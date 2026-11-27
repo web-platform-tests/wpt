@@ -188,6 +188,9 @@ promise_test(async t => {
   assert_false(loadFired, "image load should still be in flight");
 
   source.srcset = `${slowUrl} 4x`;
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_false(loadFired, "image load should still be in flight after re-selection");
+  assert_equals(img.naturalWidth, 25, "naturalWidth updated before the image finishes loading");
   await loaded;
   assert_equals(img.naturalWidth, 25);
   assert_equals(img.naturalHeight, 25);
@@ -213,10 +216,41 @@ promise_test(async t => {
   assert_false(loadFired, "image load should still be in flight");
 
   img.sizes = "50px";
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_false(loadFired, "image load should still be in flight after re-selection");
+  assert_approx_equals(img.naturalWidth, 25, 1, "naturalWidth updated before the image finishes loading");
   await loaded;
   assert_approx_equals(img.naturalWidth, 25, 1);
   assert_approx_equals(img.naturalHeight, 25, 1);
 }, "Updating selected pixel density via sizes while same-URL w-descriptor current request is partially available updates natural dimensions");
+
+promise_test(async t => {
+  const id = token();
+  const partialUrl = `/images/green-100x100.png?drop-current-${id}&pipe=trickle(2048:d1.5)`;
+  const otherUrl = `/images/green-256x256.png?drop-pending-${id}&pipe=trickle(d0.5)`;
+  const img = document.createElement("img");
+  t.add_cleanup(() => img.remove());
+  img.srcset = `${partialUrl} 1x`;
+  document.body.appendChild(img);
+
+  await t.step_wait(() => img.naturalWidth > 0, "partially available header decoded", 1000, 10);
+  assert_equals(img.naturalWidth, 100);
+
+  // Starts a pending request for otherUrl.
+  img.srcset = `${otherUrl} 1x`;
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+
+  // Re-selects the partially available current request, which drops the pending request.
+  img.srcset = `${partialUrl} 2x`;
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_equals(img.naturalWidth, 50, "re-selected current request at 2x");
+
+  // With no pending request left, this starts a new request for otherUrl.
+  img.srcset = `${otherUrl} 1x`;
+  await t.step_wait(() => img.currentSrc.includes("drop-pending") && img.complete,
+                    "otherUrl becomes the current request", 5000, 50);
+  assert_equals(img.naturalWidth, 256);
+}, "Re-selecting a partially available current request drops the pending request");
 
 promise_test(async t => {
   const picture = document.createElement("picture");
@@ -274,9 +308,10 @@ promise_test(async t => {
   assert_equals(img.naturalHeight, 25);
 }, "Updating selected pixel density for an in-flight pending request with the same URL updates natural dimensions on swap");
 
-promise_test(async t => {
-  const id = token();
-  const stashBase = "/html/semantics/embedded-content/the-img-element/resources/image-and-stash.py";
+// The media query flips when the iframe is resized, so a user agent that reacts to environment
+// changes for picture sources re-runs selection, while the selected source and density stay the
+// same.
+async function pictureInResizableFrame(t, url) {
   const iframe = document.createElement("iframe");
   iframe.style.width = "300px";
   iframe.style.height = "200px";
@@ -286,29 +321,68 @@ promise_test(async t => {
   document.body.appendChild(iframe);
   await iframeLoaded;
 
-  const img = iframe.contentDocument.createElement("img");
-  const loaded = waitForEvent(img, "load");
-  img.srcset = `${stashBase}?increment=${id} 2x`;
-  iframe.contentDocument.body.appendChild(img);
-  await loaded;
+  const doc = iframe.contentDocument;
+  const picture = doc.createElement("picture");
+  const wide = doc.createElement("source");
+  wide.media = "(min-width: 400px)";
+  wide.srcset = `${url} 2x`;
+  const narrow = doc.createElement("source");
+  narrow.srcset = `${url} 2x`;
+  const img = doc.createElement("img");
+  picture.append(wide, narrow, img);
+  return { iframe, picture, img };
+}
 
-  let countText = await (await fetch(`${stashBase}?read=${id}`)).text();
-  assert_equals(countText, "1", "initial load fetched once");
+async function resizeAndSettle(t, iframe) {
+  iframe.style.width = "500px";
+  await nextAnimationFrames(iframe.contentWindow, 3);
+  await new Promise(resolve => t.step_timeout(resolve, 150));
+}
+
+const stashBase = "/html/semantics/embedded-content/the-img-element/resources/image-and-stash.py";
+
+async function fetchCount(id) {
+  return (await fetch(`${stashBase}?read=${id}`, { cache: "no-store" })).text();
+}
+
+promise_test(async t => {
+  const id = token();
+  const { iframe, picture, img } = await pictureInResizableFrame(t, `${stashBase}?increment=${id}`);
+  const loaded = waitForEvent(img, "load");
+  iframe.contentDocument.body.appendChild(picture);
+  await loaded;
+  assert_equals(await fetchCount(id), "1", "initial load fetched once");
 
   let extraLoads = 0;
   img.addEventListener("load", () => { extraLoads++; });
-  iframe.style.width = "500px";
-  await nextAnimationFrames(iframe.contentWindow, 3);
-  await new Promise(resolve => t.step_timeout(resolve, 150));
+  await resizeAndSettle(t, iframe);
 
-  countText = await (await fetch(`${stashBase}?read=${id}`)).text();
   assert_equals(extraLoads, 0, "viewport resize should not fire another load event");
-  assert_equals(countText, "1", "viewport resize should not re-fetch unchanged 2x candidate");
+  assert_equals(await fetchCount(id), "1", "viewport resize should not re-fetch unchanged 2x candidate");
 }, "Environment change does not re-fetch an already loaded 2x srcset candidate");
 
 promise_test(async t => {
+  const id = token();
+  const { iframe, picture, img } = await pictureInResizableFrame(t, `${stashBase}?increment=${id}&broken`);
+  let errorCount = 0;
+  img.addEventListener("error", () => { errorCount++; });
+  const initialError = new Promise(resolve => img.addEventListener("error", resolve, { once: true }));
+  iframe.contentDocument.body.appendChild(picture);
+  await initialError;
+  assert_equals(await fetchCount(id), "1", "initial load fetched once");
+
+  await resizeAndSettle(t, iframe);
+
+  assert_equals(errorCount, 1, "viewport resize should not fire another error event");
+  assert_equals(await fetchCount(id), "1", "viewport resize should not re-fetch broken 2x candidate");
+}, "Environment change does not re-fetch a broken 2x srcset candidate");
+
+promise_test(async t => {
+  const id = token();
+  const smallUrl = `/images/green-256x256.png?env-small-${id}`;
+  const bigUrl = `/images/green-100x100.png?env-big-${id}&pipe=trickle(d1)`;
   const iframe = document.createElement("iframe");
-  iframe.style.width = "300px";
+  iframe.style.width = "600px";
   iframe.style.height = "200px";
   t.add_cleanup(() => iframe.remove());
   const iframeLoaded = waitForEvent(iframe, "load");
@@ -316,19 +390,30 @@ promise_test(async t => {
   document.body.appendChild(iframe);
   await iframeLoaded;
 
-  const img = iframe.contentDocument.createElement("img");
-  let errorCount = 0;
-  img.addEventListener("error", () => { errorCount++; });
-  const initialError = new Promise(resolve => img.addEventListener("error", resolve, { once: true }));
-  img.srcset = `/images/broken.png?broken-${token()} 2x`;
-  iframe.contentDocument.body.appendChild(img);
-  await initialError;
-  assert_equals(errorCount, 1);
+  const doc = iframe.contentDocument;
+  const picture = doc.createElement("picture");
+  const source = doc.createElement("source");
+  source.media = "(min-width: 800px)";
+  source.srcset = bigUrl;
+  const img = doc.createElement("img");
+  img.src = smallUrl;
+  picture.append(source, img);
+  const loaded = waitForEvent(img, "load");
+  doc.body.appendChild(picture);
+  await loaded;
+  assert_equals(img.naturalWidth, 256, "small image selected initially");
 
-  iframe.style.width = "500px";
-  await nextAnimationFrames(iframe.contentWindow, 3);
-  await new Promise(resolve => t.step_timeout(resolve, 150));
-  assert_equals(errorCount, 1, "viewport resize should not re-fetch broken 2x candidate");
-}, "Environment change does not re-fetch a broken 2x srcset candidate");
+  // Starts an environment-change fetch for bigUrl.
+  iframe.style.width = "900px";
+  await nextAnimationFrames(iframe.contentWindow, 2);
+  await new Promise(resolve => t.step_timeout(resolve, 200));
+
+  // A relevant mutation that still selects bigUrl keeps that fetch as the pending request.
+  img.referrerPolicy = "no-referrer";
+
+  await t.step_wait(() => img.currentSrc.includes("env-big") && img.complete,
+                    "bigUrl becomes the current request", 5000, 50);
+  assert_equals(img.naturalWidth, 100);
+}, "A relevant mutation that keeps the selected source during an environment-change fetch doesn't discard that fetch");
 </script>
 </body>

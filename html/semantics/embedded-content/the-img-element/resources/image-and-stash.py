@@ -25,6 +25,9 @@ def main(request, response):
       stash_value = 0
     request.server.stash.put(uuid, stash_value + 1)
 
+    if b"broken" in request.GET:
+      return (404, [], "Not found")
+
     # Return a basic image.
     response_headers = [(b"Content-Type", b"image/png")]
     image_path = os.path.join(os.path.dirname(isomorphic_decode(__file__)), u"image.png")

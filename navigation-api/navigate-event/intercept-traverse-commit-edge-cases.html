@@ -182,6 +182,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   await onloadPromise;
+  await navigation.navigate("#joint-start").finished;
   const iframe = await createIframe(t, "/common/blank.html?joint=0");
   const iw = iframe.contentWindow;
   const h0 = history.length;
@@ -204,7 +205,7 @@ promise_test(async t => {
   controller.abort();
   await new Promise(resolve => t.step_timeout(resolve, 50));
 
-  assert_equals(location.hash, "#state-2");
+  assert_equals(location.hash, "#joint-start");
   assert_equals(iw.location.hash, "#joint-inew");
   assert_equals(history.length, h0 + 1);
 }, "Top-level intercepted traverse handler calling iframe.history.pushState preserves joint history");

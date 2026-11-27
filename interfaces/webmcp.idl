@@ -10,6 +10,7 @@ partial interface Document {
 [Exposed=Window, SecureContext]
 interface ModelContext : EventTarget {
   Promise<undefined> registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
+  undefined waitForToolsUntil(Promise<any> promise);
   Promise<sequence<Tool>> getTools(optional ModelContextGetToolOptions options = {});
   Promise<DOMString> executeTool(Tool tool, optional object inputObject, optional ModelContextExecuteToolOptions options = {});
 

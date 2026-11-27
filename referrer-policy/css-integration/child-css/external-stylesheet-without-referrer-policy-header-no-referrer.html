@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSS integration - Child css from external stylesheet without Referrer-Policy header - no-referrer</title>
+    <link rel="help" href="https://w3c.github.io/webappsec-referrer-policy/#integration-with-css">
+    <link rel="help" href="https://html.spec.whatwg.org/multipage/browsers.html#policy-container-referrer-policy">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/common/utils.js"></script>
+    <!-- Common global functions for referrer-policy tests. -->
+    <script src="/common/security-features/resources/common.sub.js"></script>
+    <script src="/referrer-policy/css-integration/resources/external-stylesheet-without-referrer-policy-header.js"></script>
+    <meta name="referrer" content="no-referrer">
+  </head>
+  <body>
+    <p>Check that resources from an external stylesheet served without a
+    Referrer-Policy header are loaded with the default referrer policy
+    (strict-origin-when-cross-origin), not with the referrer policy of the
+    document.</p>
+
+    <script>
+      testExternalStyleSheetWithoutReferrerPolicyHeader({
+        sheet: "without-referrer-policy-header-import",
+        subresource_handler: "stylesheet.py",
+        expected: "the style sheet origin",
+      }, "Child css from an external stylesheet without a Referrer-Policy header uses the default referrer policy, not the document's no-referrer policy.");
+    </script>
+
+    <div id="log"></div>
+  </body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mixed-Content: worklets and workers in sandboxed HTTPS frames</title>
+<meta charset="utf-8">
+<meta name="help" href="https://w3c.github.io/webappsec-mixed-content/#should-block-fetch">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+</head>
+<body>
+<script>
+const hostInfo = get_host_info();
+const kHttpModuleUrl =
+    `${hostInfo.HTTP_REMOTE_ORIGIN}/common/empty.js?pipe=header(Access-Control-Allow-Origin,*)`;
+const kHttpsModuleUrl =
+    `${hostInfo.HTTPS_REMOTE_ORIGIN}/common/empty.js?pipe=header(Access-Control-Allow-Origin,*)`;
+
+function runInOpaqueHttpsSubframe(t, configureFrame, childScript) {
+  return new Promise(resolve => {
+    const frame = document.createElement("iframe");
+    t.add_cleanup(() => frame.remove());
+    window.addEventListener("message", function onMessage(e) {
+      if (e.source !== frame.contentWindow)
+        return;
+      window.removeEventListener("message", onMessage);
+      resolve(e.data);
+    });
+    configureFrame(frame, `<!DOCTYPE html><script>${childScript}<\/script>`);
+    document.body.appendChild(frame);
+  });
+}
+
+for (const [frameName, configureFrame] of [
+  ["sandboxed srcdoc", (frame, html) => {
+    frame.sandbox = "allow-scripts";
+    frame.srcdoc = html;
+  }],
+  ["data: URL", (frame, html) => {
+    frame.src = `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
+  }],
+]) {
+  promise_test(async t => {
+    const result = await runInOpaqueHttpsSubframe(t, configureFrame, `
+      (async () => {
+        const results = {
+          origin: self.origin,
+          isSecureContext: self.isSecureContext,
+        };
+
+        const sameOriginBlobUrl = URL.createObjectURL(
+            new Blob(["export const ok = 1;"], {type: "text/javascript"}));
+        const mixedImportBlobUrl = URL.createObjectURL(
+            new Blob(["import '${kHttpModuleUrl}&case=blob_import';"],
+                     {type: "text/javascript"}));
+        const dataModuleUrl = "data:text/javascript,export const ok = 1;";
+
+        results.httpsPaint = await CSS.paintWorklet
+            .addModule("${kHttpsModuleUrl}&case=https_paint")
+            .then(() => "RESOLVED", e => e.name);
+        results.dataPaint = await CSS.paintWorklet
+            .addModule(dataModuleUrl)
+            .then(() => "RESOLVED", e => e.name);
+        results.blobPaint = await CSS.paintWorklet
+            .addModule(sameOriginBlobUrl)
+            .then(() => "RESOLVED", e => e.name);
+        results.httpPaint = await CSS.paintWorklet
+            .addModule("${kHttpModuleUrl}&case=http_paint")
+            .then(() => "RESOLVED", e => e.name);
+        results.httpImportPaint = await CSS.paintWorklet
+            .addModule(mixedImportBlobUrl)
+            .then(() => "RESOLVED", e => e.name);
+
+        const audioCtx = new OfflineAudioContext(1, 128, 44100);
+        results.httpsAudio = await audioCtx.audioWorklet
+            .addModule("${kHttpsModuleUrl}&case=https_audio")
+            .then(() => "RESOLVED", e => e.name);
+        results.dataAudio = await audioCtx.audioWorklet
+            .addModule(dataModuleUrl)
+            .then(() => "RESOLVED", e => e.name);
+        results.blobAudio = await audioCtx.audioWorklet
+            .addModule(sameOriginBlobUrl)
+            .then(() => "RESOLVED", e => e.name);
+        results.httpAudio = await audioCtx.audioWorklet
+            .addModule("${kHttpModuleUrl}&case=http_audio")
+            .then(() => "RESOLVED", e => e.name);
+
+        parent.postMessage(results, "*");
+      })();
+    `);
+
+    assert_equals(result.origin, "null");
+    assert_true(result.isSecureContext);
+    assert_equals(result.httpsPaint, "RESOLVED");
+    assert_equals(result.dataPaint, "RESOLVED");
+    assert_equals(result.blobPaint, "RESOLVED");
+    assert_equals(result.httpsAudio, "RESOLVED");
+    assert_equals(result.dataAudio, "RESOLVED");
+    assert_equals(result.blobAudio, "RESOLVED");
+    assert_equals(result.httpPaint, "AbortError");
+    assert_equals(result.httpImportPaint, "AbortError");
+    assert_equals(result.httpAudio, "AbortError");
+  }, `HTTPS ${frameName} frames block insecure worklet modules while allowing HTTPS, data:, and same-origin blob: modules.`);
+}
+
+promise_test(async t => {
+  const workerResult = await runInOpaqueHttpsSubframe(t, (frame, html) => {
+    frame.sandbox = "allow-scripts";
+    frame.srcdoc = html;
+  }, `
+    (async () => {
+      const innerBlobUrl = URL.createObjectURL(new Blob(["ok"]));
+      const workerCode = \`
+        self.onmessage = async (e) => {
+          const out = {};
+          out.httpsFetch = await fetch("${kHttpsModuleUrl}&case=worker_https")
+              .then(() => "RESOLVED", () => "BLOCKED");
+          out.blobFetch = await fetch(e.data.innerBlobUrl)
+              .then(() => "RESOLVED", () => "BLOCKED");
+          out.httpFetch = await fetch("${kHttpModuleUrl}&case=worker_http")
+              .then(() => "RESOLVED", () => "BLOCKED");
+          try {
+            importScripts("${kHttpModuleUrl}&case=worker_import");
+            out.httpImportScripts = "RESOLVED";
+          } catch (err) {
+            out.httpImportScripts = "BLOCKED";
+          }
+          postMessage(out);
+        };
+      \`;
+      const workerUrl = URL.createObjectURL(
+          new Blob([workerCode], {type: "text/javascript"}));
+      const worker = new Worker(workerUrl);
+      const res = await new Promise(r => {
+        worker.onmessage = ev => r(ev.data);
+        worker.postMessage({innerBlobUrl});
+      });
+      parent.postMessage(res, "*");
+    })();
+  `);
+
+  assert_equals(workerResult.httpsFetch, "RESOLVED");
+  assert_equals(workerResult.blobFetch, "RESOLVED");
+  assert_equals(workerResult.httpFetch, "BLOCKED");
+  assert_equals(workerResult.httpImportScripts, "BLOCKED");
+}, "Dedicated workers created in sandboxed HTTPS frames block mixed content while allowing HTTPS and same-origin blob fetches.");
+</script>
+</body>
+</html>

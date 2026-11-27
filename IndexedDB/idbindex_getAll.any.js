@@ -29,6 +29,14 @@ index_get_all_values_test(
     /*storeName=*/ 'out-of-line', /*options=*/ {count: 10}, 'maxCount=10');
 
 index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: null},
+    'Get all with null query');
+
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: null, count: 10},
+    'maxCount=10 with null query');
+
+index_get_all_values_test(
     /*storeName=*/ 'out-of-line',
     /*options=*/ {query: IDBKeyRange.bound('G', 'M')}, 'Get bound range');
 

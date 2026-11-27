@@ -26,6 +26,14 @@ object_store_get_all_keys_test(
     /*storeName=*/ 'out-of-line', /*options=*/ {count: 10}, 'Test maxCount');
 
 object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: null},
+    'Get all keys with null query');
+
+object_store_get_all_keys_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: null, count: 10},
+    'Test maxCount with null query');
+
+object_store_get_all_keys_test(
     /*storeName=*/ 'out-of-line',
     /*options=*/ {query: IDBKeyRange.bound('g', 'm')}, 'Get bound range');
 

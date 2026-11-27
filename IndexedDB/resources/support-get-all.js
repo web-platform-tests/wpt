@@ -325,7 +325,7 @@ function createGetAllRequest(
   if (options && options.count) {
     return queryTarget[getAllFunctionName](options.query, options.count);
   }
-  if (options && options.query) {
+  if (options && options.query !== undefined) {
     return queryTarget[getAllFunctionName](options.query);
   }
   return queryTarget[getAllFunctionName]();
@@ -374,8 +374,10 @@ function filterWithGetAllRecordsOptions(records, options) {
     return records;
   }
 
-  // Remove records that don't satisfy the query.
-  if (options.query) {
+  // Remove records that don't satisfy the query.  A null or omitted query
+  // uses an unbounded key range, so do not filter.  A query of 0 is a valid
+  // key and must be applied.
+  if (options.query !== undefined && options.query !== null) {
     let query = options.query;
     if (!(query instanceof IDBKeyRange)) {
       // Create an IDBKeyRange for the query's key value.

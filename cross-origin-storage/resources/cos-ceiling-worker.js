@@ -1,7 +1,8 @@
-// Worker used by allow-origin-header-workers.tentative.https.html. It stores
-// bytes on request, so that the write is made from a worker global and is
-// bounded by that worker's COS scope ceiling, which is its creator's,
-// captured when the worker is created.
+// Worker used by allow-origin-header-workers.tentative.https.html and
+// user-activation-gate.tentative.optional.https.html. It stores bytes on
+// request, so that the write is made from a worker global, bounded by that
+// worker's COS scope ceiling (its creator's, captured when the worker is
+// created) and by the user activation it has.
 //
 // Messages:
 //   {ping: true} -> {pong: true}

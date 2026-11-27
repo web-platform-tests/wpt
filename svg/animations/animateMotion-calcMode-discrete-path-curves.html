@@ -1,5 +1,7 @@
 <!doctype html>
 <title>Test animateMotion with calcMode="discrete" and complex paths</title>
+<link rel="help" href="https://w3c.github.io/svgwg/specs/animations/#AnimateMotionElementCalcModeAttribute">
+<link rel="help" href="https://www.w3.org/TR/smil-animation/#MotionPathAttribute">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/SVGAnimationTestCase-testharness.js"></script>
@@ -32,9 +34,14 @@
 //   [0] moveTo: (0, 0)
 //   [1] lineTo endpoint: (100, 0)
 //   [2] close (back to subpath start): (0, 0)
-//   [3] moveTo (new subpath): (50, 50)
-//   [4] lineTo endpoint: (150, 50)
-// 5 points, dur=5s => each occupies 1s.
+//   [3] lineTo endpoint: (150, 50)
+// The moveto to (50, 50) is not at the beginning of the path, so it
+// "does not count as an additional point when dividing up the duration"
+// (SMIL Animation, path attribute of animateMotion).
+// 4 points, dur=5s => each occupies 1.25s.
+// Which point the third value is, the closepath end (0, 0) or the start of
+// the next subpath (50, 50), is not defined, so the test only checks that
+// the third value lasts from 2.5s to 3.75s.
 
 const rootSVGElement = document.querySelector("svg");
 const rect1 = document.querySelector("#rect1");
@@ -44,6 +51,20 @@ function assert_position(element, x, y, description) {
     assert_approx_equals(element.getCTM().e, x, 0.01, description + " (x)");
     assert_approx_equals(element.getCTM().f, y, 0.01, description + " (y)");
 }
+
+function position(element) {
+    return [element.getCTM().e, element.getCTM().f];
+}
+
+function assert_close_or_next_subpath(element, description) {
+    const [x, y] = position(element);
+    const atClose = Math.abs(x) < 0.01 && Math.abs(y) < 0.01;
+    const atNextSubpath = Math.abs(x - 50) < 0.01 && Math.abs(y - 50) < 0.01;
+    assert_true(atClose || atNextSubpath,
+        description + ": expected (0, 0) or (50, 50), got (" + x + ", " + y + ")");
+}
+
+let rect2ThirdValue;
 
 smil_async_test((t) => {
     const expectedValues = [
@@ -57,11 +78,16 @@ smil_async_test((t) => {
         }],
         ["anim", 2.5, () => {
             assert_position(rect1, 200, 100, "curves: lineTo end");
-            assert_position(rect2, 0, 0, "subpaths: close (Z)");
+            assert_close_or_next_subpath(rect2, "subpaths: third value");
+            rect2ThirdValue = position(rect2);
         }],
         ["anim", 3.0, () => {
             assert_position(rect1, 200, 100, "curves: freeze");
-            assert_position(rect2, 50, 50, "subpaths: new moveTo");
+            assert_position(rect2, rect2ThirdValue[0], rect2ThirdValue[1],
+                "subpaths: still the third value, the moveto adds no point");
+        }],
+        ["anim", 3.8, () => {
+            assert_position(rect2, 150, 50, "subpaths: fourth value from 3.75s");
         }],
         ["anim", 4.0, () => {
             assert_position(rect2, 150, 50, "subpaths: lineTo");

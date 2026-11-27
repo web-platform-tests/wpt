@@ -1,0 +1,28 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: CSS Overscroll Behavior Module Level 2 (https://drafts.csswg.org/css-overscroll-2/)
+
+dictionary OverscrollEventInit : EventInit {
+  Element? overscrollTarget = null;
+  boolean overscrolling = false;
+};
+
+[Exposed=Window]
+interface OverscrollEvent : Event {
+  constructor(DOMString type, optional OverscrollEventInit eventInitDict = {});
+  readonly attribute Element? overscrollTarget;
+  readonly attribute boolean overscrolling;
+};
+
+partial interface HTMLElement {
+  [CEReactions, Reflect] attribute boolean overscrollContainer;
+  [CEReactions, Reflect] attribute boolean overscrollArea;
+};
+
+partial interface mixin GlobalEventHandlers {
+  attribute EventHandler onoverscrollstart;
+  attribute EventHandler onoverscrollchanging;
+  attribute EventHandler onoverscrollend;
+  attribute EventHandler onoverscrollcancel;
+};

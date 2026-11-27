@@ -128,6 +128,9 @@ interface HTMLElement : Element {
   [CEReactions, ReflectSetter] attribute DOMString autocapitalize;
   [CEReactions] attribute boolean autocorrect;
 
+  // scoped custom element registries
+  [CEReactions, Reflect="customelementregistry"] attribute DOMString htmlCustomElementRegistry;
+
   [CEReactions] attribute [LegacyNullToEmptyString] DOMString innerText;
   [CEReactions] attribute [LegacyNullToEmptyString] DOMString outerText;
 

@@ -98,6 +98,6 @@ interface PushSubscriptionChangeEvent : ExtendableEvent {
 };
 
 dictionary PushSubscriptionChangeEventInit : ExtendableEventInit {
-  PushSubscription newSubscription = null;
-  PushSubscription oldSubscription = null;
+  PushSubscription? newSubscription = null;
+  PushSubscription? oldSubscription = null;
 };

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/reporting/resources/report-helper.js"></script>
+</head>
+<body>
+<script>
+const { HTTP_REMOTE_ORIGIN, REMOTE_HOST } = get_host_info();
+const endpoint = "/reporting/resources/report.py";
+const reportID = '31b523b7-8ea4-4d09-95a1-c425f97ce5d1';
+const expectedConnection = `https://${REMOTE_HOST}/`;
+
+promise_test(async t => {
+  const link = document.createElement('link');
+  link.rel = 'dns-prefetch';
+  link.href = `${HTTP_REMOTE_ORIGIN}/common/blank.html`;
+  document.head.appendChild(link);
+  t.add_cleanup(() => link.remove());
+
+  await wait(5000);
+  const reports = await pollReports(endpoint, reportID);
+
+  const report = reports.find(
+      r => r.type === 'connection-allowlist' && r.body.connection === expectedConnection);
+  assert_true(!!report, `A report for ${expectedConnection} should be present.`);
+  assert_equals(report.body.disposition, 'enforce');
+}, 'Connection-Allowlist report is delivered with a synthesized https:// URL for a blocked dns-prefetch.');
+</script>
+</body>
+</html>

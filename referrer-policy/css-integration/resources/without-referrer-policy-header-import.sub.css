@@ -1,0 +1,1 @@
+@import url(http://{{hosts[][]}}:{{ports[http][0]}}/common/security-features/subresource/stylesheet.py?id={{GET[id]}}&type=stylesheet-only);

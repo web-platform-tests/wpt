@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>img current pixel density and density-corrected dimensions lifecycle</title>
 <link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#updating-the-image-data">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#density-corrected-natural-width-and-height">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#density-corrected-intrinsic-width-and-height">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -242,8 +242,9 @@ promise_test(async t => {
 
   // Re-selects the partially available current request, which drops the pending request.
   img.srcset = `${partialUrl} 2x`;
-  await new Promise(resolve => t.step_timeout(resolve, 0));
+  await new Promise(resolve => t.step_timeout(resolve, 700));
   assert_equals(img.naturalWidth, 50, "re-selected current request at 2x");
+  assert_true(img.currentSrc.includes("drop-current"), "aborted pending request did not swap in");
 
   // With no pending request left, this starts a new request for otherUrl.
   img.srcset = `${otherUrl} 1x`;
@@ -380,7 +381,7 @@ promise_test(async t => {
 promise_test(async t => {
   const id = token();
   const smallUrl = `/images/green-256x256.png?env-small-${id}`;
-  const bigUrl = `/images/green-100x100.png?env-big-${id}&pipe=trickle(d1)`;
+  const bigUrl = `${stashBase}?increment=${id}&delay=1`;
   const iframe = document.createElement("iframe");
   iframe.style.width = "600px";
   iframe.style.height = "200px";
@@ -411,9 +412,10 @@ promise_test(async t => {
   // A relevant mutation that still selects bigUrl keeps that fetch as the pending request.
   img.referrerPolicy = "no-referrer";
 
-  await t.step_wait(() => img.currentSrc.includes("env-big") && img.complete,
+  await t.step_wait(() => img.currentSrc.includes(`increment=${id}`) && img.complete,
                     "bigUrl becomes the current request", 5000, 50);
-  assert_equals(img.naturalWidth, 100);
+  assert_equals(img.naturalWidth, 330);
+  assert_equals(await fetchCount(id), "1", "relevant mutation should not re-fetch bigUrl");
 }, "A relevant mutation that keeps the selected source during an environment-change fetch doesn't discard that fetch");
 </script>
 </body>

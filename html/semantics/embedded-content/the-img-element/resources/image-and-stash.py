@@ -10,6 +10,7 @@
 #       https://web-platform-tests.org/tools/wptserve/docs/stash.html.
 
 import os
+import time
 
 from wptserve.utils import isomorphic_decode
 
@@ -24,6 +25,9 @@ def main(request, response):
     if stash_value is None:
       stash_value = 0
     request.server.stash.put(uuid, stash_value + 1)
+
+    if b"delay" in request.GET:
+      time.sleep(float(request.GET[b"delay"]))
 
     if b"broken" in request.GET:
       return (404, [], "Not found")

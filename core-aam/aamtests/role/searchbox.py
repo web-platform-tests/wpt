@@ -1,15 +1,21 @@
+import pytest
+
 # Testing: https://w3c.github.io/core-aam/#role-map-searchbox
 
-TEST_HTML = "<div role='searchbox' contenteditable id='test'>content</div>"
+TEST_HTML = {
+    "no-aria-readonly": "<div role='searchbox' contenteditable id='test'>content</div>",
+    "aria-readonly-true": "<div role='searchbox' aria-readonly='true' contenteditable id='test'>content</div>"
+}
 
-def test_atspi(atspi, session, inline):
-    session.url = inline(TEST_HTML)
+@pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
+def test_atspi(atspi, session, inline, test_html):
+    session.url = inline(test_html)
 
     # Spec:
     # Role: ROLE_ENTRY
     # Object Attribute: xml-roles:searchbox
     # Object Attribute: text-input-type:search
-    # Interface: EditableText: if aria-readonly is not "true"
+    # Interface: EditableText
 
     node = atspi.find_node("test", session.url)
     assert atspi.Accessible.get_role(node) == atspi.Role.ENTRY
@@ -31,8 +37,9 @@ def test_atspi(atspi, session, inline):
 #     # Role: ROLE_SYSTEM_TEXT
 #     # Object Attribute: text-input-type:search
 
-def test_uia(uia, session, inline):
-    session.url = inline(TEST_HTML)
+@pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
+def test_uia(uia, session, inline, test_html):
+    session.url = inline(test_html)
 
     # Spec:
     # Control Type: Edit

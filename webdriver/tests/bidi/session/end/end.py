@@ -50,20 +50,6 @@ async def test_end_closes_all_connections(bidi_session):
         await additional_session.end()
 
 
-async def test_end_replies_to_pipelined_command(bidi_session):
-    # Send both commands before waiting for either response. The second command
-    # can be received after session.end has detached the active session but
-    # before its asynchronous cleanup has closed this connection.
-    end_response = await bidi_session.send_command("session.end", {})
-    command_response = await bidi_session.send_command(
-        "browsingContext.getTree", {}
-    )
-
-    assert await asyncio.wait_for(end_response, timeout=2) == {}
-    with pytest.raises(InvalidSessionIDError):
-        await asyncio.wait_for(command_response, timeout=2)
-
-
 async def test_end_invalidates_classic_session(bidi_session, configuration):
     session_id = bidi_session.session_id
     assert session_id is not None

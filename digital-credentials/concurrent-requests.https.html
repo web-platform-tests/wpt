@@ -110,7 +110,7 @@
 
     const responseData = "served-after-teardown";
     await test_driver.set_virtual_wallet_behavior("respond", "org-iso-mdoc", {
-      value: responseData,
+      response: responseData,
     });
     await test_driver.bless("user activation for top-level request");
     const credential = await navigator.credentials.get(
@@ -118,7 +118,7 @@
     );
 
     assert_equals(
-      credential.data.value,
+      credential.data.response,
       responseData,
       "A request made after the previous requester's document was destroyed must be served, not rejected as concurrent.",
     );

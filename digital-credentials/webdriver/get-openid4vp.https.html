@@ -11,7 +11,7 @@
 
   promise_test(async (t) => {
     const responseData = "test-response-data";
-    await test_driver.set_virtual_wallet_behavior("respond", "openid4vp-v1-unsigned", { "value": responseData });
+    await test_driver.set_virtual_wallet_behavior("respond", "openid4vp-v1-unsigned", { "response": responseData });
     t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
     await test_driver.bless("user activation");
 
@@ -19,11 +19,11 @@
     const result = await navigator.credentials.get(options);
 
     assert_equals(result.protocol, "openid4vp-v1-unsigned");
-    assert_equals(result.data.value, responseData);
+    assert_equals(result.data.response, responseData);
   }, "navigator.credentials.get() with respond mode should resolve with the specified data.");
 
   promise_test(async (t) => {
-    const complexData = { "a": 1, "b": [2, 3], "c": { "d": 4 } };
+    const complexData = { "response": { "a": 1, "b": [2, 3], "c": { "d": 4 } } };
     await test_driver.set_virtual_wallet_behavior("respond", "openid4vp-v1-unsigned", complexData);
     t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
     await test_driver.bless("user activation");
@@ -32,9 +32,9 @@
     const result = await navigator.credentials.get(options);
 
     assert_equals(result.protocol, "openid4vp-v1-unsigned");
-    assert_equals(result.data.a, 1);
-    assert_array_equals(result.data.b, [2, 3]);
-    assert_equals(result.data.c.d, 4);
+    assert_equals(result.data.response.a, 1);
+    assert_array_equals(result.data.response.b, [2, 3]);
+    assert_equals(result.data.response.c.d, 4);
   }, "navigator.credentials.get() with complex data response should resolve with structured data.");
 
   promise_test(async (t) => {

@@ -3,6 +3,8 @@
 <title>Cross-Origin Storage: fetch() integration and the Public Hash List</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
@@ -36,6 +38,10 @@ promise_test(async t => {
   const stored = await fetch(LISTED_RESOURCE, {integrity, crossOriginStorage: '*'});
   assert_true(stored.ok, 'the storing fetch itself succeeded');
   await stored.text();
+  // A "*" write waits for user activation on a page of its top-level site
+  // before other sites can read it through the global scope.
+  // https://wicg.github.io/cross-origin-storage/#user-activation-gate
+  await cosActivate();
 
   const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
   let result;

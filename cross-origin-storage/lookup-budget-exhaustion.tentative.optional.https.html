@@ -1,0 +1,92 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: the cross-site lookup budget runs out and stays out</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#lookup-budget
+//
+// Every top-level site has a cross-site lookup budget. A charged lookup over
+// budget returns NotFoundError, exactly as a miss does, so the budget is only
+// observable on an entry the reader is known to be entitled to. This file uses
+// a first-party list record: this document writes an entry listing an alt-site
+// origin, and that origin reads it as a top-level page on its own site. Such a
+// read is disclosed, and charged, because the record was written under another
+// top-level site.
+//
+// This file deliberately exhausts the alt site's budget for the rest of the
+// user agent's lookup window, which persists across reloads and tabs. Every
+// later test that makes charged lookups under the alt site, such as
+// top-level-site-keying.tentative.https.html and the Public Hash List tests,
+// fails until the window ends or the user clears the alt site's data. It is
+// optional for that reason, and should run last or in a fresh profile.
+//
+// The list-scoped write relies on the companion .sub.headers file, whose
+// Cross-Origin-Storage-Allow-Origin ceiling names the alt-site origins.
+
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+// Well above the 8 to 16 lookups per window the README suggests, so a budget
+// of any plausible size runs out before this.
+const MAX_LOOKUPS = 64;
+
+// Reads after the first refusal, which must all be refused as well.
+const AFTER = 3;
+
+promise_test(async t => {
+  const content = cosUniqueContent('budget-exhaustion');
+  const {hash} = await cosStore(content, {origins: [HTTPS_NOTSAMESITE_ORIGIN]});
+
+  const reader = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  const first = await cosRemoteRead(reader, hash);
+  cosAssertDisclosed(first, content,
+    'the first charged read is disclosed; if not, the alt site\'s budget was ' +
+    'already used up when this test started');
+
+  let refusedAt = 0;
+  for (let i = 2; i <= MAX_LOOKUPS; ++i) {
+    const result = await cosRemoteRead(reader, hash);
+    if (!result.ok) {
+      assert_equals(result.name, 'NotFoundError',
+        `read ${i}: a read refused over budget must reject exactly as a miss`);
+      refusedAt = i;
+      break;
+    }
+    assert_equals(result.text, content, `read ${i}: content`);
+  }
+  assert_greater_than(refusedAt, 0,
+    `${MAX_LOOKUPS} charged reads of one entry were all disclosed, so the alt ` +
+    'site has no cross-site lookup budget');
+
+  for (let i = 0; i < AFTER; ++i) {
+    const result = await cosRemoteRead(reader, hash);
+    assert_false(result.ok, `read ${refusedAt + i + 1}: the budget stays used up`);
+    assert_equals(result.name, 'NotFoundError', 'a refusal is a plain miss');
+  }
+
+  // The budget belongs to the top-level site and survives new tabs.
+  const second = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  const fromSecond = await cosRemoteRead(second, hash);
+  assert_false(fromSecond.ok,
+    'a new top-level window on the same site draws from the same, used-up budget');
+  assert_equals(fromSecond.name, 'NotFoundError', 'a refusal is a plain miss');
+
+  // Lookups answered by the reader's own storing-origins record stay free.
+  const own = cosUniqueContent('budget-exhaustion-own');
+  const ownHash = cosHash(await cosSha256Hex(own));
+  const stored = await cosRemoteStore(second, ownHash, own);
+  assert_true(stored.ok, `the write succeeds, got ${stored.name}: ${stored.message}`);
+  cosAssertDisclosed(await cosRemoteRead(second, ownHash), own,
+    'an origin reading what it stored under the same top-level site is never charged');
+}, 'charged lookups run out within a plausible budget, stay refused as misses, and leave own reads free');
+</script>
+</body>

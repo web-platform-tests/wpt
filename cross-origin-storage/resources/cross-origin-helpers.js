@@ -268,3 +268,13 @@ async function cosRunTopLevel(t, origin, path, name, args) {
     }
   }, [path, name, args]);
 }
+
+// Gives this document user activation. A "*" write made under this document's
+// top-level site waits for that before other sites can read it through the
+// global scope, so tests that read a "*"-scoped entry cross-site call this
+// between the write and the read. Pages using it load testdriver.js and
+// testdriver-vendor.js.
+// https://wicg.github.io/cross-origin-storage/#user-activation-gate
+async function cosActivate() {
+  await test_driver.bless('release Cross-Origin Storage writes to the global scope');
+}

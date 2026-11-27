@@ -16,11 +16,13 @@
 // https://wicg.github.io/cross-origin-storage/#availability-gating
 // https://wicg.github.io/cross-origin-storage/#cos-entries
 //
+// https://wicg.github.io/cross-origin-storage/#lookup-budget
+//
 // This file is optional, for the same reason probe-budget.tentative.optional.
-// https.any.js is: the specification describes a cross-site lookup budget only
-// in a non-normative note. That note leaves a lookup uncharged only when
-// "determine COS disclosure" answers it through a sharing record written under the
-// reader's own top-level site, which is a storing-origins record or an origins
+// https.any.js is: the size of the cross-site lookup budget is
+// implementation-defined. The specification leaves a lookup uncharged only when
+// it is answered through a sharing record written under the reader's own
+// top-level site, which is a storing-origins record or an origins
 // list record whose partition is the reader's. A first-party origins list
 // record also admits the listed origin first-party under any other top-level
 // site, and a lookup answered that way is charged. Without that charge, two

@@ -5,14 +5,13 @@
 // https://wicg.github.io/cross-origin-storage/#availability-gating
 // https://wicg.github.io/cross-origin-storage/#cross-site-probing
 //
-// This file is optional. The specification describes a lookup budget only in
-// a non-normative note, as an example mitigation for user agents that block
-// third-party cookies: a small budget of cross-site lookups keyed on the
-// top-level site and shared by every frame on the page, counted across
-// reloads for a time window. It also says a user agent should rate-limit or
-// otherwise throttle repeated `getFileHandle()` calls. Neither defines what is
-// charged, so the test names below describe what each test observes, and the
-// comments explain the mitigation it is meant to sit alongside.
+// https://wicg.github.io/cross-origin-storage/#lookup-budget
+//
+// This file is optional. The specification requires a cross-site lookup
+// budget keyed on the top-level site, shared by every frame on the page, and
+// counted across reloads for a time window, but its size is
+// implementation-defined. lookup-budget-exhaustion.tentative.optional.https.html
+// runs it out; the tests here only check what holds before it runs out.
 //
 // The budget's size is implementation-defined, and "complete a read request"
 // only ever refuses with NotFoundError, so a read refused for being over budget

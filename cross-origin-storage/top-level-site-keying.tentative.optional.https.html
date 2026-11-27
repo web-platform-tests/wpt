@@ -4,6 +4,8 @@
 <title>Cross-Origin Storage: the global scope is not keyed to the top-level site</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
@@ -95,6 +97,10 @@ promise_test(async t => {
     `the cross-site frame's write succeeds, got ${stored.name}: ${stored.message}`);
   assert_equals(stored.hash.value, LISTED_DIGEST,
     'the vendored resource must still be the hash this test is about');
+  // A "*" write waits for user activation on a page of its top-level site
+  // before other sites can read it through the global scope.
+  // https://wicg.github.io/cross-origin-storage/#user-activation-gate
+  await cosActivate();
 
   // The listed hash is the only lookup this top-level site makes in this test,
   // so a cross-site lookup budget cannot turn it into a spurious failure.

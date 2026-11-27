@@ -1,0 +1,94 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: a "*" write reaches the global scope only after user activation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#user-activation-gate
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+//
+// Optional, because it depends on Public Hash List membership, which is
+// implementation-defined. resources/phl-listed-gate-resource.js is js-cookie
+// 3.0.8's minified build (MIT), which jsDelivr and cdnjs serve byte for byte
+// and which the list carries. It must stay byte-identical, so it carries no
+// header of its own; the digest assertion below catches any change.
+//
+// The test uses its own listed resource, and not the jQuery build the other
+// Public Hash List tests share, because global disclosure is permanent: once
+// any test has released a "*" write of jQuery, a later read of it says nothing
+// about this document's write. No other test writes this resource with "*".
+// For the same reason, the result is only meaningful in a profile where it has
+// not run before.
+//
+// The cross-site reader is a top-level window on the alt site, so its lookups
+// are charged to the alt site's cross-site lookup budget. The test keeps them
+// few (see ATTEMPTS).
+
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+const GATE_RESOURCE = 'resources/phl-listed-gate-resource.js';
+const GATE_DIGEST =
+  '506834dde81524c74ba93c40c73ac0316fb8d4f860f816353a5562b2f8118c12';
+
+// Before activation the global scope discloses nothing, so a refusal is
+// certain and two reads suffice. After it, GREASE'ing may refuse any single
+// read, so the reader tries a few more times.
+const READS_BEFORE = 2;
+const ATTEMPTS = 6;
+
+promise_test(async t => {
+  assert_false(navigator.userActivation.hasBeenActive,
+    'the write must come from a document without user activation');
+
+  const bytes = new Uint8Array(await (await fetch(GATE_RESOURCE)).arrayBuffer());
+  assert_equals(await cosSha256Hex(bytes), GATE_DIGEST,
+    'the vendored resource must still be the hash this test is about');
+  const hash = cosHash(GATE_DIGEST);
+  const handle = await navigator.crossOriginStorage.getFileHandle(
+    hash, {create: true, origins: '*'});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([bytes]));
+  await writable.close();
+
+  const reader = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  for (let i = 0; i < READS_BEFORE; ++i) {
+    const result = await cosRemoteReadDigest(reader, hash);
+    assert_false(result.ok,
+      `read ${i + 1}: a "*" write from a page without user activation must not ` +
+      'reach another top-level site yet');
+    assert_equals(result.name, 'NotFoundError',
+      `read ${i + 1}: waiting for activation must look exactly like a miss`);
+  }
+
+  await cosActivate();
+  assert_true(navigator.userActivation.hasBeenActive, 'test_driver.bless() activated the page');
+
+  const rejections = [];
+  for (let i = 0; i < ATTEMPTS; ++i) {
+    const result = await cosRemoteReadDigest(reader, hash);
+    if (result.ok) {
+      assert_equals(result.digest, GATE_DIGEST,
+        'a disclosed resource must be byte-for-byte what was stored');
+      return;
+    }
+    assert_equals(result.name, 'NotFoundError',
+      `a refused global-scope read must reject with NotFoundError, got ${result.name}`);
+    rejections.push(result.name);
+  }
+  assert_unreached(
+    `after user activation, a "*" write of a PHL resource must reach the global scope; ` +
+    `${ATTEMPTS} reads were all rejected (${rejections.join(', ')})`);
+}, 'a "*" write of a Public Hash List resource reaches other top-level sites only after user activation');
+</script>
+</body>

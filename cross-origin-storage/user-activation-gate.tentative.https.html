@@ -1,0 +1,77 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: the user activation gate holds back only the global scope</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#user-activation-gate
+//
+// A "*" write from a page without user activation waits in its top-level
+// site's pending global entries until the user interacts with a page of that
+// site. Everything outside the global scope is unaffected: the writer reads
+// the entry back through its storing-origins record, same-site origins read it
+// through the same-site baseline, and origins on an explicit list, which the
+// writer authorized with its Cross-Origin-Storage-Allow-Origin header, read it
+// right away. This file checks that side of the gate, which needs no Public
+// Hash List resource. user-activation-gate.tentative.optional.https.html
+// checks the global scope itself.
+//
+// Nothing here may give this document user activation, so the file loads no
+// testdriver. List-scoped writes rely on the companion .sub.headers file,
+// whose Cross-Origin-Storage-Allow-Origin ceiling names the alt-site origins.
+
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+function assertNoActivation() {
+  assert_false(navigator.userActivation.hasBeenActive,
+    'this test is only meaningful in a document that has no user activation');
+}
+
+promise_test(async t => {
+  assertNoActivation();
+  const content = cosUniqueContent('gate-storer');
+  const {hash} = await cosStore(content, {origins: '*'});
+  assert_equals(await cosReadText(hash), content,
+    'the writer reads its own "*" write back before any user activation');
+}, 'a "*" write is readable by its writer before user activation');
+
+promise_test(async t => {
+  assertNoActivation();
+  const content = cosUniqueContent('gate-same-site');
+  const {hash} = await cosStore(content, {origins: '*'});
+  const {ctx} = await cosOpenRemoteContext(cosNextSameSiteOrigin());
+  cosAssertDisclosed(await cosRemoteRead(ctx, hash), content,
+    'a same-site origin reads a "*" write through the same-site baseline before user activation');
+}, 'a "*" write is readable by same-site origins before user activation');
+
+promise_test(async t => {
+  assertNoActivation();
+  const content = cosUniqueContent('gate-list');
+  const {hash} = await cosStore(content, {origins: [HTTPS_NOTSAMESITE_ORIGIN]});
+  const {ctx} = await cosOpenRemoteContext(HTTPS_NOTSAMESITE_ORIGIN);
+  cosAssertDisclosed(await cosRemoteRead(ctx, hash), content,
+    'a listed origin reads a list-scoped write before user activation');
+}, 'a list-scoped write is readable by a listed cross-site origin before user activation');
+
+promise_test(async t => {
+  // The control for the optional file: content invented here cannot be on the
+  // Public Hash List, so the global scope never discloses it, with or without
+  // activation. A cross-site reader must see a plain miss.
+  assertNoActivation();
+  const content = cosUniqueContent('gate-unlisted-cross-site');
+  const {hash} = await cosStore(content, {origins: '*'});
+  const {ctx} = await cosOpenRemoteContext(cosNextCrossSiteOrigin());
+  const result = await cosRemoteRead(ctx, hash);
+  assert_false(result.ok, 'a cross-site origin must not read a "*" write off the PHL');
+  assert_equals(result.name, 'NotFoundError', 'the refusal is a plain miss');
+}, 'a "*" write off the Public Hash List is not readable cross-site before user activation');
+</script>
+</body>

@@ -2,6 +2,7 @@
 <svg><tr><td><title><tr>
 #errors
 (1:21) Unexpected <tr> tag
+(1:21) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
 (1:25) Unexpected EOF
 #document-fragment
 td
@@ -16,6 +17,7 @@ td
 #errors
 (1:1) Unexpected <svg> tag
 (1:21) Unexpected <tr> tag
+(1:21) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
 (1:25) Unexpected EOF
 #document-fragment
 tr
@@ -30,6 +32,7 @@ tr
 #errors
 (1:1) Unexpected <svg> tag
 (1:20) Unexpected <tbody> tag
+(1:20) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
 (1:27) Unexpected EOF
 #document-fragment
 thead
@@ -43,6 +46,7 @@ thead
 #errors
 (1:1) Unexpected <svg> tag
 (1:20) Unexpected <tbody> tag
+(1:20) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
 (1:27) Unexpected EOF
 #document-fragment
 tfoot
@@ -56,6 +60,7 @@ tfoot
 #errors
 (1:1) Unexpected <svg> tag
 (1:20) Unexpected <tfoot> tag
+(1:20) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
 (1:27) Unexpected EOF
 #document-fragment
 tbody
@@ -102,3 +107,350 @@ tbody
 | <svg svg>
 |   <svg tfoot>
 |     <svg title>
+
+#data
+<!DOCTYPE html><svg><title><b>x</b></title></svg>
+#errors
+(1:28) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <b>
+|           "x"
+
+#data
+<!DOCTYPE html><svg><title><b><i>x</i></b></title></svg>
+#errors
+(1:28) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <b>
+|           <i>
+|             "x"
+
+#data
+<!DOCTYPE html><svg><style><rect/></style></svg>
+#errors
+(1:28) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg style>
+|         <svg rect>
+
+#data
+<!DOCTYPE html><svg><script><g/></script></svg>
+#errors
+(1:29) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg script>
+|         <svg g>
+
+#data
+<!DOCTYPE html><svg><noscript><circle/></noscript></svg>
+#errors
+(1:31) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg noscript>
+|         <svg circle>
+
+#data
+<!DOCTYPE html><svg><title><table><br></table></title></svg>
+#errors
+(1:28) Start tag in an SVG or MathML “title”, “style”, “script”, or “noscript” element.
+(1:35) Start tag “br” in table context; it is foster parented.
+(1:35) Element inserted into an SVG or MathML “title”, “style”, “script”, or “noscript” element that isn’t the current node.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <br>
+|         <table>
+
+#data
+<!DOCTYPE html><svg><desc><table><br></table></desc></svg>
+#errors
+(1:34) Start tag “br” in table context; it is foster parented.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg desc>
+|         <br>
+|         <table>
+
+#data
+<!DOCTYPE html><svg><textarea>x</textarea></svg>
+#errors
+(1:21) Start tag “textarea”, “xmp”, “iframe”, “noembed”, “noframes”, or “plaintext” in a foreign namespace context.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg textarea>
+|         "x"
+
+#data
+<!DOCTYPE html><svg><xmp/><iframe/><noembed/><noframes/><plaintext/></svg>
+#errors
+(1:21) Start tag “textarea”, “xmp”, “iframe”, “noembed”, “noframes”, or “plaintext” in a foreign namespace context.
+(1:27) Start tag “textarea”, “xmp”, “iframe”, “noembed”, “noframes”, or “plaintext” in a foreign namespace context.
+(1:36) Start tag “textarea”, “xmp”, “iframe”, “noembed”, “noframes”, or “plaintext” in a foreign namespace context.
+(1:46) Start tag “textarea”, “xmp”, “iframe”, “noembed”, “noframes”, or “plaintext” in a foreign namespace context.
+(1:57) Start tag “textarea”, “xmp”, “iframe”, “noembed”, “noframes”, or “plaintext” in a foreign namespace context.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg xmp>
+|       <svg iframe>
+|       <svg noembed>
+|       <svg noframes>
+|       <svg plaintext>
+
+#data
+<!DOCTYPE html><svg><title><!--</title>--></title></svg>
+#errors
+(1:32) End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- </title> -->
+
+#data
+<!DOCTYPE html><svg><title><!--<</title>--></title></svg>
+#errors
+(1:33) End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- <</title> -->
+
+#data
+<!DOCTYPE html><svg><title><!--</TiTlE>--></title></svg>
+#errors
+(1:32) End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- </TiTlE> -->
+
+#data
+<!DOCTYPE html><svg><title><!--</title/>--></title></svg>
+#errors
+(1:32) End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- </title/> -->
+
+#data
+<!DOCTYPE html><svg><title><!--</title	>--></title></svg>
+#errors
+(1:32) End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- </title	> -->
+
+#data
+<!DOCTYPE html><svg><title><!x</title></title></svg>
+#errors
+(1:1) Incorrectly opened comment.
+(1:31) End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- x</title -->
+
+#data
+<!DOCTYPE html><svg><style><?a b</style></style></svg>
+#errors
+(1:33) End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg style>
+|         <?a b</style?>
+
+#data
+<!DOCTYPE html><svg><style><?a b</style ></style></svg>
+#errors
+(1:33) End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg style>
+|         <?a b</style ?>
+
+#data
+<!DOCTYPE html><svg><style><![CDATA[a</style>]]></style></svg>
+#errors
+(1:38) End tag of the enclosing SVG or MathML element inside a comment, processing instruction, or CDATA section.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg style>
+|         "a</style>"
+
+#data
+<!DOCTYPE html><svg><title><!--</title--></title></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- </title -->
+
+#data
+<!DOCTYPE html><svg><title><!--</titlex>--></title></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- </titlex> -->
+
+#data
+<!DOCTYPE html><svg><title><!x</titlex></title></svg>
+#errors
+(1:1) Incorrectly opened comment.
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <!-- x</titlex -->
+
+#data
+<!DOCTYPE html><svg><title><?x </title?></title></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         <?x </title?>
+
+#data
+<!DOCTYPE html><svg><title><![CDATA[</titlex>]]></title></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "</titlex>"
+
+#data
+<!DOCTYPE html><svg><title>a&lt;/title&gt;</title></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|         "a</title>"
+
+#data
+<!DOCTYPE html><svg><foreignObject><textarea>x</textarea></foreignObject></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg foreignObject>
+|         <textarea>
+|           "x"
+
+#data
+<!DOCTYPE html><svg><title/><style/></svg>
+#errors
+#document
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <svg svg>
+|       <svg title>
+|       <svg style>

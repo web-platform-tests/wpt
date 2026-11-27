@@ -173,6 +173,43 @@ async def test_iframe(
     remove_listener()
 
 
+async def test_navigate_existing_iframe(
+    bidi_session,
+    subscribe_events,
+    top_context,
+    test_page_same_origin_frame,
+    inline,
+    wait_for_event,
+    wait_for_future_safe,
+):
+    parent = top_context["context"]
+    await bidi_session.browsing_context.navigate(
+        context=parent, url=test_page_same_origin_frame, wait="complete"
+    )
+
+    contexts = await bidi_session.browsing_context.get_tree(root=parent)
+    child = contexts[0]["children"][0]
+
+    await subscribe_events(events=[NAVIGATION_COMMITTED_EVENT])
+    on_navigation_committed = wait_for_event(NAVIGATION_COMMITTED_EVENT)
+    url = inline("<p>Child frame destination</p>")
+    result = await bidi_session.browsing_context.navigate(
+        context=child["context"], url=url, wait="complete"
+    )
+    event = await wait_for_future_safe(on_navigation_committed)
+
+    assert result["navigation"] is not None
+    assert_navigation_info(
+        event,
+        {
+            "context": child["context"],
+            "navigation": result["navigation"],
+            "url": url,
+            **({"userContext": child["userContext"]} if "userContext" in event else {}),
+        },
+    )
+
+
 async def test_nested_iframes(
     bidi_session,
     subscribe_events,

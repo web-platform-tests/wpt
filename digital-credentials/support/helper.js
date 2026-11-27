@@ -397,6 +397,9 @@ export function makeGetOptionsWithArbitraryProtocol(protocol, data = {}, signal)
  * @returns {Promise<void>}
  */
 export async function checkRequest(t, protocol, data, expectedError) {
+  await test_driver.set_virtual_wallet_behavior("wait");
+  t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
   const abortController = new AbortController();
   const options = makeGetOptions({
     protocol,
@@ -404,9 +407,11 @@ export async function checkRequest(t, protocol, data, expectedError) {
     signal: abortController.signal,
   });
 
-  await test_driver.bless("user activation");
-  const promise = navigator.credentials.get(options);
-  abortController.abort();
+  let promise;
+  await test_driver.bless("user activation", () => {
+    promise = navigator.credentials.get(options);
+    abortController.abort();
+  });
 
   if (expectedError === "AbortError") {
     await promise_rejects_dom(

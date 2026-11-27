@@ -56,12 +56,12 @@ test(() => {
   assert_equals(button1.type, "button");
 
   const button2 = document.createElement("button");
-  button2.commandfor = "test";
+  button2.setAttribute("commandfor", "test");
   assert_equals(button2.type, "button");
 
   const button3 = document.createElement("button");
   button3.command = "--test";
-  button3.commandfor = "test";
+  button3.setAttribute("commandfor", "test");
   assert_equals(button3.type, "button");
 
 }, "a button in auto state with a command or commandfor attribute should return button type");

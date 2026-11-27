@@ -9,6 +9,7 @@ from .. import assert_browsing_context, find_context_info
 pytestmark = pytest.mark.asyncio
 
 CONTEXT_CREATED_EVENT = "browsingContext.contextCreated"
+PAGE_EMPTY = "/webdriver/tests/bidi/browsing_context/support/empty.html"
 
 
 async def test_not_unsubscribed(bidi_session, wait_for_bidi_events):
@@ -108,6 +109,106 @@ async def test_evaluate_window_open_with_url(bidi_session, subscribe_events, wai
         original_opener=top_context["context"],
         client_window=found_context["clientWindow"],
         has_planned_navigation=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "about:blank",
+        "javascript:void(0)",
+    ],
+    ids=["about_blank", "javascript"],
+)
+async def test_evaluate_window_open_with_special_url(
+    bidi_session,
+    subscribe_events,
+    wait_for_event,
+    wait_for_future_safe,
+    top_context,
+    url,
+):
+    await subscribe_events([CONTEXT_CREATED_EVENT])
+
+    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
+
+    await bidi_session.script.evaluate(
+        expression=f"""window.open("{url}");""",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False)
+    context_info = await wait_for_future_safe(on_entry)
+    contexts = await bidi_session.browsing_context.get_tree()
+
+    assert len(contexts) == 2
+
+    found_context = find_context_info(contexts, context_info["context"])
+
+    assert_browsing_context(
+        context_info,
+        context=None,
+        children=None,
+        url="about:blank",
+        parent=None,
+        original_opener=top_context["context"],
+        client_window=found_context["clientWindow"],
+        has_planned_navigation=False
+    )
+
+
+@pytest.mark.parametrize(
+    "html",
+    [
+        "<a id='target' href='{url}' target='_blank'>link</a>",
+        "<form action='{url}' target='_blank'><button id='target'>submit</button></form>",
+    ],
+    ids=["anchor", "form"],
+)
+@pytest.mark.parametrize("is_about_blank", [True, False], ids=["about_blank", "url"])
+async def test_target_blank(
+    bidi_session,
+    subscribe_events,
+    wait_for_event,
+    wait_for_future_safe,
+    inline,
+    url,
+    top_context,
+    html,
+    is_about_blank,
+):
+    target_url = "about:blank" if is_about_blank else url(PAGE_EMPTY)
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"],
+        url=inline(html.format(url=target_url)),
+        wait="complete",
+    )
+
+    await subscribe_events([CONTEXT_CREATED_EVENT])
+
+    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
+
+    await bidi_session.script.evaluate(
+        expression="document.getElementById('target').click()",
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+        user_activation=True,
+    )
+    context_info = await wait_for_future_safe(on_entry)
+    contexts = await bidi_session.browsing_context.get_tree()
+
+    assert len(contexts) == 2
+
+    found_context = find_context_info(contexts, context_info["context"])
+
+    assert_browsing_context(
+        context_info,
+        context=None,
+        children=None,
+        url="about:blank",
+        parent=None,
+        original_opener=top_context["context"],
+        client_window=found_context["clientWindow"],
+        has_planned_navigation=not is_about_blank,
     )
 
 
@@ -292,6 +393,129 @@ async def test_create_lazy_iframe(
         parent=root_info["context"],
         client_window=root_info["clientWindow"],
         has_planned_navigation=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "html, has_planned_navigation",
+    [
+        ("<iframe></iframe>", False),
+        ("<iframe src=''></iframe>", False),
+        ("<iframe src='about:blank'></iframe>", False),
+        ("<iframe src='{url}'></iframe>", True),
+        ("<iframe srcdoc='<div>foo</div>'></iframe>", True),
+        # The srcdoc attribute takes precedence over the src attribute.
+        ("<iframe src='about:blank' srcdoc='<div>foo</div>'></iframe>", True),
+        ("<iframe src='javascript:void(0)'></iframe>", False),
+        ("<frameset><frame></frameset>", False),
+        ("<frameset><frame src='about:blank'></frameset>", False),
+        ("<frameset><frame src='{url}'></frameset>", True),
+        ("<object type='text/html' data='about:blank'></object>", False),
+        ("<object type='text/html' data='{url}'></object>", True),
+        ("<embed type='text/html' src='{url}'>", True),
+    ],
+    ids=[
+        "iframe_without_src",
+        "iframe_with_empty_src",
+        "iframe_with_about_blank",
+        "iframe_with_url",
+        "iframe_with_srcdoc",
+        "iframe_with_srcdoc_and_about_blank",
+        "iframe_with_javascript_url",
+        "frame_without_src",
+        "frame_with_about_blank",
+        "frame_with_url",
+        "object_with_about_blank",
+        "object_with_url",
+        "embed_with_url",
+    ],
+)
+async def test_navigate_creates_child_context(
+    bidi_session,
+    subscribe_events,
+    wait_for_event,
+    wait_for_future_safe,
+    inline,
+    top_context,
+    html,
+    has_planned_navigation,
+):
+    frame_url = inline("<div>foo</div>")
+    url = inline(html.format(url=frame_url))
+
+    await subscribe_events([CONTEXT_CREATED_EVENT])
+
+    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
+
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=url, wait="complete"
+    )
+
+    context_info = await wait_for_future_safe(on_entry)
+
+    contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
+
+    assert len(contexts) == 1
+    root_info = contexts[0]
+    assert len(root_info["children"]) == 1
+
+    assert_browsing_context(
+        context_info,
+        root_info["children"][0]["context"],
+        children=None,
+        url="about:blank",
+        parent=root_info["context"],
+        client_window=root_info["clientWindow"],
+        has_planned_navigation=has_planned_navigation,
+    )
+
+
+@pytest.mark.parametrize("fragment", ["", "#foo"], ids=["same_url", "same_url_with_fragment"])
+async def test_iframe_with_ancestor_url(
+    bidi_session,
+    subscribe_events,
+    wait_for_event,
+    wait_for_future_safe,
+    inline,
+    top_context,
+    fragment,
+):
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=inline("<div>foo</div>"), wait="complete"
+    )
+
+    await subscribe_events([CONTEXT_CREATED_EVENT])
+
+    on_entry = wait_for_event(CONTEXT_CREATED_EVENT)
+
+    # An iframe whose URL equals (ignoring fragments) the URL of one of its
+    # ancestors is not navigated.
+    await bidi_session.script.evaluate(
+        expression=f"""
+            const iframe = document.createElement("iframe");
+            iframe.src = location.href + "{fragment}";
+            document.body.appendChild(iframe);
+        """,
+        target=ContextTarget(top_context["context"]),
+        await_promise=False,
+    )
+
+    context_info = await wait_for_future_safe(on_entry)
+
+    contexts = await bidi_session.browsing_context.get_tree(root=top_context["context"])
+
+    assert len(contexts) == 1
+    root_info = contexts[0]
+    assert len(root_info["children"]) == 1
+
+    assert_browsing_context(
+        context_info,
+        root_info["children"][0]["context"],
+        children=None,
+        url="about:blank",
+        parent=root_info["context"],
+        client_window=root_info["clientWindow"],
+        has_planned_navigation=False,
     )
 
 

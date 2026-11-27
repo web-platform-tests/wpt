@@ -1,0 +1,91 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: the write limit belongs to the top-level site</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#storage-limits
+//
+// Every top-level site has a COS write limit on the number of files and bytes
+// its pages store, whichever origin or frame makes the write. A write over
+// the limit rejects with QuotaExceededError. Its size is implementation-defined,
+// so this file stores tiny files until a write is refused.
+//
+// It does so as a top-level page on the alt site, so the write limit of this
+// document's site stays untouched for the rest of the suite. The alt site's
+// limit stays used up for the rest of the user agent's time window, so every
+// later test that writes under the alt site, such as
+// top-level-site-keying.tentative.https.html, fails until the window ends or
+// the user clears the alt site's data. It is optional for that reason, and
+// should run last or in a fresh profile.
+
+const {HTTPS_NOTSAMESITE_ORIGIN, HTTPS_OTHER_NOTSAMESITE_ORIGIN} = get_host_info();
+
+// Well above the few dozen small files a write limit has to stop.
+const MAX_WRITES = 512;
+
+// Stores `count` tiny distinct files, stopping at the first refusal. Returns
+// {stored, error, firstHash, firstContent}.
+function fillWrites(ctx, label, count) {
+  return ctx.execute_script(async (label, count) => {
+    async function store(content) {
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(content));
+      const value = Array.from(new Uint8Array(digest))
+        .map((b) => b.toString(16).padStart(2, '0')).join('');
+      const hash = {algorithm: 'SHA-256', value};
+      const handle = await navigator.crossOriginStorage.getFileHandle(hash, {create: true});
+      const writable = await handle.createWritable();
+      await writable.write(new Blob([content]));
+      await writable.close();
+      return hash;
+    }
+    let firstHash = null, firstContent = null;
+    for (let i = 0; i < count; ++i) {
+      const content = `cos-write-limit-${label}-${i}-${Date.now()}-${Math.random()}`;
+      try {
+        const hash = await store(content);
+        if (!firstHash) {
+          firstHash = hash;
+          firstContent = content;
+        }
+      } catch (e) {
+        return {stored: i, error: e.name, firstHash, firstContent};
+      }
+    }
+    return {stored: count, error: null, firstHash, firstContent};
+  }, [label, count]);
+}
+
+promise_test(async t => {
+  const writer = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  const filled = await fillWrites(writer, 'fill', MAX_WRITES);
+  assert_greater_than(filled.stored, 0,
+    'the first write succeeds; if not, the alt site\'s write limit was already ' +
+    'used up when this test started');
+  assert_not_equals(filled.error, null,
+    `${MAX_WRITES} tiny distinct files were all stored, so the alt site has no write limit`);
+  assert_equals(filled.error, 'QuotaExceededError',
+    'a write over the limit rejects with QuotaExceededError');
+
+  // Rewriting a file this origin already stored here adds nothing and stays free.
+  const rewrite = await cosRemoteStore(writer, filled.firstHash, filled.firstContent);
+  assert_true(rewrite.ok,
+    `rewriting an already-stored file is not charged, got ${rewrite.name}: ${rewrite.message}`);
+
+  // Another origin of the same site draws from the same limit.
+  const sibling = await cosOpenTopLevel(t, HTTPS_OTHER_NOTSAMESITE_ORIGIN);
+  const fromSibling = await fillWrites(sibling, 'sibling', 1);
+  assert_equals(fromSibling.error, 'QuotaExceededError',
+    'a same-site origin cannot sidestep the limit, which belongs to the top-level site');
+}, 'tiny distinct writes run into a write limit that belongs to the top-level site, and rewrites stay free');
+</script>
+</body>

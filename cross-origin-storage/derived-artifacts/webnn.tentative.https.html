@@ -1,0 +1,66 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: WebNN derived artifacts are keyed on the graph</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/cross-origin-helpers.js"></script>
+<body>
+<script type="module">
+// https://wicg.github.io/cross-origin-storage/#derived-artifacts
+//
+// A user agent may reuse a graph compiled from constants read from a
+// Cross-Origin Storage entry under another top-level site, but the key of that
+// derived artifact includes every page-chosen input, and the artifact depends
+// on its key alone. The graph structure and operator options are page-chosen.
+// Each test builds graphs from one stored set of weights under this document's
+// top-level site and under another one, with different graphs, and checks that
+// every site gets the output its own graph describes. Whether a user agent
+// reuses anything is not observable here, so these tests hold whether or not
+// it does.
+import {expectedWebNN, runWebNN, store, weights} from '../resources/derived-artifacts.mjs';
+
+const MODULE = '/cross-origin-storage/resources/derived-artifacts.mjs';
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+const INPUT = [2, 2, 2, 2];
+
+function assertOutputs(actual, w, graphs, description) {
+  assert_equals(actual.length, graphs.length, `${description}: number of outputs`);
+  graphs.forEach((graph, i) => assert_array_approx_equals(
+    actual[i], expectedWebNN(w, INPUT, graph), 1e-5, `${description}: graph ${i}`));
+}
+
+async function runHere(value, graphs) {
+  const result = await runWebNN(value, INPUT, graphs);
+  assert_implements_optional(!result.unsupported, 'WebNN');
+  return result.results;
+}
+
+async function runThere(t, value, graphs) {
+  const result = await cosRunTopLevel(
+    t, HTTPS_NOTSAMESITE_ORIGIN, MODULE, 'runWebNN', [value, INPUT, graphs]);
+  assert_true(result.ok, `building on another top-level site, got ${result.name}: ${result.message}`);
+  assert_implements_optional(!result.value.unsupported, 'WebNN on another top-level site');
+  return result.value.results;
+}
+
+async function check(t, mine, theirs) {
+  const w = weights();
+  const value = await store(w, [HTTPS_NOTSAMESITE_ORIGIN]);
+  assertOutputs(await runHere(value, [mine]), w, [mine], 'this site, with its graph');
+  assertOutputs(await runThere(t, value, [theirs, mine]), w, [theirs, mine],
+    'another top-level site, with another graph and then with the same graph');
+  assertOutputs(await runHere(value, [theirs]), w, [theirs], 'this site, with the other graph');
+}
+
+// Each graph computes `clamp(op(x, w), {minValue: 0, maxValue})`.
+promise_test(t => check(t, {op: 'add', maxValue: 4}, {op: 'add', maxValue: 5}),
+  'operator options are part of the key of a graph built from Cross-Origin Storage');
+
+promise_test(t => check(t, {op: 'add', maxValue: 10}, {op: 'mul', maxValue: 10}),
+  'the graph structure is part of the key of a graph built from Cross-Origin Storage');
+</script>
+</body>

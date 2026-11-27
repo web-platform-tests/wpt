@@ -1,0 +1,164 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Cross-Origin Storage: a "*" write reaches the global scope only after user activation</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="resources/cross-origin-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://wicg.github.io/cross-origin-storage/#user-activation-gate
+// https://wicg.github.io/cross-origin-storage/#availability-gating
+//
+// Optional, because it depends on Public Hash List membership, which is
+// implementation-defined. resources/phl-listed-gate-resource.js is js-cookie
+// 3.0.8's minified build (MIT), which jsDelivr and cdnjs serve byte for byte
+// and which the list carries. It must stay byte-identical, so it carries no
+// header of its own; the digest assertion below catches any change.
+//
+// The worker tests use two more listed resources: dayjs 1.11.23's minified
+// build (MIT) and canvas-confetti 1.9.4's browser build (ISC), both as
+// jsDelivr serves them.
+//
+// Each test uses its own listed resource, and not the jQuery build the other
+// Public Hash List tests share, because global disclosure is permanent: once
+// any test has released a "*" write of a resource, a later read of it says
+// nothing about this document's write. No other test writes these resources
+// with "*". For the same reason, the results are only meaningful in a profile
+// where this file has not run before.
+//
+// The tests run in order: the first needs a document without user activation,
+// and the later ones rely on the activation it ends with.
+//
+// The cross-site reader is a top-level window on the alt site, so its lookups
+// are charged to the alt site's cross-site lookup budget. All three tests share
+// it, and READS_BEFORE and ATTEMPTS keep the worst case at 16 lookups.
+
+const {HTTPS_NOTSAMESITE_ORIGIN} = get_host_info();
+
+const GATE_RESOURCE = 'resources/phl-listed-gate-resource.js';
+const GATE_DIGEST =
+  '506834dde81524c74ba93c40c73ac0316fb8d4f860f816353a5562b2f8118c12';
+const WORKER_RESOURCE = 'resources/phl-listed-worker-resource.js';
+const WORKER_DIGEST =
+  '0198dd0b1f760cded169c7e7ff7eaf56bc36c4c22c7c9b7c683e59437ed8700e';
+const SHARED_WORKER_RESOURCE = 'resources/phl-listed-sharedworker-resource.js';
+const SHARED_WORKER_DIGEST =
+  'ad09d54c8acda8739180e170d81ac5a8b16ed333756514a7f085ef315bc59729';
+const WRITE_WORKER = 'resources/cos-ceiling-worker.js';
+
+// Before activation the global scope discloses nothing, so a refusal is
+// certain and two reads suffice. After it, GREASE'ing may refuse any single
+// read, so the reader tries a few more times.
+const READS_BEFORE = 2;
+const ATTEMPTS = 4;
+
+// Fetches a vendored resource and checks it is still the hash under test.
+async function loadListed(path, digest) {
+  const bytes = new Uint8Array(await (await fetch(path)).arrayBuffer());
+  assert_equals(await cosSha256Hex(bytes), digest,
+    `${path} must still be the hash this test is about`);
+  return bytes;
+}
+
+async function writeGlobally(hash, bytes) {
+  const handle = await navigator.crossOriginStorage.getFileHandle(
+    hash, {create: true, origins: '*'});
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([bytes]));
+  await writable.close();
+}
+
+// Sends one write request to a dedicated worker or to a shared worker's port.
+function writeFromWorker(target, hash, bytes) {
+  return new Promise(resolve => {
+    target.onmessage = e => resolve(e.data);
+    target.postMessage({hash, content: bytes, origins: '*'});
+  });
+}
+
+async function assertWithheld(reader, hash) {
+  for (let i = 0; i < READS_BEFORE; ++i) {
+    const result = await cosRemoteReadDigest(reader, hash);
+    assert_false(result.ok,
+      `read ${i + 1}: a "*" write still waiting for user activation must not ` +
+      'reach another top-level site yet');
+    assert_equals(result.name, 'NotFoundError',
+      `read ${i + 1}: waiting for activation must look exactly like a miss`);
+  }
+}
+
+async function assertDisclosed(reader, hash, digest) {
+  const rejections = [];
+  for (let i = 0; i < ATTEMPTS; ++i) {
+    const result = await cosRemoteReadDigest(reader, hash);
+    if (result.ok) {
+      assert_equals(result.digest, digest,
+        'a disclosed resource must be byte-for-byte what was stored');
+      return;
+    }
+    assert_equals(result.name, 'NotFoundError',
+      `a refused global-scope read must reject with NotFoundError, got ${result.name}`);
+    rejections.push(result.name);
+  }
+  assert_unreached(
+    `a "*" write of a PHL resource must reach the global scope; ` +
+    `${ATTEMPTS} reads were all rejected (${rejections.join(', ')})`);
+}
+
+promise_test(async t => {
+  assert_false(navigator.userActivation.hasBeenActive,
+    'the write must come from a document without user activation');
+  const bytes = await loadListed(GATE_RESOURCE, GATE_DIGEST);
+  const hash = cosHash(GATE_DIGEST);
+  await writeGlobally(hash, bytes);
+
+  const reader = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  await assertWithheld(reader, hash);
+
+  await cosActivate();
+  assert_true(navigator.userActivation.hasBeenActive, 'test_driver.bless() activated the page');
+  await assertDisclosed(reader, hash, GATE_DIGEST);
+}, 'a "*" write of a Public Hash List resource reaches other top-level sites only after user activation');
+
+// https://wicg.github.io/cross-origin-storage/#has-cos-user-activation
+promise_test(async t => {
+  await cosActivate();
+  const bytes = await loadListed(WORKER_RESOURCE, WORKER_DIGEST);
+  const hash = cosHash(WORKER_DIGEST);
+  const worker = new Worker(WRITE_WORKER);
+  t.add_cleanup(() => worker.terminate());
+  const written = await writeFromWorker(worker, hash, bytes);
+  assert_true(written.ok, `the worker's write must succeed: ${written.name}`);
+
+  // No activation after the write: the worker takes its owner's.
+  const reader = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  await assertDisclosed(reader, hash, WORKER_DIGEST);
+}, 'a "*" write from a dedicated worker of an activated page reaches other top-level sites at once');
+
+promise_test(async t => {
+  await cosActivate();
+  const bytes = await loadListed(SHARED_WORKER_RESOURCE, SHARED_WORKER_DIGEST);
+  const hash = cosHash(SHARED_WORKER_DIGEST);
+  const worker = new SharedWorker(WRITE_WORKER, {name: token(), allow: 'cross-origin-storage'});
+  const written = await writeFromWorker(worker.port, hash, bytes);
+  assert_true(written.ok, `the shared worker's write must succeed: ${written.name}`);
+
+  // A shared worker takes no owner's activation, so the write waits for the
+  // next one, even though the page that created the worker is activated.
+  const reader = await cosOpenTopLevel(t, HTTPS_NOTSAMESITE_ORIGIN);
+  await assertWithheld(reader, hash);
+
+  await cosActivate();
+  await assertDisclosed(reader, hash, SHARED_WORKER_DIGEST);
+}, 'a "*" write from a shared worker waits for the next user activation');
+</script>
+</body>

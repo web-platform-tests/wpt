@@ -1,0 +1,79 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: HTML integration, module scripts</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://github.com/whatwg/html/issues/12770
+//
+// The `crossoriginstorage` attribute applies to <script> whatever its type, so
+// a module script opts into COS the same way a classic one does, and so does
+// a <link rel=modulepreload>. Each test proves COS involvement by loading the
+// same integrity from a URL that 404s: that can only succeed if the bytes were
+// served from COS.
+
+function appendModuleScript(t, {src, integrity}) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = src;
+    script.integrity = integrity;
+    script.setAttribute('crossoriginstorage', '');
+    script.onload = () => resolve(script);
+    script.onerror = () => reject(new Error('module script failed to load'));
+    t.add_cleanup(() => script.remove());
+    document.body.appendChild(script);
+  });
+}
+
+function appendModulePreload(t, {href, integrity}) {
+  return new Promise((resolve, reject) => {
+    const link = document.createElement('link');
+    link.rel = 'modulepreload';
+    link.href = href;
+    link.integrity = integrity;
+    link.setAttribute('crossoriginstorage', '');
+    link.onload = () => resolve(link);
+    link.onerror = () => reject(new Error('modulepreload failed to load'));
+    t.add_cleanup(() => link.remove());
+    document.head.appendChild(link);
+  });
+}
+
+promise_test(async t => {
+  const label = cosUniqueContent('html-module-script');
+  const counter = `__cosHtmlModuleRuns_${label.replace(/\W/g, '_')}`;
+  const jsText = `self.${counter} = (self.${counter} || 0) + 1;\n// ${label}\n`;
+  const integrity = await cosSha256Integrity(jsText);
+
+  await appendModuleScript(t, {src: cosResourceUrl(jsText, 'text/javascript'), integrity});
+  assert_equals(self[counter], 1, 'the module ran from the network');
+
+  // A different URL is a different module map key, so the module is fetched
+  // and evaluated again.
+  await appendModuleScript(t, {src: cosBrokenUrl('mjs'), integrity});
+  assert_equals(self[counter], 2,
+    'a module <script> with a broken src but the same integrity hash ran, via COS');
+}, 'HTML: a crossoriginstorage module <script> is served from COS on a subsequent request');
+
+promise_test(async t => {
+  const label = cosUniqueContent('html-modulepreload');
+  const jsText = cosUniqueModule('html-modulepreload', label);
+  const integrity = await cosSha256Integrity(jsText);
+  await appendModuleScript(t, {src: cosResourceUrl(jsText, 'text/javascript'), integrity});
+
+  const brokenUrl = cosBrokenUrl('mjs');
+  await appendModulePreload(t, {href: brokenUrl, integrity});
+  // The preload put the module in the module map under the broken URL, so an
+  // import of that URL resolves without fetching it again.
+  const module = await import(brokenUrl);
+  assert_equals(module.default, label,
+    'the module preloaded from COS under a broken href is the one that was stored');
+}, 'HTML: a crossoriginstorage <link rel=modulepreload> is served from COS');
+</script>
+</body>

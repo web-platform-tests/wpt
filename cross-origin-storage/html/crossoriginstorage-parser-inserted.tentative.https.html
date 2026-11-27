@@ -1,0 +1,68 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cross-Origin Storage: HTML integration, elements in markup</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/helpers.js"></script>
+<script src="../resources/integration-helpers.js"></script>
+<body>
+<script>
+'use strict';
+
+// https://github.com/whatwg/html/issues/12770
+//
+// The attribute is meant for markup above all, where a <link> or <script> is
+// loaded by the parser before any page script runs. Each document below is
+// parsed from markup in an iframe, first pointing at real URLs to populate
+// COS, then at URLs that 404 with the same integrity, which can only load from
+// COS.
+
+function loadFrame(t, markup) {
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement('iframe');
+    iframe.onload = () => resolve(iframe.contentWindow);
+    iframe.onerror = () => reject(new Error('frame failed to load'));
+    iframe.srcdoc = markup;
+    t.add_cleanup(() => iframe.remove());
+    document.body.appendChild(iframe);
+  });
+}
+
+function markup({cssUrl, cssIntegrity, jsUrl, jsIntegrity}) {
+  return `<!doctype html>
+<link rel="stylesheet" href="${cssUrl}" integrity="${cssIntegrity}" crossoriginstorage>
+<script src="${jsUrl}" integrity="${jsIntegrity}" crossoriginstorage><\/script>
+<span id="cos-parser-marker">marker</span>
+<script>
+  window.result = {
+    ran: window.cosParserRuns || 0,
+    color: getComputedStyle(document.getElementById('cos-parser-marker')).color,
+  };
+<\/script>`;
+}
+
+promise_test(async t => {
+  const cssText = cosUniqueStylesheet('html-parser-inserted', 'cos-parser-marker');
+  const jsText =
+    `window.cosParserRuns = (window.cosParserRuns || 0) + 1;\n// ${cosUniqueContent('html-parser-inserted')}\n`;
+  const cssIntegrity = await cosSha256Integrity(cssText);
+  const jsIntegrity = await cosSha256Integrity(jsText);
+
+  const first = await loadFrame(t, markup({
+    cssUrl: cosResourceUrl(cssText, 'text/css'), cssIntegrity,
+    jsUrl: cosResourceUrl(jsText, 'text/javascript'), jsIntegrity,
+  }));
+  assert_equals(first.result.ran, 1, 'the script ran from the network');
+  assert_equals(first.result.color, 'rgb(1, 2, 3)', 'the stylesheet applied from the network');
+
+  const second = await loadFrame(t, markup({
+    cssUrl: cosBrokenUrl('css'), cssIntegrity,
+    jsUrl: cosBrokenUrl('js'), jsIntegrity,
+  }));
+  assert_equals(second.result.ran, 1,
+    'a parser-inserted <script> with a broken src but the same integrity ran, via COS');
+  assert_equals(second.result.color, 'rgb(1, 2, 3)',
+    'a parser-inserted <link> with a broken href but the same integrity applied, via COS');
+}, 'HTML: <link> and <script> written in markup are served from COS on a subsequent load');
+</script>
+</body>

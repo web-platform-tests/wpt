@@ -193,6 +193,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   await onloadPromise;
+  await navigation.navigate("#start-d").finished;
   const startEntry = navigation.currentEntry;
   const startIndex = startEntry.index;
   const startLength = navigation.entries().length;
@@ -207,14 +208,14 @@ promise_test(async t => {
   t.add_cleanup(() => controller.abort());
 
   let nav2Result;
-  navigation.addEventListener("currententrychange", e => {
+  navigation.addEventListener("currententrychange", t.step_func(e => {
     if (e.navigationType === "traverse") {
       assert_equals(location.hash, startHash);
       assert_equals(navigation.currentEntry, startEntry);
       nav2Result = navigation.navigate("#2d");
       assert_equals(history.length, startHistoryLength + 1);
     }
-  }, { signal: controller.signal });
+  }), { signal: controller.signal });
 
   navigation.addEventListener("navigate", e => {
     if (e.navigationType === "traverse") {

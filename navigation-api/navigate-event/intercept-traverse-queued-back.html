@@ -20,7 +20,11 @@ promise_test(async t => {
   const log = [];
   let navigateCount = 0;
   let secondSuccessResolve;
-  const secondSuccess = new Promise(r => secondSuccessResolve = r);
+  let secondSuccessReject;
+  const secondSuccess = new Promise((r, rej) => {
+    secondSuccessResolve = r;
+    secondSuccessReject = rej;
+  });
 
   navigation.addEventListener("navigate", e => {
     const id = ++navigateCount;
@@ -29,7 +33,10 @@ promise_test(async t => {
     e.intercept({
       handler: () => {
         log.push(`handler#${id}:${location.hash}`);
-        return new Promise(r => t.step_timeout(r, 30));
+        if (id === 1) {
+          return new Promise(() => {});
+        }
+        return new Promise(r => t.step_timeout(r, 0));
       }
     });
   }, { signal: controller.signal });
@@ -40,7 +47,15 @@ promise_test(async t => {
 
   navigation.addEventListener("navigatesuccess", () => {
     log.push(`navigatesuccess:${location.hash}`);
-    secondSuccessResolve();
+    if (navigateCount === 2) {
+      secondSuccessResolve();
+    }
+  }, { signal: controller.signal });
+
+  navigation.addEventListener("navigateerror", e => {
+    if (navigateCount === 2) {
+      secondSuccessReject(e.error || new Error("navigateerror on second traversal"));
+    }
   }, { signal: controller.signal });
 
   history.back();
@@ -87,10 +102,10 @@ promise_test(async t => {
       handler: () => {
         if (id === 1) {
           handler1Count++;
-        } else {
-          handler2Count++;
+          return new Promise(() => {});
         }
-        return new Promise(r => t.step_timeout(r, 30));
+        handler2Count++;
+        return new Promise(r => t.step_timeout(r, 0));
       }
     });
   }, { signal: controller.signal });

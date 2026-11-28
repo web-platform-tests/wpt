@@ -1,0 +1,9 @@
+<svg width="480" height="360"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <title>Unstroked, filled circle with radius 35</title>
+  <html:link rel="author" title="Skef Iterum" href="https://github.com/skef/"/>
+
+  <path stroke="none" fill="blue" d="M185 260c0 -19.3301 15.6699 -35 35 -35s35 15.6699 35 35s-15.6699 35 -35 35s-35 -15.6699 -35 -35z"/>
+  <path stroke="green" stroke-width="2.4" fill="none" d="M185 260c0 -19.3301 15.6699 -35 35 -35s35 15.6699 35 35s-15.6699 35 -35 35s-35 -15.6699 -35 -35z"/>
+</svg>

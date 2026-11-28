@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/10234">
+<link rel=help href="https://github.com/whatwg/html/issues/3514">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id=setfromhtml tabindex=0
+     onfocusin="window.firedFocusin = true"
+     onfocusout="window.firedFocusout = true">
+  onfocusin/out set from html
+</div>
+
+<div id=setfromscript tabindex=0>onfocusin/out set from script</div>
+
+<script>
+window.firedFocusin = false;
+window.firedFocusout = false;
+
+test(() => {
+  assert_false(window.firedFocusin,
+    'firedFocusin should be false at the start of the test.');
+  assert_false(window.firedFocusout,
+    'firedFocusout should be false at the start of the test.');
+
+  setfromhtml.focus();
+  assert_true(window.firedFocusin,
+    'onfocusin should be called when set from html.');
+  assert_false(window.firedFocusout,
+    'firedFocusout should be false after focusing the element.');
+
+  setfromhtml.blur();
+  assert_true(window.firedFocusout,
+    'onfocusout should be called when set from html.');
+}, 'onfocusin and onfocusout should both work when set from html.');
+
+test(() => {
+  let firedFocusinFromScript = false;
+  let firedFocusoutFromScript = false;
+  setfromscript.onfocusin = () => firedFocusinFromScript = true;
+  setfromscript.onfocusout = () => firedFocusoutFromScript = true;
+
+  setfromscript.focus();
+  assert_true(firedFocusinFromScript,
+    'onfocusin should be called after focusing the element.');
+  assert_false(firedFocusoutFromScript,
+    'onfocusout should not be called after focusing the element.');
+
+  setfromscript.blur();
+  assert_true(firedFocusoutFromScript,
+    'onfocusout should be called after blurring the element.');
+}, 'onfocusin and onfocusout should both work when set from script.');
+</script>

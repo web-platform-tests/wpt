@@ -1,5 +1,5 @@
 import socket
-from typing import AnyStr, Dict, List, TypeVar
+from typing import AbstractSet, AnyStr, Dict, List, TypeVar
 
 from .logger import get_logger
 
@@ -168,6 +168,26 @@ def get_port(host: str = '') -> int:
         if not is_bad_port(port):
             break
     return port
+
+
+def reserve_tcp_port(host: str, excluded_ports: AbstractSet[int] = frozenset()) -> socket.socket:
+    """Bind an IPv4 TCP socket without listening, for adoption by an HTTP server."""
+    while True:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            # Do not enable SO_REUSEADDR: another socket could bind the same port
+            # before this one starts listening. Windows needs explicit exclusivity.
+            if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+            sock.bind((host, 0))
+            port = sock.getsockname()[1]
+            if not is_bad_port(port) and port not in excluded_ports:
+                return sock
+        except BaseException:
+            sock.close()
+            raise
+        sock.close()
+
 
 def http2_compatible() -> bool:
     # The HTTP/2 server requires OpenSSL 1.0.2+.

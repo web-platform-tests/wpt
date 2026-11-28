@@ -1,2 +1,2 @@
-ua-parser==0.18.0
+ua-parser==1.0.1
 python-dateutil==2.9.0.post0

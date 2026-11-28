@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <title>
-    Test that all event handlers are called when a remote playback device is connected
+    Test that all event handlers are called when a remote playback device is
+    connected and then disconnected using prompt()
   </title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -17,12 +18,15 @@
       <button id="start-button">Start test</button>
     </div>
     <div id="pick-device" style="display: none">
-      <p>
+      <p id="connect-instructions">
         Click the button below to prompt for a remote playback device and select
-        one! After connecting to the device, please click again and disconnect
-        from device.
+        one!
       </p>
       <button id="prompt-button">Pick device</button>
+      <p id="disconnect-instructions" style="display: none">
+        Click the button below and <b>disconnect</b> from the device using the
+        user interface that is shown.
+      </p>
       <button id="disconnect-button" style="display: none">
         Disconnect device
       </button>
@@ -32,31 +36,54 @@
   <script>
     let v = document.createElement("video");
     v.src = getVideoURI("/media/movie_300");
-    enablePromptAfterMetadataLoaded(
-        v, document.getElementById("prompt-button-prep"),
-        document.getElementById("prompt-button"));
+    let promptButton = document.getElementById("prompt-button");
+    let disconnectButton = document.getElementById("disconnect-button");
+    const metadataLoaded = enablePromptAfterMetadataLoaded(
+        v, document.getElementById("prompt-button-prep"), promptButton);
 
-    async_test(t => {
-      let promptButton = document.getElementById("prompt-button");
-      let disconnectButton = document.getElementById("disconnect-button");
+    // Records the order of prompt() fulfillment and events fired at v.remote
+    // (using the onconnecting, onconnect and ondisconnect event handlers),
+    // along with the state observed at each step.
+    const log = [];
+    logRemotePlaybackEvents(v.remote, log, /*useEventHandlerAttributes=*/true);
+    const eventsInLog = () => log.filter(e => !e.startsWith("prompt"));
 
-      const w = new EventWatcher(t, v.remote, ['connecting', 'connect', 'disconnect']);
-      w.wait_for(['connecting', 'connect', 'disconnect']).then(t.step_func_done());
+    promise_test(async t => {
+      assert_equals(v.remote.state, "disconnected");
+      await metadataLoaded;
+      await promptOnClick(promptButton, v.remote);
+      log.push(`prompt resolved:${v.remote.state}`);
+      assert_equals(v.remote.state, "connecting",
+                    "The state must be connecting when prompt() resolves.");
 
-      promptButton.onclick = () => {
-        promise_test(() => {
-          return v.remote.prompt().then(() => {
-            promptButton.style.display = "none";
-            disconnectButton.style.display = "inline";
-          });
-        }, "Prompt to connect to the device");
-      };
+      // This test does not check the order of prompt() fulfillment relative
+      // to the connecting event.
+      if (!eventsInLog().some(e => e.startsWith("connect:"))) {
+        await waitForEvent(v.remote, "connect");
+      }
+      assert_array_equals(eventsInLog(),
+                          ["connecting:connecting", "connect:connected"]);
+    }, "Test that the onconnecting and onconnect event handlers are called when the user selects a device.");
 
-      disconnectButton.onclick = () => {
-        promise_test(() => {
-          return v.remote.prompt()
-        }, "Prompt to disconnect from the device")
-      };
-    }, "Test that all event handlers are called when a remote playback device is connected.");
+    promise_test(async t => {
+      assert_equals(v.remote.state, "connected",
+                    "The device must be connected to test disconnection.");
+      log.length = 0;
+      document.getElementById("connect-instructions").style.display = "none";
+      promptButton.style.display = "none";
+      document.getElementById("disconnect-instructions").style.display =
+          "block";
+      disconnectButton.style.display = "inline";
+
+      await promptOnClick(disconnectButton, v.remote);
+
+      // This test does not check the order of prompt() fulfillment relative
+      // to the disconnect event.
+      if (!eventsInLog().some(e => e.startsWith("disconnect:"))) {
+        await waitForEvent(v.remote, "disconnect");
+      }
+      assert_array_equals(eventsInLog(), ["disconnect:disconnected"]);
+      assert_equals(v.remote.state, "disconnected");
+    }, "Test that prompt() resolves and the ondisconnect event handler is called when the user disconnects using prompt().");
   </script>
 </html>

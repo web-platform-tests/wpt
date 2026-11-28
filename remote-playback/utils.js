@@ -24,3 +24,44 @@ function enablePromptAfterMetadataLoaded(video, ...buttons) {
     buttons.forEach(button => button.disabled = false);
   });
 }
+
+// Calls |remote|.prompt() the next time |button| is clicked, and returns a
+// Promise that settles with the result of prompt().
+//
+// prompt() requires transient activation, so it is called synchronously from
+// the click handler. Calling it from a later task (for example, a
+// watchAvailability() callback) is not triggered by the user gesture, and the
+// activation may have expired by the time the task runs, which causes prompt()
+// to reject with InvalidAccessError.
+function promptOnClick(button, remote) {
+  return new Promise((resolve, reject) => {
+    button.addEventListener("click", () => {
+      remote.prompt().then(resolve, reject);
+    }, { once: true });
+  });
+}
+
+// Returns a Promise that resolves the next time an event named |type| is fired
+// at |target|.
+function waitForEvent(target, type) {
+  return new Promise(resolve => {
+    target.addEventListener(type, resolve, { once: true });
+  });
+}
+
+// Appends "<type>:<state>" to |log| whenever a connecting, connect or
+// disconnect event is fired at |remote|, where <state> is the value of
+// |remote|.state when the event is dispatched. If |useEventHandlerAttributes|
+// is true, the onconnecting, onconnect and ondisconnect attributes are used
+// instead of addEventListener().
+function logRemotePlaybackEvents(remote, log,
+                                 useEventHandlerAttributes = false) {
+  for (const type of ["connecting", "connect", "disconnect"]) {
+    const listener = () => log.push(`${type}:${remote.state}`);
+    if (useEventHandlerAttributes) {
+      remote["on" + type] = listener;
+    } else {
+      remote.addEventListener(type, listener);
+    }
+  }
+}

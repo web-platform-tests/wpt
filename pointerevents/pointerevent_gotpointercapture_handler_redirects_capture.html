@@ -1,0 +1,74 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>gotpointercapture handler redirecting capture routes current event to new element immediately</title>
+<link rel="help" href="https://w3c.github.io/pointerevents/#process-pending-pointer-capture">
+<link rel="help" href="https://w3c.github.io/pointerevents/#the-gotpointercapture-event">
+<link rel="help" href="https://w3c.github.io/pointerevents/#the-lostpointercapture-event">
+<link rel="help" href="https://w3c.github.io/pointerevents/#setting-pointer-capture">
+<meta name="viewport" content="width=device-width">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<div id="target">target</div>
+<div id="a">a</div>
+<div id="b">b</div>
+<script>
+"use strict";
+
+promise_test(async () => {
+  const target = document.getElementById("target");
+  const a = document.getElementById("a");
+  const b = document.getElementById("b");
+  const event_log = [];
+
+  function logEvent(event) {
+    event_log.push(event.type + "@" + event.target.id);
+  }
+
+  target.addEventListener("pointerdown", event => {
+    logEvent(event);
+    a.setPointerCapture(event.pointerId);
+  });
+  // The gotpointercapture handler redirects capture from a to b.
+  // Per spec, step 3 re-reads pending and sees b, so override goes from
+  // not set directly to b - no a->b transition, no lostpointercapture@a
+  // or gotpointercapture@b.
+  a.addEventListener("gotpointercapture", event => {
+    logEvent(event);
+    b.setPointerCapture(event.pointerId);
+  });
+  b.addEventListener("gotpointercapture", logEvent);
+  for (const el of [a, b]) {
+    el.addEventListener("lostpointercapture", logEvent);
+    el.addEventListener("pointerover", logEvent);
+    el.addEventListener("pointerout", logEvent);
+    el.addEventListener("pointermove", logEvent);
+    el.addEventListener("pointerup", logEvent);
+  }
+
+  await new test_driver.Actions()
+    .pointerMove(0, 0, {origin: target})
+    .pointerDown()
+    // Move 1: pending=a, handler redirects to b
+    .pointerMove(1, 1, {origin: target})
+    // Move 2: steady state, override=b
+    .pointerMove(2, 2, {origin: target})
+    .pointerUp()
+    .send();
+
+  assert_array_equals(event_log, [
+    "pointerdown@target",
+    // Move 1
+    "gotpointercapture@a",
+    "pointerover@b",
+    "pointermove@b",
+    // Move 2
+    "pointermove@b",
+    "pointerup@b",
+    "lostpointercapture@b",
+    "pointerout@b",
+  ]);
+}, "Redirecting capture in gotpointercapture handler routes current event to new element immediately");
+</script>

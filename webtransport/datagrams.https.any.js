@@ -118,8 +118,12 @@ promise_test(async t => {
 }, 'Datagrams are echoed successfully');
 
 promise_test(async t => {
-  // Establish a WebTransport session.
-  const wt = new WebTransport(webtransport_url('echo.py'), { 'datagramsReadableType' : 'bytes' });
+  // Establish a WebTransport session. datagramsReadableType: "bytes" opts
+  // into a byte stream, which BYOB reads require.
+  const wt = new WebTransport(webtransport_url('echo.py'),
+                              { datagramsReadableType: 'bytes' });
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   const writer = wt.datagrams.createWritable().getWriter();
@@ -145,14 +149,23 @@ promise_test(async t => {
 }, 'Successfully reading datagrams with BYOB reader.');
 
 promise_test(async t => {
+  // https://w3c.github.io/webtransport/#web-transport-configuration: without
+  // datagramsReadableType: "bytes", datagrams.readable must be a default
+  // (non-byte) stream, so a BYOB reader request must be rejected.
   const wt = new WebTransport(webtransport_url('echo.py'));
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
   assert_throws_js(TypeError, () => { wt.datagrams.readable.getReader({ mode: 'byob' }) });
 }, 'Reading datagrams with BYOB reader without datagramsReadableType should fail.');
 
 promise_test(async t => {
-  // Establish a WebTransport session.
-  const wt = new WebTransport(webtransport_url('echo.py'), { 'datagramsReadableType' : 'bytes' });
+  // Establish a WebTransport session. datagramsReadableType: "bytes" opts
+  // into a byte stream, which BYOB reads require.
+  const wt = new WebTransport(webtransport_url('echo.py'),
+                              { datagramsReadableType: 'bytes' });
+  wt.closed.catch(() => {});
+  t.add_cleanup(() => wt.close());
   await wt.ready;
 
   const writer = wt.datagrams.createWritable().getWriter();

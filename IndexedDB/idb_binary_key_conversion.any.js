@@ -72,3 +72,34 @@ test(function() {
     assert_equals(keyInInt8Array[i], int8Array[i]);
   }
 }, 'Array of TypedArray(Int8Array)');
+
+test(function() {
+  let binary = new ArrayBuffer(4, {maxByteLength: 8});
+  assert_true(binary.resizable, 'source buffer should be resizable');
+  let uint8Array = new Uint8Array(binary);
+  uint8Array.set([1, 2, 3, 4]);
+
+  let key = IDBKeyRange.lowerBound(binary).lower;
+
+  assert_true(key instanceof ArrayBuffer);
+  assert_false(key.resizable, 'key should not be resizable');
+  assert_equals(key.byteLength, 4);
+  assert_equals(key.maxByteLength, 4);
+  assert_array_equals(new Uint8Array(key), uint8Array);
+}, 'Resizable ArrayBuffer');
+
+test(function() {
+  let binary = new ArrayBuffer(4, {maxByteLength: 8});
+  assert_true(binary.resizable, 'source buffer should be resizable');
+  let int8Array = new Int8Array(binary);
+  int8Array.set([16, -32, 64, -128]);
+
+  let key = IDBKeyRange.lowerBound(int8Array).lower;
+  let keyInInt8Array = new Int8Array(key);
+
+  assert_true(key instanceof ArrayBuffer);
+  assert_false(key.resizable, 'key should not be resizable');
+  assert_equals(key.byteLength, 4);
+  assert_equals(key.maxByteLength, 4);
+  assert_array_equals(keyInInt8Array, int8Array);
+}, 'TypedArray(Int8Array) backed by resizable ArrayBuffer');

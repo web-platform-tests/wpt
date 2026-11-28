@@ -44,6 +44,10 @@ const valid_key = (desc, key) => {
 valid_key('new Date()', new Date());
 valid_key('new Date(0)', new Date(0));
 
+// Binary
+valid_key('ArrayBuffer', new ArrayBuffer(4));
+valid_key('resizable ArrayBuffer', new ArrayBuffer(4, {maxByteLength: 8}));
+
 // Array
 valid_key('[]', []);
 valid_key('new Array()', new Array());

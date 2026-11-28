@@ -1,9 +1,5 @@
-<!doctype html>
-<title>CustomEvent</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+// META: title=CustomEvent
+
 test(function() {
   var type = "foo";
 
@@ -32,4 +28,3 @@ test(function() {
     assert_false(e.cancelable, "cancelable");
     assert_equals(e.detail, null, "detail");
 }, "initCustomEvent's default parameter values.");
-</script>

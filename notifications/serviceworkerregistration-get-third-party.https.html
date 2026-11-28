@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<!-- Pull in executor_path needed by newPopup / newIframe -->
+<script src="/html/cross-origin-embedder-policy/credentialless/resources/common.js"></script>
+<!-- Pull in importScript / newPopup / newIframe -->
+<script src="/html/anonymous-iframe/resources/common.js"></script>
+<body>
+<script>
+const same_site_origin = get_host_info().HTTPS_ORIGIN;
+const cross_site_origin = get_host_info().HTTPS_NOTSAMESITE_ORIGIN;
+
+const add_iframe_js = (iframe_origin, response_queue_uuid) => `
+  const importScript = ${importScript};
+  await importScript("/html/cross-origin-embedder-policy/credentialless" +
+                   "/resources/common.js");
+  await importScript("/html/anonymous-iframe/resources/common.js");
+  await importScript("/common/utils.js");
+  send("${response_queue_uuid}", newIframe("${iframe_origin}"));
+`;
+
+const notifications_test_js = (response_queue_uuid) => `
+  async function test() {
+    try {
+      await self.registration.showNotification('Hello, world!', {
+          body: 'First notification'
+      });
+      await self.registration.showNotification('Hello again, world!', {
+          body: 'Second notification'
+      });
+      var notifications = await self.registration.getNotifications();
+      var firstIndex = notifications[0].title == 'Hello, world!' ? 0 : 1;
+      var secondIndex = firstIndex ? 0 : 1;
+
+      while (true) {
+        if (notifications[firstIndex].title != 'Hello, world!') {
+          await send('${response_queue_uuid}', 'First notification title is incorrect');
+          break;
+        }
+        if (notifications[firstIndex].body != 'First notification') {
+          await send('${response_queue_uuid}', 'First notification body is incorrect');
+          break;
+        }
+        if (notifications[secondIndex].title != 'Hello again, world!') {
+          await send('${response_queue_uuid}', 'Second notification title is incorrect');
+          break;
+        }
+        if (notifications[secondIndex].body != 'Second notification') {
+          await send('${response_queue_uuid}', 'Second notification body is incorrect');
+          break;
+        }
+        await send('${response_queue_uuid}', 'Success');
+        break;
+      }
+    } catch (error) {
+      await send('${response_queue_uuid}', 'Error: ' + error.message);
+    }
+  }
+  await test();
+`;
+
+const newServiceWorker = async (origin) => {
+  const worker_token = token();
+  const worker_url = origin + executor_service_worker_path +
+                     `&uuid=${worker_token}`;
+  const worker_url_path = executor_service_worker_path.substring(0,
+                              executor_service_worker_path.lastIndexOf('/'));
+  const scope = worker_url_path + "/not-used/";
+  const reg = await navigator.serviceWorker.register(worker_url,
+                                                     {'scope': scope});
+  return worker_token;
+}
+
+    </script>
+  </head>
+  <body>
+    <script>
+      // Tests that the getNotifications() function when used in a document returns
+      // an array of the notifications which were previously displayed using the
+      // same Service Worker registration id. This is the same test as
+      // serviceworkerregistration-get-third-party.html but from a third-party
+      // (partitioned) service worker, for browsers that support storage partition.
+      promise_test(function(test) {
+        return new Promise(async (resolve, reject) => {
+          try {
+
+          var scope = 'resources/scope/' + location.pathname,
+              script = 'instrumentation-service-worker.js';
+
+          testRunner.setPermission('notifications', 'granted', location.origin, location.origin);
+
+    const response_queue_uuid = token();
+
+    const create_worker_js = (origin) => `
+      const importScript = ${importScript};
+      await importScript("/html/cross-origin-embedder-policy/credentialless" +
+                       "/resources/common.js");
+      await importScript("/html/anonymous-iframe/resources/common.js");
+      await importScript("/common/utils.js");
+      const newServiceWorker = ${newServiceWorker};
+      send("${response_queue_uuid}", await newServiceWorker("${origin}"));
+    `;
+
+  // Create a same-origin iframe in a cross-site popup.
+  const not_same_site_popup_uuid = newPopup(test, cross_site_origin);
+  send(not_same_site_popup_uuid,
+       add_iframe_js(same_site_origin, response_queue_uuid));
+  const iframe_uuid = await receive(response_queue_uuid);
+
+    // Create a service worker in the cross-top-level-site iframe.
+    send(iframe_uuid, create_worker_js(same_site_origin));
+    var worker_uuid = await receive(response_queue_uuid);
+    test.add_cleanup(() =>
+        send(worker_uuid, "self.registration.unregister();"));
+
+  await send(worker_uuid, notifications_test_js(response_queue_uuid));
+  const results = await receive(response_queue_uuid);
+
+  results == 'Success' ? resolve() : reject('Test failure: ' + results);
+
+  } catch (error) {
+    reject(error);
+  }
+});
+
+      }, 'ServiceWorkerRegistration.getNotifications() returns the opened notifications.');
+</script>
+</body>

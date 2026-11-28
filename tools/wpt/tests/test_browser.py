@@ -1,5 +1,6 @@
 # mypy: allow-untyped-defs
 
+import hashlib
 import logging
 import os
 import inspect
@@ -15,6 +16,53 @@ from tools.wpt import browser
 
 
 logger = logging.getLogger()
+
+
+@pytest.mark.parametrize("browser_cls", [browser.WebKitGTKMiniBrowser, browser.WPEWebKitMiniBrowser])
+@pytest.mark.parametrize("extension", [".tar.xz", ".tar.gz", ".zip"])
+@pytest.mark.parametrize("rename", [None, "minibrowser-nightly"])
+def test_minibrowser_download(tmp_path, browser_cls, extension, rename):
+    minibrowser = browser_cls(logger)
+    destination = tmp_path / "download"
+    bundle_name = "MiniBrowser_322241@main" + extension
+    bundle_contents = b"browser bundle"
+    bundle_hash = hashlib.sha256(bundle_contents).hexdigest()
+    base_url = minibrowser.BASE_DOWNLOAD_URI + "x86_64/release/nightly/MiniBrowser/"
+    responses = [mock.Mock(text=bundle_name + "\n"), mock.Mock(text=f"{bundle_hash}  {bundle_name}\n")]
+    with mock.patch("tools.wpt.browser.platform.machine", return_value="x86_64"), \
+         mock.patch("tools.wpt.browser.get", side_effect=responses) as get, \
+         mock.patch("tools.wpt.browser.get_download_to_descriptor",
+                    side_effect=lambda descriptor, url: descriptor.write(bundle_contents)) as download:
+        bundle_path = minibrowser.download(dest=str(destination), channel="nightly", rename=rename)
+
+    expected_name = rename + extension if rename else bundle_name
+    assert bundle_path == str(destination / expected_name)
+    assert (destination / expected_name).read_bytes() == bundle_contents
+    assert list(destination.iterdir()) == [destination / expected_name]
+    assert get.call_args_list == [
+        mock.call(base_url + "LAST-IS"),
+        mock.call(base_url + "MiniBrowser_322241@main.sha256sum"),
+    ]
+    assert download.call_args.args[1] == base_url + "MiniBrowser_322241%40main" + extension
+
+
+@pytest.mark.parametrize("browser_cls", [browser.WebKitGTKMiniBrowser, browser.WPEWebKitMiniBrowser])
+def test_minibrowser_download_incorrect_hash(tmp_path, browser_cls):
+    minibrowser = browser_cls(logger)
+    with mock.patch("tools.wpt.browser.get", side_effect=[
+        mock.Mock(text="MiniBrowser.tar.xz\n"),
+        mock.Mock(text="incorrect hash\n"),
+    ]), mock.patch("tools.wpt.browser.get_download_to_descriptor"):
+        with pytest.raises(RuntimeError, match="incorrect SHA256 hash"):
+            minibrowser.download(dest=str(tmp_path), channel="nightly", rename="minibrowser-nightly")
+    assert not (tmp_path / "minibrowser-nightly.tar.xz").exists()
+
+
+@pytest.mark.parametrize("browser_cls", [browser.WebKitGTKMiniBrowser, browser.WPEWebKitMiniBrowser])
+def test_minibrowser_install_rejects_url(tmp_path, browser_cls):
+    minibrowser = browser_cls(logger)
+    with pytest.raises(ValueError, match="--install-browser-url not supported"):
+        minibrowser.install(dest=str(tmp_path), channel="nightly", url="https://example.com/bundle.tar.xz")
 
 
 def test_all_browser_abc():

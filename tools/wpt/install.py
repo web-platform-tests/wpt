@@ -46,7 +46,8 @@ def get_parser():
     parser = argparse.ArgumentParser(
         parents=[channel_args],
         description="Install a given browser or webdriver frontend.")
-    parser.add_argument('browser', choices=['firefox', 'chrome', 'chromium', 'servo', 'safari', 'wktr'],
+    parser.add_argument('browser', choices=['firefox', 'chrome', 'chromium', 'servo', 'safari', 'wktr',
+                                           'webkitgtk_minibrowser', 'wpewebkit_minibrowser'],
                         help='name of web browser product')
     parser.add_argument('component', choices=['browser', 'webdriver'],
                         help='name of component')
@@ -111,6 +112,10 @@ def install(name, component, destination, channel="nightly", logger=None, downlo
 
     if name == "wktr":
         canonical_name = "WebKitTestRunner"
+    elif name == "webkitgtk_minibrowser":
+        canonical_name = "WebKitGTKMiniBrowser"
+    elif name == "wpewebkit_minibrowser":
+        canonical_name = "WPEWebKitMiniBrowser"
     else:
         canonical_name = name.title()
 

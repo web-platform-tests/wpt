@@ -1,0 +1,44 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+async function createLoadedIframe(t) {
+  const iframe = document.createElement("iframe");
+  iframe.src = "/common/blank.html";
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await new Promise(resolve => iframe.addEventListener("load", () => t.step_timeout(resolve, 0), { once: true }));
+  return iframe;
+}
+
+promise_test(async t => {
+  const iframe = await createLoadedIframe(t);
+  const w = iframe.contentWindow;
+
+  let secondSignal;
+  let errorCount = 0;
+
+  w.navigation.onnavigatesuccess = t.unreached_func("navigatesuccess must not fire");
+  w.navigation.onnavigate = t.step_func(e => {
+    if (errorCount > 0) {
+      secondSignal = e.signal;
+    }
+    e.intercept({ handler: () => new Promise(resolve => t.step_timeout(resolve, 20)) });
+  });
+  w.navigation.onnavigateerror = t.step_func(() => {
+    errorCount++;
+    if (errorCount === 1) {
+      w.history.pushState(null, "", "#reentrant");
+    }
+  });
+
+  w.history.pushState(null, "", "#initial");
+  w.stop();
+
+  assert_equals(errorCount, 2);
+  assert_true(secondSignal.aborted);
+  await new Promise(resolve => t.step_timeout(resolve, 30));
+}, "window.stop() aborts navigations started re-entrantly inside navigateerror");
+</script>
+</body>

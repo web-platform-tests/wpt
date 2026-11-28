@@ -38,6 +38,6 @@ promise_test(async t => {
   assert_equals(navigation.currentEntry.index, start_index + 2);
   assert_equals(location.hash, "#2");
   assert_true(navigateerror_called);
-}, "precommitHandler traversal is not aborted by window.stop() before commit");
+}, "precommitHandler traversal is aborted by window.stop() before commit");
 </script>
 </body>

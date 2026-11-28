@@ -37,8 +37,8 @@ promise_test(async t => {
     e.intercept({ precommitHandler: async () => {} });
   };
 
-  navigation.onnavigateerror = t.unreached_func("onnavigateerror must not fire");
   navigation.onnavigatesuccess = t.unreached_func("onnavigatesuccess must not fire");
+  let navigateerror_called = false;
   navigation.onnavigateerror = t.step_func(() => {
     navigateerror_called = true;
   });
@@ -52,5 +52,45 @@ promise_test(async t => {
   assert_equals(location.hash, "");
   assert_true(navigateerror_called);
 }, " precommitHandler with window.stop() before fragment navigation commit");
+
+promise_test(async t => {
+  navigation.onnavigate = e => {
+    e.intercept({ precommitHandler: async () => {} });
+  };
+
+  navigation.onnavigatesuccess = t.unreached_func("onnavigatesuccess must not fire");
+  let navigateerror_called = false;
+  navigation.onnavigateerror = t.step_func(() => {
+    navigateerror_called = true;
+  });
+
+  history.pushState(null, "", "#PushShouldNotCommit");
+  assert_equals(location.hash, "");
+
+  window.stop();
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+
+  assert_equals(location.hash, "");
+  assert_true(navigateerror_called);
+}, " precommitHandler with window.stop() before history.pushState() commit");
+
+promise_test(async t => {
+  navigation.onnavigate = e => {
+    e.intercept({ precommitHandler: async () => {} });
+  };
+
+  navigation.onnavigatesuccess = t.unreached_func("onnavigatesuccess must not fire");
+  let navigateerror_called = false;
+  navigation.onnavigateerror = t.step_func(() => {
+    navigateerror_called = true;
+  });
+
+  let promises = navigation.reload();
+
+  window.stop();
+  await assertBothRejectDOM(t, promises, "AbortError");
+
+  assert_true(navigateerror_called);
+}, " precommitHandler with window.stop() before reload commit");
 </script>
 </body>

@@ -8,7 +8,7 @@ import {
 
 self.addEventListener('install', async e => {
   e.waitUntil(caches.open('v1').then(
-      cache => {cache.put('cache.txt', new Response('From cache'))}));
+      cache => cache.put('cache.txt', new Response('From cache'))));
 
   const params = new URLSearchParams(location.search);
   const key = params.get('key');

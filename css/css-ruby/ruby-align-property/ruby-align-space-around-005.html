@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html  lang="en" >
+<head>
+<meta charset="utf-8">
+<title>ruby-align: space-around, multiword latin annotation (zh)</title>
+<meta name="assert" content="If the language of the annotation starts with zh, ruby-align: space-around will center the latin words in an annotation, due to the default style sheet, with a small amount of space either side. Latin words are not letter-spaced.">
+<link rel="author" title="Richard Ishida" href="mailto:ishida@w3.org">
+<link rel="help" href="http://www.w3.org/TR/css-ruby-1/#rubypos">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#rubypos">
+<style type="text/css">/* this is not part of the test */
+.test { margin: 20px;  padding: 40px; font-size: 110px; }
+rt { color: blue; }
+</style>
+<style type="text/css">/* this is the test */
+ruby { ruby-align: space-around; }
+</style>
+</head>
+<body>
+<p class="instructions">Test passes if the two words are centered over the base text, and there are no spaces between the letters in each word.</p>
+<div class="test" lang="zh-hant"><ruby><rb>基斯愛默生</rb><rt>Keith Emerson</rt></ruby></div>
+<!-- Notes:
+This test checks whether the browser implements the non-normative default UA style sheet recommendations in Appendix A. -->
+</body>
+</html>

@@ -1,3 +1,4 @@
+import http.client
 import os
 import socket
 import ssl
@@ -79,6 +80,21 @@ class TestH1TLSHandshake(TestUsingServer):
             doc_root=doc_root,
         )
         self.server.start()
+
+    def test_close_delimited_response(self):
+        context = ssl.create_default_context(
+            cafile=os.path.join(repo_root, "tools", "certs", "cacert.pem")
+        )
+        with socket.create_connection(("localhost", self.server.port), timeout=10) as sock:
+            with context.wrap_socket(sock, server_hostname="web-platform.test",
+                                     suppress_ragged_eofs=False) as tls:
+                tls.sendall(b"GET /document.txt HTTP/1.1\r\nHost: web-platform.test\r\n\r\n")
+                with http.client.HTTPResponse(tls) as response:
+                    response.begin()
+                    self.assertEqual(response.status, 200)
+                    self.assertIsNone(response.length)
+                    self.assertFalse(response.chunked)
+                    self.assertEqual(response.read(), b"This is a test document\n")
 
     def test_no_handshake(self):
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)

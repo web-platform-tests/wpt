@@ -8,7 +8,14 @@
 <script src='/resources/testdriver-vendor.js'></script>
 <script>
 "use strict";
-const basicCard = Object.freeze({ supportedMethods: "basic-card" });
+const wptPay1 = Object.freeze({
+  supportedMethods:
+    window.location.origin + "/payment-request/resources/wpt-pay-1.json",
+});
+const wptPay2 = Object.freeze({
+  supportedMethods:
+    window.location.origin + "/payment-request/resources/wpt-pay-2.json",
+});
 const applePay = Object.freeze({
   supportedMethods: "https://apple.com/apple-pay",
   data: {
@@ -19,7 +26,7 @@ const applePay = Object.freeze({
     supportedNetworks: ["visa"],
   }
 });
-const defaultMethods = Object.freeze([basicCard, applePay]);
+const defaultMethods = Object.freeze([wptPay1, wptPay2, applePay]);
 const defaultDetails = Object.freeze({
   total: {
     label: "Total",

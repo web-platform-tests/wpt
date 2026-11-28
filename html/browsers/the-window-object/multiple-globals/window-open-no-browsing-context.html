@@ -1,0 +1,114 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>window.open() when the entry, incumbent, or relevant global has no browsing context</title>
+<link rel=help href="https://html.spec.whatwg.org/#window-open-steps">
+<link rel=help href="https://github.com/whatwg/html/issues/11797">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<body>
+<script>
+function addIframe(t, name) {
+  const iframe = document.createElement('iframe');
+  if (name) {
+    iframe.name = name;
+  }
+  document.body.append(iframe);
+  t.add_cleanup(() => iframe.remove());
+  return iframe;
+}
+
+// Calls relevantWindow.open(url, target), after removing the iframe for the
+// realm given by `removed`, if any, where:
+// - The entry realm is that of the entry iframe, since the listener is from
+//   that realm and is invoked from a task, with no other script on the stack.
+// - The incumbent realm is that of the incumbent iframe, since the function
+//   calling open() is from that realm.
+// - The relevant realm is that of the relevant iframe, since its Window is the
+//   this value.
+// Each iframe's base URL is blank.html with the realm's name as the query.
+async function openWithRemoved(t, removed, url, target) {
+  const iframes = {};
+  for (const realm of ['entry', 'incumbent', 'relevant']) {
+    const iframe = addIframe(t);
+    const base = iframe.contentDocument.createElement('base');
+    base.href = `${location.origin}/common/blank.html?${realm}`;
+    iframe.contentDocument.head.append(base);
+    iframes[realm] = iframe;
+  }
+  const relevantWindow = iframes.relevant.contentWindow;
+  const callOpen = iframes.incumbent.contentWindow.eval(
+      '(w, url, target) => w.open(url, target)');
+  const token = `open-${Math.random()}`;
+  let ran = false;
+  let result;
+  let error;
+  const listener = iframes.entry.contentWindow.eval('f => e => f(e)')(e => {
+    if (e.data !== token) {
+      return;
+    }
+    ran = true;
+    try {
+      result = callOpen(relevantWindow, url, target);
+    } catch (e) {
+      error = e;
+    }
+  });
+  if (removed) {
+    iframes[removed].remove();
+  }
+  await new Promise(resolve => {
+    const done = e => {
+      if (e.data === token) {
+        resolve();
+      }
+    };
+    window.addEventListener('message', listener);
+    window.addEventListener('message', done);
+    t.add_cleanup(() => {
+      window.removeEventListener('message', listener);
+      window.removeEventListener('message', done);
+    });
+    window.postMessage(token, '*');
+  });
+  if (removed === 'entry' && !ran) {
+    // A listener from a realm that isn't fully active might not be invoked:
+    // https://github.com/whatwg/webidl/issues/993
+    return null;
+  }
+  assert_true(ran, 'listener ran');
+  if (error) {
+    throw error;
+  }
+  return result;
+}
+
+promise_test(async t => {
+  const targetIframe = addIframe(t, 'target-control');
+  const loaded = new Promise(resolve => targetIframe.onload = resolve);
+  const result = await openWithRemoved(t, null, '#opened', 'target-control');
+  assert_equals(result, targetIframe.contentWindow);
+  await loaded;
+  assert_equals(targetIframe.contentWindow.location.search, '?entry',
+      'URL is parsed relative to the entry iframe');
+}, 'window.open() with no iframe removed');
+
+for (const targetType of ['_blank', 'named']) {
+  for (const [removed, expectNull] of [['entry', true], ['incumbent', false], ['relevant', true]]) {
+    promise_test(async t => {
+      const name = `target-${targetType}-${removed}`;
+      const targetIframe = targetType === 'named' ? addIframe(t, name) : null;
+      const result = await openWithRemoved(t, removed, '#opened', targetIframe ? name : '_blank');
+      if (result && !targetIframe) {
+        t.add_cleanup(() => result.close());
+      }
+      if (expectNull) {
+        assert_equals(result, null);
+      } else if (targetIframe) {
+        assert_equals(result, targetIframe.contentWindow);
+      } else {
+        assert_not_equals(result, null);
+      }
+    }, `window.open() with ${targetType} target when the ${removed} iframe is removed`);
+  }
+}
+</script>

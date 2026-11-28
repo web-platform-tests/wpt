@@ -1,4 +1,4 @@
-function createImageWithMetadata({
+function createImageDataURLWithMetadata({
     width,
     height,
     preferredWidth,
@@ -30,9 +30,12 @@ function createImageWithMetadata({
     if (preferredHeight !== undefined)
         exif[piexif.ExifIFD.PixelYDimension] = preferredHeight
     const exifString = piexif.dump({'0th': root, 'Exif': exif})
-    const newDataUrl = piexif.insert(exifString, original)
+    return piexif.insert(exifString, original)
+}
+
+function createImageWithMetadata(input) {
     const image = new Image()
-    image.src = newDataUrl
+    image.src = createImageDataURLWithMetadata(input)
     return new Promise(resolve => {
         image.onload = () => resolve(image);
     })

@@ -1,0 +1,26 @@
+<!doctype html>
+<title>img current pixel density: changing sizes updates the natural width when the w descriptor is wrong</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#density-corrected-intrinsic-width-and-height">
+<link rel="help" href="https://github.com/whatwg/html/issues/3981">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<!-- green-100x50.png is 100x50 -->
+<img srcset="/images/green-100x50.png 200w" sizes="100px">
+<script>
+const windowLoaded = new Promise(resolve => window.addEventListener('load', resolve));
+promise_test(async t => {
+  const img = document.querySelector('img');
+  await windowLoaded;
+  assert_equals(img.naturalWidth, 100, 'naturalWidth before changing sizes');
+  assert_equals(img.naturalHeight, 50, 'naturalHeight before changing sizes');
+
+  const watcher = new EventWatcher(t, img, ['load', 'error']);
+  img.sizes = '50px';
+  await watcher.wait_for('load');
+  assert_equals(img.naturalWidth, 50, 'naturalWidth after changing sizes');
+  assert_equals(img.naturalHeight, 25, 'naturalHeight after changing sizes');
+  assert_equals(img.width, 50, 'width after changing sizes');
+  assert_equals(img.height, 25, 'height after changing sizes');
+});
+</script>

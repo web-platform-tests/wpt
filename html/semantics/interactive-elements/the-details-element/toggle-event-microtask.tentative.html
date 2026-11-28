@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/9046">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<details>hello</details>
+
+<script>
+promise_test(async () => {
+  // Toggling details elements during parsing may have special behavior.
+  await new Promise(resolve => window.onload = resolve);
+
+  const details = document.querySelector('details');
+  let gotToggleEvent = false;
+  details.ontoggle = () => gotToggleEvent = true;
+
+  // Asserting inside the microtask callback causes a timeout, so pull the
+  // value out instead.
+  const gotToggleEventInTime = await new Promise(resolve => {
+    details.open = true;
+    queueMicrotask(() => {
+      resolve(gotToggleEvent);
+    });
+  });
+
+  assert_true(gotToggleEventInTime);
+}, '<details> toggle events should be fired at microtask timing.');
+</script>

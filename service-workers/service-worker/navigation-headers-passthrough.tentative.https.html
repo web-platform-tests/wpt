@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<meta name="timeout" content="long">
+<title>Service Worker: passthrough navigations keep Sec-Fetch-Dest and Sec-Fetch-User</title>
+<!--
+  Tentative, see https://github.com/w3c/ServiceWorker/issues/1803.
+  Proposal: respondWith(fetch(event.request)) for a navigation sends the same
+  Sec-Fetch-Dest and Sec-Fetch-User as the navigation without a service worker,
+  as navigation preload already does.
+-->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<body>
+<script>
+'use strict';
+
+const script = new URL('./resources/fetch-rewrite-worker.js', self.location);
+const base = './resources/navigation-headers-server.py';
+const scope = base + '?with-sw';
+
+// Registers the worker for |swaction| and returns the URL to navigate to.
+async function target_url(t, swaction) {
+  if (swaction === 'no-sw')
+    return new URL(base + '?no-sw', self.location).href;
+  const registration =
+      await service_worker_unregister_and_register(t, script, scope);
+  t.add_cleanup(() => registration.unregister());
+  await wait_for_state(t, registration.installing, 'activated');
+  if (swaction === 'navpreload') {
+    assert_true('navigationPreload' in registration,
+                'navigation preload must be supported');
+    await registration.navigationPreload.enable();
+  }
+  return new URL(`${scope}&${swaction}`, self.location).href;
+}
+
+function headers_from(source) {
+  return new Promise(resolve => {
+    self.addEventListener('message', function listener(evt) {
+      if (evt.source !== source)
+        return;
+      self.removeEventListener('message', listener);
+      resolve(evt.data);
+    });
+  });
+}
+
+let popup_count = 0;
+function open_popup(t) {
+  const name = `popup-${++popup_count}`;
+  const popup = window.open('about:blank', name);
+  t.add_cleanup(() => popup.close());
+  return {popup, name};
+}
+
+const scenarios = {
+  'iframe navigation': {
+    dest: 'iframe', user: 'not set',
+    navigate: async (t, url) => {
+      const frame = document.createElement('iframe');
+      t.add_cleanup(() => frame.remove());
+      document.body.append(frame);
+      const headers = headers_from(frame.contentWindow);
+      frame.src = url;
+      return headers;
+    },
+  },
+  'top-level navigation without user activation': {
+    dest: 'document', user: 'not set',
+    navigate: async (t, url) => {
+      const {popup} = open_popup(t);
+      const headers = headers_from(popup);
+      popup.location.href = url;
+      return headers;
+    },
+  },
+  'top-level navigation with user activation': {
+    dest: 'document', user: '?1',
+    navigate: async (t, url) => {
+      const {popup, name} = open_popup(t);
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = name;
+      link.textContent = 'link';
+      t.add_cleanup(() => link.remove());
+      document.body.append(link);
+      const headers = headers_from(popup);
+      await test_driver.click(link);
+      return headers;
+    },
+  },
+};
+
+for (const [scenario, expected] of Object.entries(scenarios)) {
+  for (const swaction of ['no-sw', 'passthrough', 'navpreload']) {
+    promise_test(async t => {
+      const url = await target_url(t, swaction);
+      const headers = await expected.navigate(t, url);
+      // One comparison, so a failure reports all three actual values.
+      assert_equals(
+          JSON.stringify({
+            'sec-fetch-mode': headers['sec-fetch-mode'],
+            'sec-fetch-dest': headers['sec-fetch-dest'],
+            'sec-fetch-user': headers['sec-fetch-user'],
+          }),
+          JSON.stringify({
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-dest': expected.dest,
+            'sec-fetch-user': expected.user,
+          }));
+    }, `${scenario}, ${swaction}: sec-fetch-dest is ${expected.dest} and ` +
+       `sec-fetch-user is ${expected.user}.`);
+  }
+}
+</script>

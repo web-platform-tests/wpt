@@ -4,16 +4,18 @@ def main(request, response):
     return b"""
     <script>
       self.addEventListener('load', evt => {
-        self.parent.postMessage({
+        (self.opener || self.parent).postMessage({
           origin: '%s',
           referer: '%s',
           'sec-fetch-site': '%s',
           'sec-fetch-mode': '%s',
           'sec-fetch-dest': '%s',
+          'sec-fetch-user': '%s',
         });
       });
     </script>""" % (request.headers.get(
         b"origin", b"not set"), request.headers.get(b"referer", b"not set"),
                     request.headers.get(b"sec-fetch-site", b"not set"),
                     request.headers.get(b"sec-fetch-mode", b"not set"),
-                    request.headers.get(b"sec-fetch-dest", b"not set"))
+                    request.headers.get(b"sec-fetch-dest", b"not set"),
+                    request.headers.get(b"sec-fetch-user", b"not set"))

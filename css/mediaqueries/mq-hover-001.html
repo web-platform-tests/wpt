@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+
+        <title>CSS Media Feature: The device supports hovering</title>
+
+        <link rel="author" title="Fabien Basmaison" href="https://arkhi.org/">
+        <link rel="help" href="https://www.w3.org/TR/mediaqueries-4/#hover">
+        <link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1558865">
+        <link rel="match" href="../reference/ref-filled-green-100px-square-only.html">
+
+        <meta name="assert" content="This tests that the device supports the `hover` media feature.">
+
+        <style>
+            div {
+                background-color: red;
+                height: 100px;
+                width: 100px;
+            }
+
+            @media ( hover: hover ) {
+                div {
+                    background-color: green;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <p>Test passes if there is a <strong>filled green square</strong> and <strong>no red</strong>.</p>
+        <div></div>
+    </body>
+</html>

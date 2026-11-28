@@ -82,3 +82,38 @@ async def test_rejected_promise(bidi_session, top_context, chained):
         },
         exception.value.result,
     )
+
+
+async def test_stack_coordinates(bidi_session, top_context, inline):
+    page_url = inline(
+        "<script>\n"
+        "function foo() { missingIdentifier; }\n"
+        "function bar() { foo(); }\n"
+        "</script>",
+        doctype="html_quirks",
+    )
+    await bidi_session.browsing_context.navigate(
+        context=top_context["context"], url=page_url, wait="complete"
+    )
+
+    with pytest.raises(ScriptEvaluateResultException) as exception:
+        await bidi_session.script.call_function(
+            function_declaration="() => bar()",
+            target=ContextTarget(top_context["context"]),
+            await_promise=False,
+        )
+
+    exception_details = exception.value.result["exceptionDetails"]
+    call_frames = exception_details["stackTrace"]["callFrames"]
+
+    assert len(call_frames) >= 2
+    assert call_frames[0]["functionName"] == "foo"
+    assert call_frames[0]["url"] == page_url
+    assert call_frames[0]["lineNumber"] == 1
+    assert call_frames[0]["columnNumber"] == 17
+    assert call_frames[1]["functionName"] == "bar"
+    assert call_frames[1]["url"] == page_url
+    assert call_frames[1]["lineNumber"] == 2
+    assert call_frames[1]["columnNumber"] == 17
+    assert exception_details["lineNumber"] == call_frames[0]["lineNumber"]
+    assert exception_details["columnNumber"] == call_frames[0]["columnNumber"]

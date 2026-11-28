@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: parser created attributes</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="Attributes created by the HTML parser must be upgraded when a definition is available in the custom attribute registry of their element"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="before-define" parsed-before-define="before"></div>
+    <template id="template"
+      ><span parsed-in-template="template"></span
+    ></template>
+    <script>
+      const beforeDefine = create_custom_attribute_class();
+      const afterDefine = define_custom_attribute("parsed-after-define");
+      const fragmentDefine = define_custom_attribute("parsed-fragment-attr");
+
+      test(function () {
+        const element = document.getElementById("before-define");
+        const plain = element.getAttributeNode("parsed-before-define");
+        assert_equals(
+          Object.getPrototypeOf(plain),
+          Attr.prototype,
+          "a parsed attribute without a definition must be a plain Attr",
+        );
+
+        customAttributes.define("parsed-before-define", beforeDefine.class);
+        const upgraded = element.getAttributeNode("parsed-before-define");
+        assert_equals(
+          upgraded,
+          plain,
+          "upgrading a parsed attribute must preserve node identity",
+        );
+        assert_true(upgraded instanceof beforeDefine.class);
+        assert_equals(upgraded.value, "before");
+        const log = beforeDefine.takeLog();
+        assert_array_equals(log.types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "before",
+          attribute: upgraded,
+        });
+      }, "A parser created attribute must be upgraded when its name is defined");
+
+      test(function () {
+        const template = document.getElementById("template");
+        const inTemplate = template.content.firstChild;
+        assert_equals(
+          template.content.ownerDocument.customAttributeRegistry,
+          null,
+          "the template contents owner document must have a null custom attribute registry",
+        );
+        assert_equals(
+          inTemplate.customAttributeRegistry,
+          null,
+          "elements in template contents must have a null custom attribute registry",
+        );
+
+        class TemplateAttr extends Attr {}
+        customAttributes.define("parsed-in-template", TemplateAttr);
+        assert_equals(
+          Object.getPrototypeOf(
+            inTemplate.getAttributeNode("parsed-in-template"),
+          ),
+          Attr.prototype,
+          "an attribute of an element with a null custom attribute registry must not be upgraded",
+        );
+
+        const clone = document.importNode(inTemplate, true);
+        assert_equals(
+          clone.customAttributeRegistry,
+          customAttributes,
+          "the imported clone must use the document registry",
+        );
+        assert_true(
+          clone.getAttributeNode("parsed-in-template") instanceof TemplateAttr,
+          "the imported clone must be upgraded by importNode",
+        );
+      }, "Attributes inside template contents must not be upgraded until imported");
+
+      test(function () {
+        const container = document.createElement("div");
+        document.body.appendChild(container);
+        this.add_cleanup(() => container.remove());
+        fragmentDefine.takeLog();
+
+        container.innerHTML = `<span ${fragmentDefine.name}="inner">text</span>`;
+        const span = container.firstChild;
+        const attr = span.getAttributeNode(fragmentDefine.name);
+        assert_true(
+          attr instanceof fragmentDefine.class,
+          "innerHTML must upgrade defined attributes before returning",
+        );
+        const log = fragmentDefine.takeLog();
+        assert_array_equals(log.types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "inner",
+          attribute: attr,
+        });
+      }, "Attributes created by innerHTML on a connected element must be upgraded synchronously");
+
+      test(function () {
+        fragmentDefine.takeLog();
+        const container = document.createElement("div");
+        container.innerHTML = `<span ${fragmentDefine.name}="detached"></span>`;
+        const span = container.firstChild;
+        const attr = span.getAttributeNode(fragmentDefine.name);
+        assert_true(
+          attr instanceof fragmentDefine.class,
+          "innerHTML on a disconnected element must upgrade defined attributes before returning",
+        );
+        let log = fragmentDefine.takeLog();
+        assert_array_equals(
+          log.types(),
+          ["constructed", "attributeChanged"],
+          "connectedCallback must not be invoked for a disconnected element",
+        );
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "detached",
+          attribute: attr,
+        });
+
+        document.body.appendChild(container);
+        this.add_cleanup(() => container.remove());
+        assert_equals(span.getAttributeNode(fragmentDefine.name), attr);
+        assert_array_equals(fragmentDefine.takeLog().types(), ["connected"]);
+      }, "Attributes created by innerHTML on a disconnected element must be upgraded synchronously");
+
+      test(function () {
+        const container = document.createElement("div");
+        document.body.appendChild(container);
+        this.add_cleanup(() => container.remove());
+        fragmentDefine.takeLog();
+
+        container.insertAdjacentHTML(
+          "afterbegin",
+          `<span ${fragmentDefine.name}="adjacent"></span>`,
+        );
+        const span = container.firstChild;
+        assert_true(
+          span.getAttributeNode(fragmentDefine.name) instanceof
+            fragmentDefine.class,
+        );
+        assert_array_equals(fragmentDefine.takeLog().types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+      }, "Attributes created by insertAdjacentHTML on a connected element must be upgraded synchronously");
+
+      test(function () {
+        fragmentDefine.takeLog();
+        const doc = new DOMParser().parseFromString(
+          `<div ${fragmentDefine.name}="parsed"></div>`,
+          "text/html",
+        );
+        const element = doc.body.firstChild;
+        assert_equals(
+          doc.customAttributeRegistry,
+          null,
+          "a DOMParser document must have a null custom attribute registry",
+        );
+        assert_equals(
+          element.customAttributeRegistry,
+          null,
+          "elements of a DOMParser document must have a null custom attribute registry",
+        );
+        assert_equals(
+          Object.getPrototypeOf(element.getAttributeNode(fragmentDefine.name)),
+          Attr.prototype,
+          "an attribute of an element with a null custom attribute registry must not be upgraded",
+        );
+
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        assert_equals(
+          element.customAttributeRegistry,
+          customAttributes,
+          "adoption must give the element the document registry",
+        );
+        assert_true(
+          element.getAttributeNode(fragmentDefine.name) instanceof
+            fragmentDefine.class,
+        );
+        const log = fragmentDefine.takeLog();
+        assert_array_equals(log.types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "parsed",
+          attribute: log[0].attribute,
+        });
+      }, "Attributes parsed by DOMParser must be upgraded when the element is adopted and connected");
+
+      test(function () {
+        fragmentDefine.takeLog();
+        const range = document.createRange();
+        range.selectNodeContents(document.body);
+        const fragment = range.createContextualFragment(
+          `<span ${fragmentDefine.name}="fragment"></span>`,
+        );
+        const span = fragment.firstChild;
+        assert_true(
+          span.getAttributeNode(fragmentDefine.name) instanceof
+            fragmentDefine.class,
+          "createContextualFragment must upgrade defined attributes before returning",
+        );
+        assert_array_equals(fragmentDefine.takeLog().types(), [
+          "constructed",
+          "attributeChanged",
+        ]);
+        document.body.appendChild(fragment);
+        this.add_cleanup(() => span.remove());
+        assert_array_equals(fragmentDefine.takeLog().types(), ["connected"]);
+      }, "Attributes created by createContextualFragment must be upgraded synchronously");
+
+      promise_test(function (t) {
+        fragmentDefine.takeLog();
+        return create_window_in_test(
+          t,
+          `<!DOCTYPE html><div ${fragmentDefine.name}="iframe"></div>`,
+        ).then(function (contentWindow) {
+          const element = contentWindow.document.querySelector("div");
+          assert_equals(
+            Object.getPrototypeOf(
+              element.getAttributeNode(fragmentDefine.name),
+            ),
+            contentWindow.Attr.prototype,
+            "a definition in this window must not apply to the iframe document",
+          );
+          assert_array_equals(fragmentDefine.takeLog().types(), []);
+        });
+      }, "Parser created attributes in another window must not be upgraded by definitions in this window");
+    </script>
+    <div id="after-define-parsed" parsed-after-define="after"></div>
+    <script>
+      test(function () {
+        const element = document.getElementById("after-define-parsed");
+        const attr = element.getAttributeNode(afterDefine.name);
+        assert_true(
+          attr instanceof afterDefine.class,
+          "a parsed attribute with an existing definition must be upgraded when its element is inserted",
+        );
+        assert_equals(attr.value, "after");
+        const log = afterDefine.takeLog();
+        assert_array_equals(log.types(), [
+          "constructed",
+          "attributeChanged",
+          "connected",
+        ]);
+        assert_attribute_changed_entry(log[1], {
+          oldValue: null,
+          newValue: "after",
+          attribute: attr,
+        });
+      }, "A parser created attribute whose name is already defined must be upgraded synchronously by the parser");
+    </script>
+  </body>
+</html>

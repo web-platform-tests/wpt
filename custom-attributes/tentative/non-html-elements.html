@@ -1,0 +1,251 @@
+<!doctype html>
+<html>
+  <head>
+    <title>
+      Custom Attributes: attributes on elements outside the HTML namespace
+    </title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="Custom attributes only apply to HTML elements; attributes on elements in other namespaces must never be upgraded"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="parsed">
+      <svg>
+        <rect parsed-svg-attr="1"></rect>
+        <foreignObject
+          ><div id="parsed-fo-div" parsed-svg-attr="2"></div
+        ></foreignObject>
+      </svg>
+      <math><mi parsed-svg-attr="3"></mi></math>
+    </div>
+    <div id="container"></div>
+    <script>
+      setup({ allow_uncaught_exception: true });
+
+      const SVG_NS = "http://www.w3.org/2000/svg";
+      const MATHML_NS = "http://www.w3.org/1998/Math/MathML";
+      const container = document.getElementById("container");
+
+      test(function () {
+        const custom = define_custom_attribute("parsed-svg-attr");
+        const parsed = document.getElementById("parsed");
+        const rect = parsed.querySelector("rect");
+        const mi = parsed.querySelector("mi");
+        const div = document.getElementById("parsed-fo-div");
+        assert_equals(
+          Object.getPrototypeOf(rect.getAttributeNode(custom.name)),
+          Attr.prototype,
+          "the SVG element attribute must not be upgraded",
+        );
+        assert_equals(
+          Object.getPrototypeOf(mi.getAttributeNode(custom.name)),
+          Attr.prototype,
+          "the MathML element attribute must not be upgraded",
+        );
+        assert_true(
+          div.getAttributeNode(custom.name) instanceof custom.class,
+          "the HTML element inside foreignObject must be upgraded",
+        );
+      }, "customAttributes.define must only upgrade attributes of parsed HTML elements");
+
+      test(function () {
+        const custom = define_new_custom_attribute();
+        container.innerHTML = `<svg><rect ${custom.name}="1"></rect><foreignObject><div ${custom.name}="2"></div></foreignObject></svg><math><mi ${custom.name}="3"></mi></math>`;
+        this.add_cleanup(() => {
+          container.innerHTML = "";
+        });
+        assert_equals(
+          Object.getPrototypeOf(
+            container.querySelector("rect").getAttributeNode(custom.name),
+          ),
+          Attr.prototype,
+        );
+        assert_equals(
+          Object.getPrototypeOf(
+            container.querySelector("mi").getAttributeNode(custom.name),
+          ),
+          Attr.prototype,
+        );
+        assert_true(
+          container
+            .querySelector("div")
+            .getAttributeNode(custom.name) instanceof custom.class,
+        );
+      }, "Parser-created attributes must only be upgraded on HTML elements");
+
+      test(function () {
+        const custom = define_new_custom_attribute();
+        const svg = document.createElementNS(SVG_NS, "svg");
+        container.appendChild(svg);
+        this.add_cleanup(() => svg.remove());
+        svg.setAttribute(custom.name, "value");
+        assert_equals(
+          Object.getPrototypeOf(svg.getAttributeNode(custom.name)),
+          Attr.prototype,
+        );
+        svg.remove();
+        container.appendChild(svg);
+        assert_equals(
+          Object.getPrototypeOf(svg.getAttributeNode(custom.name)),
+          Attr.prototype,
+        );
+        assert_array_equals(custom.takeLog().types(), []);
+      }, "setAttribute on an SVG element must not upgrade the attribute");
+
+      test(function () {
+        const svg = document.createElementNS(SVG_NS, "svg");
+        const rect = document.createElementNS(SVG_NS, "rect");
+        rect.setAttribute("stroke-width", "2");
+        svg.appendChild(rect);
+        const div = document.createElement("div");
+        div.setAttribute("stroke-width", "3");
+        container.append(svg, div);
+        this.add_cleanup(() => {
+          svg.remove();
+          div.remove();
+        });
+
+        const custom = define_custom_attribute("stroke-width");
+        assert_equals(
+          Object.getPrototypeOf(rect.getAttributeNode("stroke-width")),
+          Attr.prototype,
+        );
+        assert_equals(rect.getAttribute("stroke-width"), "2");
+        assert_true(
+          div.getAttributeNode("stroke-width") instanceof custom.class,
+        );
+      }, "customAttributes.define must accept SVG attribute names and only upgrade them on HTML elements");
+
+      for (const [description, namespace, localName] of [
+        ["an SVG", SVG_NS, "svg"],
+        ["a MathML", MATHML_NS, "math"],
+      ]) {
+        test(function () {
+          const custom = define_new_custom_attribute();
+          const attr = document.createAttribute(custom.name);
+          assert_true(attr instanceof custom.class);
+          custom.takeLog();
+          const element = document.createElementNS(namespace, localName);
+          container.appendChild(element);
+          this.add_cleanup(() => element.remove());
+          assert_throws_dom("NotSupportedError", () =>
+            element.setAttributeNode(attr),
+          );
+          assert_throws_dom("NotSupportedError", () =>
+            element.setAttributeNodeNS(attr),
+          );
+          assert_throws_dom("NotSupportedError", () =>
+            element.attributes.setNamedItem(attr),
+          );
+          assert_throws_dom("NotSupportedError", () =>
+            element.attributes.setNamedItemNS(attr),
+          );
+          assert_false(element.hasAttribute(custom.name));
+          assert_equals(element.attributes.length, 0);
+          assert_equals(attr.ownerElement, null);
+          assert_array_equals(custom.takeLog().types(), []);
+        }, `setAttributeNode and setNamedItem with a custom attribute on ${description} element must throw NotSupportedError without mutating the element`);
+
+        test(function () {
+          const custom = define_new_custom_attribute();
+          const attr = document.createAttribute(custom.name);
+          attr.value = "custom";
+          custom.takeLog();
+          const element = document.createElementNS(namespace, localName);
+          container.appendChild(element);
+          this.add_cleanup(() => element.remove());
+          element.setAttribute(custom.name, "plain");
+          const plain = element.getAttributeNode(custom.name);
+
+          assert_throws_dom("NotSupportedError", () =>
+            element.setAttributeNode(attr),
+          );
+          assert_throws_dom("NotSupportedError", () =>
+            element.attributes.setNamedItem(attr),
+          );
+          assert_equals(
+            element.getAttributeNode(custom.name),
+            plain,
+            "the existing attribute must not be replaced",
+          );
+          assert_equals(plain.ownerElement, element);
+          assert_equals(element.getAttribute(custom.name), "plain");
+          assert_equals(attr.ownerElement, null);
+          assert_array_equals(custom.takeLog().types(), []);
+        }, `Replacing an attribute of ${description} element with a custom attribute must throw NotSupportedError without mutating the element`);
+
+        test(function () {
+          const custom = define_new_custom_attribute();
+          const div = document.createElement("div");
+          div.setAttribute(custom.name, "moved");
+          const attr = div.getAttributeNode(custom.name);
+          assert_true(attr instanceof custom.class);
+          div.removeAttributeNode(attr);
+          custom.takeLog();
+
+          const doc = document.implementation.createHTMLDocument();
+          const element = doc.createElementNS(namespace, localName);
+          doc.body.appendChild(element);
+          assert_throws_dom("NotSupportedError", () =>
+            element.setAttributeNode(attr),
+          );
+          assert_equals(
+            attr.ownerDocument,
+            document,
+            "the attribute must not be adopted",
+          );
+          assert_false(element.hasAttribute(custom.name));
+          assert_array_equals(
+            custom.takeLog().types(),
+            [],
+            "no callback, including adoptedCallback, must be invoked",
+          );
+        }, `setAttributeNode with a custom attribute from another document on ${description} element must throw before adopting the attribute`);
+      }
+
+      test(function () {
+        const svg = document.createElementNS(SVG_NS, "svg");
+        container.appendChild(svg);
+        this.add_cleanup(() => svg.remove());
+        const name = "attach-to-svg-attr";
+        let constructed = null;
+        customAttributes.define(
+          name,
+          class extends Attr {
+            constructor() {
+              super();
+              constructed = this;
+              svg.setAttributeNode(this);
+            }
+          },
+        );
+        let attr;
+        assert_reports(
+          "NotSupportedError",
+          () => {
+            attr = document.createAttribute(name);
+          },
+          "the exception thrown inside the constructor must be reported rather than rethrown",
+        );
+        assert_equals(
+          attr,
+          constructed,
+          "createAttribute must return the attribute that failed to construct",
+        );
+        assert_false(svg.hasAttribute(name));
+        assert_equals(attr.ownerElement, null);
+      }, "A custom attribute constructor attaching itself to an SVG element must fail and be reported");
+    </script>
+  </body>
+</html>

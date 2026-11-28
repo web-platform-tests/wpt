@@ -1,0 +1,311 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: adoptedCallback</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="adoptedCallback must be enqueued whenever a custom attribute moves to a new document, either along with its element or on its own"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      const custom = define_new_custom_attribute();
+
+      function create_element_with_custom_attribute() {
+        const element = document.createElement("div");
+        const attr = document.createAttribute(custom.name);
+        element.setAttributeNode(attr);
+        custom.takeLog();
+        return { element, attr };
+      }
+
+      document_types().forEach(function (entry) {
+        const documentName = entry.name;
+        const getDocument = entry.create;
+        if (entry.isOwner) return;
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_element_with_custom_attribute();
+              doc.adoptNode(element);
+              assert_equals(element.ownerDocument, doc);
+              assert_equals(
+                attr.ownerDocument,
+                doc,
+                "the attribute node must be adopted along with its element",
+              );
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), ["adopted"]);
+              assert_adopted_entry(log[0], attr, document, doc);
+            });
+          },
+          "Adopting a disconnected element with a custom attribute into " +
+            documentName +
+            " must enqueue and invoke adoptedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_element_with_custom_attribute();
+              document.body.appendChild(element);
+              t.add_cleanup(() => element.remove());
+              custom.takeLog();
+
+              doc.adoptNode(element);
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), ["disconnected", "adopted"]);
+              assert_disconnected_entry(log[0], attr);
+              assert_adopted_entry(log[1], attr, document, doc);
+            });
+          },
+          "Adopting a connected element with a custom attribute into " +
+            documentName +
+            " must enqueue and invoke disconnectedCallback then adoptedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_element_with_custom_attribute();
+              document.body.appendChild(element);
+              t.add_cleanup(() => element.remove());
+              custom.takeLog();
+
+              doc.documentElement.appendChild(element);
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), [
+                "disconnected",
+                "adopted",
+                "connected",
+              ]);
+              assert_disconnected_entry(log[0], attr);
+              assert_adopted_entry(log[1], attr, document, doc);
+              assert_connected_entry(log[2], attr, element);
+            });
+          },
+          "Inserting a connected element with a custom attribute into " +
+            documentName +
+            " must enqueue and invoke disconnectedCallback, adoptedCallback then connectedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_element_with_custom_attribute();
+              const parent = document.createElement("div");
+              parent.appendChild(element);
+              custom.takeLog();
+
+              doc.adoptNode(parent);
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), ["adopted"]);
+              assert_adopted_entry(log[0], attr, document, doc);
+            });
+          },
+          "Adopting an ancestor of an element with a custom attribute into " +
+            documentName +
+            " must enqueue and invoke adoptedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const attr = document.createAttribute(custom.name);
+              custom.takeLog();
+
+              doc.adoptNode(attr);
+              assert_equals(attr.ownerDocument, doc);
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), ["adopted"]);
+              assert_adopted_entry(log[0], attr, document, doc);
+            });
+          },
+          "Adopting a detached custom attribute into " +
+            documentName +
+            " must enqueue and invoke adoptedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const { element, attr } = create_element_with_custom_attribute();
+              document.body.appendChild(element);
+              t.add_cleanup(() => element.remove());
+              custom.takeLog();
+
+              doc.adoptNode(attr);
+              assert_equals(
+                attr.ownerElement,
+                null,
+                "the attribute must be removed from its element",
+              );
+              assert_false(element.hasAttribute(custom.name));
+              assert_equals(attr.ownerDocument, doc);
+              assert_equals(
+                element.ownerDocument,
+                document,
+                "the element must stay in its document",
+              );
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), [
+                "attributeChanged",
+                "disconnected",
+                "adopted",
+              ]);
+              assert_attribute_changed_entry(log[0], {
+                oldValue: "",
+                newValue: null,
+                attribute: attr,
+              });
+              assert_disconnected_entry(log[1], attr);
+              assert_adopted_entry(log[2], attr, document, doc);
+            });
+          },
+          "Adopting a custom attribute attached to a connected element into " +
+            documentName +
+            " must remove it, then enqueue and invoke adoptedCallback",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const attr = document.createAttribute(custom.name);
+              attr.value = "value";
+              const element = doc.createElementNS(
+                "http://www.w3.org/1999/xhtml",
+                "div",
+              );
+              doc.documentElement.appendChild(element);
+              t.add_cleanup(() => element.remove());
+              custom.takeLog();
+
+              element.setAttributeNode(attr);
+              assert_equals(attr.ownerDocument, doc);
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), [
+                "adopted",
+                "attributeChanged",
+                "connected",
+              ]);
+              assert_adopted_entry(log[0], attr, document, doc);
+              assert_attribute_changed_entry(log[1], {
+                oldValue: null,
+                newValue: "value",
+                attribute: attr,
+              });
+              assert_connected_entry(log[2], attr, element);
+            });
+          },
+          "setAttributeNode with a custom attribute from another document on an element in " +
+            documentName +
+            " must enqueue and invoke adoptedCallback first",
+        );
+
+        promise_test(
+          function (t) {
+            return getDocument().then(function (doc) {
+              add_document_cleanup(t, doc);
+              const attr = document.createAttribute(custom.name);
+              attr.value = "new";
+              const element = doc.createElementNS(
+                "http://www.w3.org/1999/xhtml",
+                "div",
+              );
+              element.setAttribute(custom.name, "old");
+              const oldAttr = element.getAttributeNode(custom.name);
+              custom.takeLog();
+
+              assert_equals(element.setAttributeNode(attr), oldAttr);
+              assert_equals(attr.ownerDocument, doc);
+              const log = custom.takeLog();
+              assert_array_equals(log.types(), ["adopted", "attributeChanged"]);
+              assert_adopted_entry(log[0], attr, document, doc);
+              assert_attribute_changed_entry(log[1], {
+                oldValue: null,
+                newValue: "new",
+                attribute: attr,
+              });
+            });
+          },
+          "setAttributeNode replacing an attribute with a custom attribute from another document in " +
+            documentName +
+            " must enqueue and invoke adoptedCallback first",
+        );
+      });
+
+      test(function () {
+        const { element } = create_element_with_custom_attribute();
+        document.adoptNode(element);
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "adopting into the same document must not invoke adoptedCallback",
+        );
+      }, "Adopting an element with a custom attribute into its own document must not enqueue adoptedCallback");
+
+      test(function () {
+        const { element, attr } = create_element_with_custom_attribute();
+        document.body.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        custom.takeLog();
+
+        assert_equals(document.adoptNode(attr), attr);
+        assert_equals(
+          attr.ownerElement,
+          null,
+          "the attribute must be removed from its element",
+        );
+        assert_false(element.hasAttribute(custom.name));
+        const log = custom.takeLog();
+        assert_array_equals(
+          log.types(),
+          ["attributeChanged", "disconnected"],
+          "adopting into the same document must remove the attribute without invoking adoptedCallback",
+        );
+        assert_attribute_changed_entry(log[0], {
+          oldValue: "",
+          newValue: null,
+          attribute: attr,
+        });
+        assert_disconnected_entry(log[1], attr);
+      }, "Adopting a custom attribute attached to an element into its own document must remove it without enqueuing adoptedCallback");
+
+      test(function () {
+        const element = document.createElement("div", {
+          customAttributeRegistry: null,
+        });
+        element.setAttribute(custom.name, "plain");
+        assert_equals(
+          Object.getPrototypeOf(element.getAttributeNode(custom.name)),
+          Attr.prototype,
+        );
+        const doc = document.implementation.createHTMLDocument();
+        doc.adoptNode(element);
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "an attribute that has not been upgraded has no adoptedCallback",
+        );
+      }, "Adopting an element with a not yet upgraded attribute must not enqueue adoptedCallback");
+    </script>
+  </body>
+</html>

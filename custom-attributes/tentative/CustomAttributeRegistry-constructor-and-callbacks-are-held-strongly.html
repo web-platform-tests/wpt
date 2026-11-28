@@ -1,0 +1,126 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>
+  CustomAttributeRegistry holds constructors and callbacks strongly, preventing
+  them from being GCed if there are no other references
+</title>
+<link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+<link
+  rel="help"
+  href="https://github.com/webplatformco/project-custom-attributes"
+/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/gc.js"></script>
+
+<body>
+  <div id="customAttributesRoot"></div>
+  <iframe id="emptyIframe" srcdoc></iframe>
+  <script>
+    "use strict";
+
+    const attributeNames = [...new Array(100)].map((_, i) => `x-foo${i}`);
+    const delay = (t, ms) =>
+      new Promise((resolve) => {
+        t.step_timeout(resolve, ms);
+      });
+
+    const constructorCalls = new Set();
+    const connectedCallbackCalls = new Set();
+    const disconnectedCallbackCalls = new Set();
+    const attributeChangedCallbackCalls = new Set();
+    const adoptedCallbackCalls = new Set();
+
+    for (const attributeName of attributeNames) {
+      const constructor = class extends Attr {
+        constructor() {
+          super();
+          constructorCalls.add(attributeName);
+        }
+        connectedCallback() {
+          connectedCallbackCalls.add(attributeName);
+        }
+        disconnectedCallback() {
+          disconnectedCallbackCalls.add(attributeName);
+        }
+        attributeChangedCallback() {
+          attributeChangedCallbackCalls.add(attributeName);
+        }
+        adoptedCallback() {
+          adoptedCallbackCalls.add(attributeName);
+        }
+      };
+
+      customAttributes.define(attributeName, constructor);
+
+      delete constructor.prototype.connectedCallback;
+      delete constructor.prototype.disconnectedCallback;
+      delete constructor.prototype.attributeChangedCallback;
+      delete constructor.prototype.adoptedCallback;
+    }
+
+    promise_test(async (t) => {
+      await garbageCollect();
+
+      assert_true(
+        attributeNames.every(
+          (attributeName) =>
+            typeof customAttributes.get(attributeName) === "function",
+        ),
+      );
+    }, "constructor");
+
+    promise_test(async (t) => {
+      await garbageCollect();
+      for (const attributeName of attributeNames) {
+        const element = document.createElement("div");
+        element.setAttribute(attributeName, "");
+        customAttributesRoot.append(element);
+      }
+
+      await delay(t, 10);
+      assert_equals(
+        constructorCalls.size,
+        attributeNames.length,
+        "constructors",
+      );
+      assert_equals(connectedCallbackCalls.size, attributeNames.length);
+      assert_equals(
+        attributeChangedCallbackCalls.size,
+        attributeNames.length,
+        "attributeChangedCallback on upgrade",
+      );
+    }, "connectedCallback");
+
+    promise_test(async (t) => {
+      await garbageCollect();
+      attributeChangedCallbackCalls.clear();
+      for (const element of customAttributesRoot.children) {
+        element.setAttribute(element.attributes[0].name, "bar");
+      }
+
+      await delay(t, 10);
+      assert_equals(attributeChangedCallbackCalls.size, attributeNames.length);
+    }, "attributeChangedCallback");
+
+    promise_test(async (t) => {
+      await garbageCollect();
+      customAttributesRoot.innerHTML = "";
+
+      await delay(t, 10);
+      assert_equals(disconnectedCallbackCalls.size, attributeNames.length);
+    }, "disconnectedCallback");
+
+    promise_test(async (t) => {
+      await garbageCollect();
+      for (const attributeName of attributeNames) {
+        const element = document.createElement("div");
+        element.setAttributeNode(document.createAttribute(attributeName));
+        emptyIframe.contentDocument.adoptNode(element);
+      }
+
+      await delay(t, 10);
+      assert_equals(adoptedCallbackCalls.size, attributeNames.length);
+    }, "adoptedCallback");
+  </script>
+</body>

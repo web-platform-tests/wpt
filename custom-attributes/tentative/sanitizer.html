@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+  <head>
+    <title>
+      Custom Attributes: the Sanitizer API must not upgrade attributes of
+      elements it drops
+    </title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="Elements that setHTML removes or replaces with their children must not run custom attribute constructors, and neither must the descendants of removed elements"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      let nameCount = 0;
+
+      function define_counting_attribute(registry = customAttributes) {
+        const name = `sanitizer-attr-${++nameCount}`;
+        const constructed = [];
+        registry.define(
+          name,
+          class extends Attr {
+            constructor() {
+              super();
+              constructed.push(this);
+            }
+          },
+        );
+        return {
+          name,
+          constructed,
+          owners: () => constructed.map((attr) => attr.ownerElement),
+        };
+      }
+
+      test(function () {
+        const { name, owners } = define_counting_attribute();
+        const target = document.createElement("div");
+        target.setHTML(
+          `<div ${name}><span ${name}></span></div><p ${name}></p>`,
+          { sanitizer: { removeElements: ["div"] } },
+        );
+        assert_equals(target.innerHTML, `<p ${name}=""></p>`);
+        assert_array_equals(
+          owners(),
+          [target.firstChild],
+          "only the attribute on the kept element must be upgraded",
+        );
+      }, "setHTML must not upgrade attributes on removed elements or their descendants");
+
+      test(function () {
+        const { name, owners } = define_counting_attribute();
+        const target = document.createElement("div");
+        target.setHTML(`<div ${name}><span ${name}></span></div>`, {
+          sanitizer: { replaceWithChildrenElements: ["div"] },
+        });
+        assert_equals(target.innerHTML, `<span ${name}=""></span>`);
+        assert_array_equals(
+          owners(),
+          [target.firstChild],
+          "only the attribute on the kept child must be upgraded",
+        );
+      }, "setHTML must not upgrade attributes on elements replaced with their children, but must upgrade their children");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const { name, owners } = define_counting_attribute(scoped);
+        const target = document.createElement("div", {
+          customAttributeRegistry: scoped,
+        });
+        target.setHTML(`<div ${name}><span ${name}></span></div>`, {
+          sanitizer: { replaceWithChildrenElements: ["div"] },
+        });
+        const span = target.firstChild;
+        assert_equals(span.localName, "span");
+        assert_equals(
+          span.customAttributeRegistry,
+          scoped,
+          "children of a replaced element must use the registry of the intended parent",
+        );
+        assert_array_equals(owners(), [span]);
+      }, "Children of an element replaced with its children must inherit the scoped registry");
+
+      test(function () {
+        const { name, constructed } = define_counting_attribute();
+        const target = document.createElement("div");
+        target.setHTML(
+          `<foo ${name}></foo><script ${name}><\/script><style ${name}></style>`,
+        );
+        assert_equals(target.innerHTML, "");
+        assert_equals(constructed.length, 0);
+      }, "setHTML with the default configuration must not upgrade attributes on removed elements");
+
+      test(function () {
+        const { name, constructed } = define_counting_attribute();
+        const target = document.createElement("div");
+        target.setHTML(
+          `<svg><foreignObject><div ${name}></div></foreignObject></svg>` +
+            `<math><annotation-xml encoding="text/html"><div ${name}></div></annotation-xml></math>`,
+          {
+            sanitizer: {
+              removeElements: [
+                { name: "svg", namespace: "http://www.w3.org/2000/svg" },
+                {
+                  name: "math",
+                  namespace: "http://www.w3.org/1998/Math/MathML",
+                },
+              ],
+            },
+          },
+        );
+        assert_equals(target.innerHTML, "");
+        assert_equals(constructed.length, 0);
+      }, "setHTML must not upgrade attributes on HTML descendants of removed SVG and MathML elements");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const { name, owners } = define_counting_attribute(scoped);
+        const target = document.createElement("div", {
+          customAttributeRegistry: scoped,
+        });
+        target.setHTML(
+          `<svg><foreignObject><div ${name}></div></foreignObject></svg>` +
+            `<math><mi><b ${name}></b></mi></math>`,
+          { sanitizer: {} },
+        );
+        const div = target.querySelector("div");
+        const b = target.querySelector("b");
+        assert_equals(
+          target.querySelector("svg").customAttributeRegistry,
+          scoped,
+          "SVG elements must get the registry of their intended parent",
+        );
+        assert_equals(
+          target.querySelector("math").customAttributeRegistry,
+          scoped,
+          "MathML elements must get the registry of their intended parent",
+        );
+        assert_equals(div.customAttributeRegistry, scoped);
+        assert_equals(b.customAttributeRegistry, scoped);
+        assert_array_equals(owners(), [div, b]);
+      }, "setHTML must upgrade attributes on HTML descendants of kept SVG and MathML elements");
+    </script>
+  </body>
+</html>

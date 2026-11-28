@@ -1,0 +1,527 @@
+<!doctype html>
+<html>
+  <head>
+    <title>
+      Custom Attributes: document.createAttribute and document.createAttributeNS
+    </title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="document.createAttribute and document.createAttributeNS must synchronously construct a defined custom attribute, using the registry given in their options"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <script>
+      setup({ allow_uncaught_exception: true });
+
+      test(function () {
+        const custom = define_new_custom_attribute();
+        const attr = document.createAttribute(custom.name);
+        assert_true(
+          attr instanceof custom.class,
+          "createAttribute must construct the defined class",
+        );
+        assert_equals(attr.name, custom.name);
+        assert_equals(attr.value, "");
+        assert_equals(attr.ownerElement, null);
+        const log = custom.takeLog();
+        assert_array_equals(
+          log.types(),
+          ["constructed"],
+          "only the constructor must run",
+        );
+        assert_constructed_entry(log[0], attr);
+      }, "document.createAttribute must synchronously construct a defined custom attribute");
+
+      test(function () {
+        const custom = define_new_custom_attribute();
+        const attr = document.createAttribute(custom.name.toUpperCase());
+        assert_true(
+          attr instanceof custom.class,
+          "the name must be lowercased in an HTML document before looking up the definition",
+        );
+        assert_equals(attr.name, custom.name);
+      }, "document.createAttribute must lowercase the name in an HTML document before looking up the definition");
+
+      test(function () {
+        const attr = document.createAttribute("not-defined-attr");
+        assert_true(attr instanceof Attr);
+        assert_equals(
+          Object.getPrototypeOf(attr),
+          Attr.prototype,
+          "an undefined name must create a plain Attr",
+        );
+      }, "document.createAttribute must create a plain Attr when the name is not defined");
+
+      test(function () {
+        const attr = document.createAttribute("title");
+        assert_equals(Object.getPrototypeOf(attr), Attr.prototype);
+      }, "document.createAttribute must create a plain Attr for a name that is not a valid custom attribute name");
+
+      // Defines a custom attribute whose constructor runs constructorSteps after
+      // super(), and whose lifecycle callbacks record their invocations.
+      function define_failing_custom_attribute(name, constructorSteps) {
+        const result = { calls: [], constructions: 0, constructed: null };
+        class FailingAttr extends Attr {
+          constructor() {
+            super();
+            result.constructions++;
+            result.constructed = this;
+            const returnValue = constructorSteps(this);
+            if (returnValue) return returnValue;
+          }
+          connectedCallback() {
+            result.calls.push("connected");
+          }
+          disconnectedCallback() {
+            result.calls.push("disconnected");
+          }
+          adoptedCallback() {
+            result.calls.push("adopted");
+          }
+          attributeChangedCallback() {
+            result.calls.push("attributeChanged");
+          }
+        }
+        customAttributes.define(name, FailingAttr);
+        result.class = FailingAttr;
+        return result;
+      }
+
+      // Asserts that attr is in the failed state: attaching it to a connected
+      // element, changing it and removing it must neither upgrade it again nor
+      // invoke any of its lifecycle callbacks.
+      function assert_failed_attribute(test, failing, attr) {
+        failing.calls.length = 0;
+        const constructions = failing.constructions;
+        if (attr.ownerElement) attr.ownerElement.removeAttributeNode(attr);
+        const element = document.createElement("div");
+        document.body.appendChild(element);
+        test.add_cleanup(() => element.remove());
+        element.setAttributeNode(attr);
+        attr.value = "changed";
+        element.remove();
+        element.removeAttributeNode(attr);
+        assert_equals(
+          failing.constructions,
+          constructions,
+          "a failed attribute must not be constructed again",
+        );
+        assert_array_equals(
+          failing.calls,
+          [],
+          "no callback must be invoked for a failed attribute",
+        );
+      }
+
+      test(function () {
+        const error = new Error("thrown from the constructor");
+        const failing = define_failing_custom_attribute("throwing-attr", () => {
+          throw error;
+        });
+        let attr;
+        assert_reports(
+          error,
+          () => {
+            attr = document.createAttribute("throwing-attr");
+          },
+          "an exception thrown by the constructor must be reported rather than rethrown",
+        );
+        assert_equals(
+          attr,
+          failing.constructed,
+          "createAttribute must return the attribute that failed to construct",
+        );
+        assert_equals(attr.name, "throwing-attr");
+        assert_equals(attr.value, "");
+        assert_equals(attr.ownerElement, null);
+        assert_failed_attribute(this, failing, attr);
+      }, "document.createAttribute must report an exception thrown by the constructor and return a failed attribute");
+
+      test(function () {
+        const other = document.createAttribute("other");
+        const failing = define_failing_custom_attribute(
+          "wrong-return-attr",
+          () => other,
+        );
+        let attr;
+        assert_reports(
+          "TypeError",
+          () => {
+            attr = document.createAttribute("wrong-return-attr");
+          },
+          "returning a different object from the constructor must report a TypeError",
+        );
+        assert_not_equals(
+          attr,
+          other,
+          "createAttribute must not return the object returned by the constructor",
+        );
+        assert_equals(attr, failing.constructed);
+        assert_equals(attr.name, "wrong-return-attr");
+        assert_failed_attribute(this, failing, attr);
+      }, "document.createAttribute must report a TypeError when the constructor returns a different object");
+
+      test(function () {
+        const element = document.createElement("div");
+        const failing = define_failing_custom_attribute(
+          "attaching-attr",
+          (attr) => {
+            element.setAttributeNode(attr);
+          },
+        );
+        let attr;
+        assert_reports(
+          "NotSupportedError",
+          () => {
+            attr = document.createAttribute("attaching-attr");
+          },
+          "a constructor that leaves the attribute attached to an element must report a NotSupportedError",
+        );
+        assert_equals(attr, failing.constructed);
+        assert_equals(
+          attr.ownerElement,
+          element,
+          "the attribute must be left on the element",
+        );
+        assert_true(element.hasAttribute("attaching-attr"));
+        assert_array_equals(
+          failing.calls,
+          ["attributeChanged"],
+          "reactions invoked while the constructor ran must not be undone",
+        );
+        assert_failed_attribute(this, failing, attr);
+      }, "document.createAttribute must report a NotSupportedError when the constructor attaches the attribute to an element");
+
+      test(function () {
+        const failing = define_failing_custom_attribute(
+          "value-changing-attr",
+          (attr) => {
+            attr.value = "set";
+          },
+        );
+        let attr;
+        assert_reports(
+          "NotSupportedError",
+          () => {
+            attr = document.createAttribute("value-changing-attr");
+          },
+          "a constructor that changes the value of the attribute must report a NotSupportedError",
+        );
+        assert_equals(attr, failing.constructed);
+        assert_equals(attr.value, "set");
+        assert_failed_attribute(this, failing, attr);
+      }, "document.createAttribute must report a NotSupportedError when the constructor changes the value");
+
+      test(function () {
+        const doc = document.implementation.createHTMLDocument();
+        const failing = define_failing_custom_attribute(
+          "adopting-attr",
+          (attr) => {
+            doc.adoptNode(attr);
+          },
+        );
+        let attr;
+        assert_reports(
+          "NotSupportedError",
+          () => {
+            attr = document.createAttribute("adopting-attr");
+          },
+          "a constructor that adopts the attribute into another document must report a NotSupportedError",
+        );
+        assert_equals(attr, failing.constructed);
+        assert_equals(attr.ownerDocument, doc);
+        assert_array_equals(
+          failing.calls,
+          ["adopted"],
+          "reactions invoked while the constructor ran must not be undone",
+        );
+        assert_failed_attribute(this, failing, attr);
+      }, "document.createAttribute must report a NotSupportedError when the constructor adopts the attribute into another document");
+
+      test(function () {
+        const error = new Error("thrown from the constructor");
+        const failing = define_failing_custom_attribute(
+          "throwing-ns-attr",
+          () => {
+            throw error;
+          },
+        );
+        let attr;
+        assert_reports(
+          error,
+          () => {
+            attr = document.createAttributeNS(null, "throwing-ns-attr");
+          },
+          "an exception thrown by the constructor must be reported rather than rethrown",
+        );
+        assert_equals(attr, failing.constructed);
+        assert_failed_attribute(this, failing, attr);
+      }, "document.createAttributeNS must report an exception thrown by the constructor and return a failed attribute");
+
+      test(function () {
+        const custom = define_new_custom_attribute();
+        const attr = document.createAttribute(custom.name);
+        custom.takeLog();
+
+        attr.value = "detached";
+        assert_equals(attr.value, "detached");
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "changing the value of a detached attribute must not enqueue attributeChangedCallback",
+        );
+
+        const element = document.createElement("div");
+        element.setAttributeNode(attr);
+        assert_equals(element.getAttribute(custom.name), "detached");
+        const log = custom.takeLog();
+        assert_array_equals(
+          log.types(),
+          ["attributeChanged"],
+          "attaching to a disconnected element must only enqueue attributeChangedCallback",
+        );
+        assert_attribute_changed_entry(log[0], {
+          oldValue: null,
+          newValue: "detached",
+          attribute: attr,
+        });
+      }, "A custom attribute created by createAttribute must be usable with setAttributeNode");
+
+      test(function () {
+        const custom = define_new_custom_attribute();
+        const attr = document.createAttributeNS(null, custom.name);
+        assert_true(
+          attr instanceof custom.class,
+          "createAttributeNS with a null namespace must construct the defined class",
+        );
+        assert_equals(attr.namespaceURI, null);
+        assert_array_equals(custom.takeLog().types(), ["constructed"]);
+
+        const namespaced = document.createAttributeNS(
+          "http://example.com/ns",
+          custom.name,
+        );
+        assert_equals(
+          Object.getPrototypeOf(namespaced),
+          Attr.prototype,
+          "an attribute in a non-null namespace must never be constructed",
+        );
+        const prefixed = document.createAttributeNS(
+          "http://example.com/ns",
+          "p:" + custom.name,
+        );
+        assert_equals(Object.getPrototypeOf(prefixed), Attr.prototype);
+        assert_array_equals(custom.takeLog().types(), []);
+      }, "document.createAttributeNS must construct a defined custom attribute only for a null namespace");
+
+      test(function () {
+        const scoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(scoped);
+        const globalDefinition = define_new_custom_attribute();
+
+        const scopedAttr = document.createAttribute(scopedDefinition.name, {
+          customAttributeRegistry: scoped,
+        });
+        assert_true(
+          scopedAttr instanceof scopedDefinition.class,
+          "createAttribute must look up the definition in the given registry",
+        );
+        const scopedNSAttr = document.createAttributeNS(
+          null,
+          scopedDefinition.name,
+          { customAttributeRegistry: scoped },
+        );
+        assert_true(
+          scopedNSAttr instanceof scopedDefinition.class,
+          "createAttributeNS must look up the definition in the given registry",
+        );
+        assert_equals(
+          Object.getPrototypeOf(
+            document.createAttribute(globalDefinition.name, {
+              customAttributeRegistry: scoped,
+            }),
+          ),
+          Attr.prototype,
+          "a name defined only in the global registry must not be constructed when a scoped registry is given",
+        );
+        assert_equals(
+          Object.getPrototypeOf(
+            document.createAttribute(scopedDefinition.name),
+          ),
+          Attr.prototype,
+          "without options, createAttribute must use the registry of the document",
+        );
+
+        assert_true(
+          document.createAttribute(globalDefinition.name, {}) instanceof
+            globalDefinition.class,
+          "empty options must use the registry of the document",
+        );
+        assert_true(
+          document.createAttribute(globalDefinition.name, {
+            customAttributeRegistry: customAttributes,
+          }) instanceof globalDefinition.class,
+          "the global registry of the document must be accepted",
+        );
+        assert_equals(
+          Object.getPrototypeOf(
+            document.createAttribute(globalDefinition.name, {
+              customAttributeRegistry: null,
+            }),
+          ),
+          Attr.prototype,
+          "a null registry must not construct anything",
+        );
+        assert_equals(
+          Object.getPrototypeOf(
+            document.createAttributeNS(null, globalDefinition.name, {
+              customAttributeRegistry: null,
+            }),
+          ),
+          Attr.prototype,
+        );
+      }, "document.createAttribute and createAttributeNS must use the customAttributeRegistry option");
+
+      test_with_window(function (contentWindow, contentDocument) {
+        const otherGlobal = contentWindow.customAttributes;
+        const custom = define_new_custom_attribute(otherGlobal, contentWindow);
+        assert_throws_dom(
+          "NotSupportedError",
+          function () {
+            document.createAttribute(custom.name, {
+              customAttributeRegistry: otherGlobal,
+            });
+          },
+          "createAttribute must reject the global registry of another document",
+        );
+        assert_throws_dom(
+          "NotSupportedError",
+          function () {
+            document.createAttributeNS(null, custom.name, {
+              customAttributeRegistry: otherGlobal,
+            });
+          },
+          "createAttributeNS must reject the global registry of another document",
+        );
+        assert_array_equals(
+          custom.takeLog().types(),
+          [],
+          "nothing must be constructed when the options are rejected",
+        );
+
+        const scopedFromOther = new contentWindow.CustomAttributeRegistry();
+        const scopedDefinition = define_new_custom_attribute(
+          scopedFromOther,
+          contentWindow,
+        );
+        assert_true(
+          document.createAttribute(scopedDefinition.name, {
+            customAttributeRegistry: scopedFromOther,
+          }) instanceof scopedDefinition.class,
+          "a scoped registry from another window must be accepted",
+        );
+      }, "document.createAttribute and createAttributeNS must reject a global registry that is not the document's own");
+
+      test(function () {
+        const xmlDocument = document.implementation.createDocument(
+          null,
+          "root",
+          null,
+        );
+        const scoped = new CustomAttributeRegistry();
+        const scopedDefinition = define_custom_attribute(
+          "case-xml-attr",
+          scoped,
+        );
+
+        assert_equals(xmlDocument.customAttributeRegistry, null);
+        assert_equals(
+          Object.getPrototypeOf(xmlDocument.createAttribute("case-xml-attr")),
+          Attr.prototype,
+          "a document with a null registry must not construct anything",
+        );
+
+        const constructed = xmlDocument.createAttribute("case-xml-attr", {
+          customAttributeRegistry: scoped,
+        });
+        assert_true(constructed instanceof scopedDefinition.class);
+        assert_equals(constructed.ownerDocument, xmlDocument);
+
+        const uppercase = xmlDocument.createAttribute("CASE-XML-ATTR", {
+          customAttributeRegistry: scoped,
+        });
+        assert_equals(
+          uppercase.name,
+          "CASE-XML-ATTR",
+          "the name must not be lowercased in an XML document",
+        );
+        assert_equals(
+          Object.getPrototypeOf(uppercase),
+          Attr.prototype,
+          "the name must be looked up without lowercasing it in an XML document",
+        );
+        assert_true(
+          document.createAttribute("CASE-XML-ATTR", {
+            customAttributeRegistry: scoped,
+          }) instanceof scopedDefinition.class,
+          "the name must be lowercased before looking it up in an HTML document",
+        );
+
+        assert_throws_dom(
+          "NotSupportedError",
+          function () {
+            xmlDocument.createAttribute("case-xml-attr", {
+              customAttributeRegistry: customAttributes,
+            });
+          },
+          "an XML document must reject a global registry that is not its own",
+        );
+      }, "document.createAttribute in an XML document must not lowercase the name before looking up the definition");
+
+      test_with_window(function (contentWindow, contentDocument) {
+        const custom = define_new_custom_attribute(null, contentWindow);
+        const fromOther = contentDocument.createAttribute(custom.name);
+        assert_true(
+          fromOther instanceof custom.class,
+          "createAttribute must use the registry of the document it is called on",
+        );
+        assert_equals(fromOther.ownerDocument, contentDocument);
+
+        const fromThis = document.createAttribute(custom.name);
+        assert_equals(
+          Object.getPrototypeOf(fromThis),
+          Attr.prototype,
+          "a definition in another window must not apply to this document",
+        );
+      }, "document.createAttribute must use the custom attribute registry of the document it is called on");
+
+      promise_test(function () {
+        const custom = define_new_custom_attribute();
+        return Promise.all(
+          document_types()
+            .filter((entry) => !entry.hasBrowsingContext)
+            .map((entry) => entry.create()),
+        ).then(function (docs) {
+          for (const doc of docs) {
+            const attr = doc.createAttribute(custom.name);
+            assert_equals(
+              Object.getPrototypeOf(attr),
+              Attr.prototype,
+              "a document without a browsing context has no registry, so createAttribute must create a plain Attr",
+            );
+          }
+        });
+      }, "document.createAttribute must create a plain Attr in a document without a browsing context");
+    </script>
+  </body>
+</html>

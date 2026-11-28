@@ -1,0 +1,317 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Custom Attributes: reported exceptions</title>
+    <link rel="author" href="mailto:wpt@keithcirkel.co.uk" />
+    <meta
+      name="assert"
+      content="Exceptions thrown by custom attribute constructors during upgrades and by lifecycle callbacks must be reported, not propagated to the DOM API that caused them"
+    />
+    <link
+      rel="help"
+      href="https://github.com/webplatformco/project-custom-attributes"
+    />
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/custom-elements/resources/custom-elements-helpers.js"></script>
+    <script src="resources/custom-attributes-helpers.js"></script>
+  </head>
+  <body>
+    <div id="log"></div>
+    <div id="container"></div>
+    <script>
+      setup({ allow_uncaught_exception: true });
+
+      const container = document.getElementById("container");
+
+      // Returns an Attr subclass whose lifecycle callbacks record their invocations
+      // in calls, so that tests can assert that none of them ran.
+      function create_recording_class(calls, constructorSteps) {
+        return class extends Attr {
+          constructor() {
+            constructorSteps(() => super());
+          }
+          connectedCallback() {
+            calls.push("connected");
+          }
+          disconnectedCallback() {
+            calls.push("disconnected");
+          }
+          adoptedCallback() {
+            calls.push("adopted");
+          }
+          attributeChangedCallback() {
+            calls.push("attributeChanged");
+          }
+        };
+      }
+
+      // Mutates element's attribute name in every way that would invoke a callback
+      // of a custom attribute, or upgrade an attribute that is not yet upgraded.
+      function exercise_failed_attribute(element, name) {
+        element.setAttribute(name, "changed");
+        element.remove();
+        container.appendChild(element);
+        document.implementation.createHTMLDocument().adoptNode(element);
+        container.appendChild(element);
+        customAttributes.upgrade(element);
+        element.removeAttribute(name);
+      }
+
+      test(function () {
+        const name = "failed-upgrade-throwing";
+        const element = document.createElement("div");
+        element.setAttribute(name, "value");
+        container.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        const attr = element.getAttributeNode(name);
+
+        const error = new Error("constructor failure");
+        const calls = [];
+        let constructions = 0;
+        const ThrowingAttr = create_recording_class(calls, (callSuper) => {
+          callSuper();
+          constructions++;
+          throw error;
+        });
+        assert_reports(
+          error,
+          () => customAttributes.define(name, ThrowingAttr),
+          "the exception thrown by the constructor must be reported",
+        );
+        assert_equals(constructions, 1, "the constructor must have run once");
+        assert_equals(element.getAttributeNode(name), attr);
+        assert_equals(attr.value, "value", "the attribute must keep its value");
+        assert_array_equals(
+          calls,
+          [],
+          "no callback must be invoked for a failed upgrade",
+        );
+
+        exercise_failed_attribute(element, name);
+        assert_equals(
+          constructions,
+          1,
+          "a failed attribute must not be upgraded again",
+        );
+        assert_array_equals(
+          calls,
+          [],
+          "no callback must be invoked for a failed attribute",
+        );
+      }, "A constructor exception during an upgrade must be reported and leave the attribute in the failed state");
+
+      test(function () {
+        const name = "failed-upgrade-wrong-return";
+        const element = document.createElement("div");
+        element.setAttribute(name, "value");
+        container.appendChild(element);
+        this.add_cleanup(() => element.remove());
+
+        const calls = [];
+        let constructions = 0;
+        const RecordingAttr = create_recording_class(calls, (callSuper) => {
+          callSuper();
+          constructions++;
+        });
+        class ReturningAttr extends RecordingAttr {
+          constructor() {
+            super();
+            return document.createAttribute("other");
+          }
+        }
+        assert_reports(
+          "TypeError",
+          () => customAttributes.define(name, ReturningAttr),
+          "returning a different object from the constructor must report a TypeError",
+        );
+        assert_equals(constructions, 1);
+
+        exercise_failed_attribute(element, name);
+        assert_equals(
+          constructions,
+          1,
+          "a failed attribute must not be upgraded again",
+        );
+        assert_array_equals(
+          calls,
+          [],
+          "no callback must be invoked for a failed attribute",
+        );
+      }, "A constructor returning a different object during an upgrade must report a TypeError");
+
+      test(function () {
+        const name = "failed-upgrade-instance-before-super";
+        const element = document.createElement("div");
+        element.setAttribute(name, "value");
+        container.appendChild(element);
+        this.add_cleanup(() => element.remove());
+        const attr = element.getAttributeNode(name);
+
+        const calls = [];
+        let inner = null;
+        let createdInner = false;
+        const EarlyInstanceAttr = create_recording_class(calls, (callSuper) => {
+          if (!createdInner) {
+            createdInner = true;
+            inner = new EarlyInstanceAttr();
+          }
+          callSuper();
+        });
+        assert_reports(
+          "TypeError",
+          () => customAttributes.define(name, EarlyInstanceAttr),
+          "calling super() after an instance of the same class took the attribute must report a TypeError",
+        );
+        assert_equals(
+          inner,
+          attr,
+          "the instance created before super() must be the attribute being upgraded",
+        );
+        assert_array_equals(calls, []);
+
+        exercise_failed_attribute(element, name);
+        assert_array_equals(
+          calls,
+          [],
+          "no callback must be invoked for a failed attribute",
+        );
+      }, "Creating an instance of the same custom attribute before calling super() during an upgrade must report a TypeError");
+
+      test(function () {
+        const name = "failed-upgrade-inner-html";
+        const error = new Error("constructor failure");
+        const calls = [];
+        const ThrowingAttr = create_recording_class(calls, (callSuper) => {
+          callSuper();
+          throw error;
+        });
+        customAttributes.define(name, ThrowingAttr);
+
+        const host = document.createElement("div");
+        container.appendChild(host);
+        this.add_cleanup(() => host.remove());
+        assert_reports(
+          error,
+          () => {
+            host.innerHTML = `<span ${name}="parsed"></span>`;
+          },
+          "innerHTML must report the exception thrown by the constructor rather than rethrowing it",
+        );
+        const span = host.firstChild;
+        this.add_cleanup(() => span.remove());
+        assert_equals(span.getAttribute(name), "parsed");
+        assert_array_equals(calls, []);
+
+        exercise_failed_attribute(span, name);
+        assert_array_equals(
+          calls,
+          [],
+          "no callback must be invoked for a failed attribute",
+        );
+      }, "A constructor exception during an upgrade caused by innerHTML must be reported");
+
+      test(function () {
+        const error = new Error("attributeChangedCallback failure");
+        const log = [];
+        class ThrowingChangedAttr extends Attr {
+          attributeChangedCallback() {
+            log.push("attributeChanged");
+            throw error;
+          }
+          connectedCallback() {
+            log.push("connected");
+          }
+        }
+        customAttributes.define(
+          "throwing-changed-callback",
+          ThrowingChangedAttr,
+        );
+        const element = document.createElement("div");
+        container.appendChild(element);
+        this.add_cleanup(() => element.remove());
+
+        assert_reports(
+          error,
+          () => element.setAttribute("throwing-changed-callback", "value"),
+          "setAttribute must report the exception thrown by attributeChangedCallback rather than rethrowing it",
+        );
+        assert_array_equals(
+          log,
+          ["attributeChanged", "connected"],
+          "reactions after the throwing callback must still be invoked",
+        );
+        assert_true(
+          element.getAttributeNode("throwing-changed-callback") instanceof
+            ThrowingChangedAttr,
+          "an exception thrown by a callback must not affect the upgrade",
+        );
+
+        log.length = 0;
+        assert_reports(error, () =>
+          element.setAttribute("throwing-changed-callback", "changed"),
+        );
+        assert_array_equals(
+          log,
+          ["attributeChanged"],
+          "the callback must still be invoked after it threw",
+        );
+      }, "An exception thrown by attributeChangedCallback must be reported");
+
+      test(function () {
+        const error = new Error("connection callback failure");
+        class ThrowingConnectionAttr extends Attr {
+          connectedCallback() {
+            throw error;
+          }
+          disconnectedCallback() {
+            throw error;
+          }
+        }
+        customAttributes.define(
+          "throwing-connection-callbacks",
+          ThrowingConnectionAttr,
+        );
+        const element = document.createElement("div");
+        element.setAttribute("throwing-connection-callbacks", "");
+        this.add_cleanup(() => element.remove());
+
+        assert_reports(
+          error,
+          () => container.appendChild(element),
+          "appendChild must report the exception thrown by connectedCallback rather than rethrowing it",
+        );
+        assert_true(element.isConnected);
+        assert_reports(
+          error,
+          () => element.remove(),
+          "remove must report the exception thrown by disconnectedCallback rather than rethrowing it",
+        );
+        assert_false(element.isConnected);
+      }, "Exceptions thrown by connectedCallback and disconnectedCallback must be reported");
+
+      test(function () {
+        const error = new Error("adoptedCallback failure");
+        class ThrowingAdoptedAttr extends Attr {
+          adoptedCallback() {
+            throw error;
+          }
+        }
+        customAttributes.define(
+          "throwing-adopted-callback",
+          ThrowingAdoptedAttr,
+        );
+        const element = document.createElement("div");
+        element.setAttribute("throwing-adopted-callback", "");
+        const doc = document.implementation.createHTMLDocument();
+
+        assert_reports(
+          error,
+          () => doc.adoptNode(element),
+          "adoptNode must report the exception thrown by adoptedCallback rather than rethrowing it",
+        );
+        assert_equals(element.ownerDocument, doc);
+      }, "An exception thrown by adoptedCallback must be reported");
+    </script>
+  </body>
+</html>

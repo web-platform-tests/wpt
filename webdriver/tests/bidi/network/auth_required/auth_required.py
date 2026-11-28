@@ -173,3 +173,34 @@ async def test_with_wrong_credentials(setup_blocked_request, bidi_session, wait_
         await wait_for_bidi_events(events, 3, timeout=1)
 
     remove_listener()
+
+
+@pytest.mark.parametrize("navigate", [False, True], ids=["fetch", "navigate"])
+async def test_response_data_when_blocked(
+    bidi_session, setup_blocked_request, navigate
+):
+    events = []
+
+    async def on_event(method, data):
+        events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(
+        AUTH_REQUIRED_EVENT, on_event)
+
+    await setup_blocked_request("authRequired", navigate=navigate)
+
+    assert len(events) == 1
+    assert_response_event(
+        events[0],
+        expected_event={
+            "response": {
+                "status": 401,
+                "statusText": "Unauthorized",
+                "authChallenges": [
+                    ({"scheme": "Basic", "realm": "test"}),
+                ],
+            },
+        },
+    )
+
+    remove_listener()

@@ -17,6 +17,7 @@
       xhr.setRequestHeader("Accept-Language", "ru");
       xhr.setRequestHeader("Content-Language", "ru");
       xhr.setRequestHeader("Content-Type", "text/plain");
+      xhr.setRequestHeader("Last-Event-ID", "abc123");
 
       xhr.send();
 
@@ -24,7 +25,8 @@
           "Accept: *\n" +
           "Accept-Language: ru\n" +
           "Content-Language: ru\n" +
-          "Content-Type: text/plain\n");
+          "Content-Type: text/plain\n" +
+          "Last-Event-ID: abc123\n");
     }, "Request with CORS-safelisted headers");
     </script>
   </body>

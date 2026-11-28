@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Fragment navigation after load copies the scroll restoration mode to the new entry</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigate-fragid">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="fragment"></div>
+<script>
+  'use strict';
+
+  function nextEvent(type) {
+    return new Promise(resolve => window.addEventListener(type, resolve, { once: true }));
+  }
+
+  promise_test(async t => {
+    if (document.readyState !== 'complete') {
+      await nextEvent('load');
+    }
+    await new Promise(resolve => t.step_timeout(resolve, 0));
+
+    history.scrollRestoration = 'manual';
+    const length = history.length;
+
+    location.hash = '#fragment';
+    await nextEvent('hashchange');
+    assert_equals(history.length, length + 1, 'fragment navigation after load should create a new entry');
+    assert_equals(history.scrollRestoration, 'manual', 'the new entry should copy the scroll restoration mode');
+
+    history.pushState(null, '', '#done');
+    history.back();
+    await nextEvent('hashchange');
+    assert_equals(history.scrollRestoration, 'manual', 'the entry traversed back to should still be manual');
+  }, 'Fragment navigation after load copies the scroll restoration mode to the new entry');
+</script>

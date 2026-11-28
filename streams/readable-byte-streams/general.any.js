@@ -2985,3 +2985,55 @@ promise_test(async t => {
   assert_equals(view.buffer.byteLength, 10, 'result.value.buffer.byteLength');
   assert_array_equals([...new Uint8Array(view)], [20, 21, 22], 'result.value');
 }, 'ReadableStream with byte source: autoAllocateChunkSize, read(), respondWithNewView()');
+
+promise_test(async t => {
+  let controller;
+  const stream = new ReadableStream({
+    type: 'bytes',
+    start: t.step_func(c => {
+      controller = c;
+    })
+  });
+
+  // Half-fill a BYOB pull-into descriptor, then release the lock so that it stays in [[pendingPullIntos]]
+  // with a reader type of "none".
+  const byobReader = stream.getReader({ mode: 'byob' });
+  const read1 = byobReader.read(new Uint16Array(1));
+  controller.byobRequest.view[0] = 0xaa;
+  controller.byobRequest.respond(1);
+  byobReader.releaseLock();
+  await promise_rejects_js(t, TypeError, read1, 'read1 should reject after releasing the lock');
+
+  const reader = stream.getReader();
+  let result2;
+  const read2 = reader.read().then(t.step_func(result => {
+    result2 = result;
+  }));
+
+  // respond() moves the bytes written into the detached descriptor to the queue, where they must be used to
+  // fulfill the pending read request rather than being left behind.
+  controller.byobRequest.view[0] = 0xbb;
+  controller.byobRequest.respond(1);
+
+  await flushAsyncEvents();
+  assert_not_equals(result2, undefined, 'read2 should have been fulfilled');
+  assert_false(result2.done, 'result2.done');
+  assert_typed_array_equals(result2.value, new Uint8Array([0xaa, 0xbb]), 'result2.value');
+  assert_equals(controller.desiredSize, 0, 'desiredSize should be 0 once the queue is drained');
+  await read2;
+
+  // The queue is drained, so the next read() waits for the next chunk.
+  let result3;
+  const read3 = reader.read().then(t.step_func(result => {
+    result3 = result;
+  }));
+  await flushAsyncEvents();
+  assert_equals(result3, undefined, 'read3 should be pending');
+
+  controller.enqueue(new Uint8Array([0xcc]));
+  await flushAsyncEvents();
+  assert_not_equals(result3, undefined, 'read3 should have been fulfilled');
+  assert_false(result3.done, 'result3.done');
+  assert_typed_array_equals(result3.value, new Uint8Array([0xcc]), 'result3.value');
+  await read3;
+}, 'ReadableStream with byte source: respond() with a detached pull-into descriptor and a pending read()');

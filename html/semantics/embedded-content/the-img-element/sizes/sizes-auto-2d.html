@@ -1,0 +1,785 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>img parse a sizes attribute: two-dimensional sizes=auto</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#parse-a-sizes-attribute">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#source-concrete-width">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#dimension-attribute-aspect-ratio">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#last-auto-sizes-size">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+/* Keep images small so that lazy images are in the viewport and load. */
+img:not(.use-pres-hint) { width: 10px; height: 100px; }
+.ancestor-contain img { object-fit: contain; }
+.ancestor-scale-down img { object-fit: scale-down; }
+.ancestor-cover img { object-fit: cover; }
+</style>
+<div id=stage style="position: relative"></div>
+<div id=log></div>
+<!-- ref1 selects the 50w candidate, ref2 selects the 51w candidate. -->
+<img srcset='/images/green-1x1.png?ref1 50w, /images/green-16x16.png?ref1 51w' sizes='1px' id=ref1>
+<img srcset='/images/green-1x1.png?ref2 50w, /images/green-16x16.png?ref2 51w' sizes='1000px' id=ref2>
+<script>
+"use strict";
+setup({explicit_done: true});
+
+// https://github.com/web-platform-tests/rfcs/pull/75
+let async_promise_test = (promise, description) => {
+  async_test(test => {
+    promise(test)
+      .then(() => {test.done();})
+      .catch(test.step_func(error => { throw error; }));
+  }, description);
+};
+
+// Mount each test element at the top of the viewport so concurrent
+// `loading="lazy"` subtests never stack past engine lazy-load scroll margins.
+function mountInViewport(t, node) {
+  const slot = document.createElement('div');
+  slot.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%';
+  slot.appendChild(node);
+  document.getElementById('stage').appendChild(slot);
+  t.add_cleanup(() => {
+    node.remove();
+    slot.remove();
+  });
+  return slot;
+}
+
+function waitForLoad(t, img) {
+  return new Promise((resolve, reject) => {
+    const timer = t.step_timeout(() => {
+      reject(new Error('Timed out waiting for image load'));
+    }, 2000);
+    img.onload = () => {
+      clearTimeout(timer);
+      resolve();
+    };
+    img.onerror = () => {
+      clearTimeout(timer);
+      reject(new Error('Unexpected image error event'));
+    };
+  });
+}
+
+function baseUrl(url) {
+  assert_greater_than(url.indexOf('?'), -1, 'expected a "?" in currentSrc');
+  return url.split('?')[0];
+}
+
+let sentinelCounter = 0;
+async function flushImagePipeline(t) {
+  const sentinel = document.createElement('img');
+  const loaded = waitForLoad(t, sentinel);
+  sentinel.src = `/images/green-1x1.png?sentinel-${++sentinelCounter}`;
+  mountInViewport(t, sentinel);
+  await loaded;
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+function check(imgOrPicture, img, refId) {
+  const ref = document.getElementById(refId);
+  const name = imgOrPicture.outerHTML;
+  async_promise_test(async (t) => {
+    let expect = ref.currentSrc;
+    if (expect) {
+      expect = expect.split('?')[0];
+    }
+    if (expect === '' || expect === null || expect === undefined) {
+      assert_unreached('ref currentSrc was ' + format_value(expect));
+    }
+    const loaded = waitForLoad(t, img);
+    mountInViewport(t, imgOrPicture);
+    await loaded;
+    t.step(() => {
+      assert_equals(baseUrl(img.currentSrc), expect);
+    });
+  }, name);
+}
+
+// `h` holds the height descriptors (if any) of the 50w and 51w candidates.
+// The concrete object size of each img is 10px x 100px.
+const tests = [
+  {loading: 'lazy', sizes: 'auto', width: '1', height: '1', h: ['', ''], ref: 'ref1'},
+  {loading: 'lazy', sizes: 'auto', width: '1', height: '1', style: 'object-fit: fill', h: ['', ''], ref: 'ref1'},
+  {loading: 'lazy', sizes: 'auto', width: '1', height: '1', style: 'object-fit: none', h: ['', ''], ref: 'ref1'},
+  {loading: 'lazy', sizes: 'auto', width: '1', height: '1', style: 'width: 100px; height: 10px; object-fit: fill', h: ['', ''], ref: 'ref2'},
+  {loading: 'lazy', sizes: 'auto', width: '1', height: '1', style: 'width: 100px; height: 10px; object-fit: none', h: ['', ''], ref: 'ref2'},
+  {loading: 'lazy', sizes: 'auto', width: '1', height: '1', style: 'width: 1000px; height: 10px; object-fit: contain', h: ['', ''], ref: 'ref1'},
+  {loading: 'lazy', sizes: 'auto', width: '1', height: '1', style: 'width: 1000px; height: 10px; object-fit: scale-down', h: ['', ''], ref: 'ref1'},
+  // With object-fit: cover and aspect ratio 1, max(10px, 100px * 1) = 100px.
+  {loading: 'lazy', sizes: 'auto', width: '1', height: '1', style: 'object-fit: cover', h: ['', ''], ref: 'ref2'},
+  // Without both width and height attributes, the second candidate (no 'h') has
+  // no aspect ratio and uses the box width (1000px -> 0.051x), while the first
+  // candidate ('50h' -> 1:1) uses min(1000px, 10px) = 10px -> 5.0x (ref1).
+  {loading: 'lazy', sizes: 'auto', style: 'width: 1000px; height: 10px; object-fit: contain', h: [' 50h', ''], ref: 'ref1'},
+  {loading: 'lazy', sizes: 'auto', width: '1', style: 'width: 1000px; height: 10px; object-fit: contain', h: [' 50h', ''], ref: 'ref1'},
+  {loading: 'lazy', sizes: 'auto', height: '1', style: 'width: 1000px; height: 10px; object-fit: contain', h: [' 50h', ''], ref: 'ref1'},
+  // 'h' descriptors give aspect ratios of 50 and 25.5;
+  // max(10px, 100px * 50) = 5000px and max(10px, 100px * 25.5) = 2550px.
+  {loading: 'lazy', sizes: 'auto', style: 'object-fit: cover', h: [' 1h', ' 2h'], ref: 'ref2'},
+  // With 1000px x 10px and aspect ratio ~1, contain and scale-down give
+  // min(1000px, 10px) = 10px (ref1), whereas 1D sizes=auto uses 1000px (ref2).
+  {loading: 'lazy', sizes: 'auto', style: 'width: 1000px; height: 10px; object-fit: contain', h: [' 50h', ' 51h'], ref: 'ref1'},
+  {loading: 'lazy', sizes: 'auto', style: 'width: 1000px; height: 10px; object-fit: scale-down', h: [' 50h', ' 51h'], ref: 'ref1'},
+  // 'h' descriptors take precedence over the dimension attribute aspect ratio
+  // in both directions.
+  {loading: 'lazy', sizes: 'auto', width: '1', height: '100', style: 'object-fit: cover', h: [' 1h', ' 2h'], ref: 'ref2'},
+  {loading: 'lazy', sizes: 'auto', width: '100', height: '1', style: 'width: 1000px; height: 10px; object-fit: contain', h: [' 5000h', ' 5100h'], ref: 'ref1'},
+  // Content box, not border box, is used for both width and height:
+  // - padding: 0 4px on 10x10 border-box gives content-box 2x10, so cover gives
+  //   max(2px, 1px) = 2px (25x) vs max(2px, 10px) = 10px (5.1x) -> ref2
+  //   (whereas border-box 10x10 gives 5.0x vs 5.1x -> ref1, and 1D gives ref1).
+  // - padding: 45px 0 on 1000x100 border-box gives content-box 1000x10, so
+  //   contain gives min(1000px, 10px) = 10px -> ref1 (whereas border-box
+  //   1000x100 gives 100px -> ref2, and 1D 1000px gives ref2).
+  {loading: 'lazy', sizes: 'auto', style: 'object-fit: cover; box-sizing: border-box; width: 10px; height: 10px; padding: 0 4px', h: [' 500h', ' 51h'], ref: 'ref2'},
+  {loading: 'lazy', sizes: 'auto', style: 'object-fit: contain; box-sizing: border-box; width: 1000px; height: 100px; padding: 45px 0', h: [' 50h', ' 51h'], ref: 'ref1'},
+  // Non-lazy img falls back to 1px and does not use CSS object-fit.
+  {sizes: 'auto, 1px', width: '1', height: '1', style: 'object-fit: cover', h: [' 1h', ' 2h'], ref: 'ref1'},
+];
+
+function srcsetFor(prefix, h) {
+  return `/images/green-1x1.png?${prefix} 50w${h[0]}, /images/green-16x16.png?${prefix} 51w${h[1]}`;
+}
+
+function test_img(obj, i) {
+  const img = document.createElement('img');
+  for (const attr in obj) {
+    if (attr !== 'h' && attr !== 'ref') {
+      img.setAttribute(attr, obj[attr]);
+    }
+  }
+  img.srcset = srcsetFor(`img${i}`, obj.h);
+  check(img, img, obj.ref);
+}
+
+function test_picture(obj, i) {
+  const picture = document.createElement('picture');
+  const source = document.createElement('source');
+  const img = document.createElement('img');
+  for (const attr in obj) {
+    switch (attr) {
+      case 'h':
+      case 'ref':
+        break;
+      case 'width':
+      case 'height':
+        source.setAttribute(attr, obj[attr]);
+        break;
+      case 'sizes':
+        img.setAttribute(attr, obj[attr]);
+        if (!obj.loading) {
+          source.setAttribute(attr, obj[attr]);
+        }
+        break;
+      default:
+        img.setAttribute(attr, obj[attr]);
+        break;
+    }
+  }
+  source.srcset = srcsetFor(`picture${i}`, obj.h);
+  picture.appendChild(source);
+  picture.appendChild(img);
+  check(picture, img, obj.ref);
+}
+
+onload = () => {
+  let i = 0;
+  for (const obj of tests) {
+    i++;
+    test_img(obj, i);
+    test_picture(obj, i);
+  }
+
+  // A <source> without width/height attributes uses the <img>'s dimension
+  // attribute aspect ratio when sizes=auto.
+  {
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.srcset = srcsetFor('picture-img-dims', ['', '']);
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 1;
+    img.height = 1;
+    img.style = 'object-fit: cover';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    check(picture, img, 'ref2');
+  }
+
+  // A <source> with explicit sizes="auto" also uses auto-sizes when <img>
+  // allows auto-sizes.
+  {
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.sizes = 'auto';
+    source.srcset = srcsetFor('picture-explicit-source-auto', ['', '']);
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 1;
+    img.height = 1;
+    img.style = 'object-fit: cover';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    check(picture, img, 'ref2');
+  }
+
+  // A <source> with width and height attributes uses its own dimension
+  // attribute aspect ratio.
+  {
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.srcset = srcsetFor('picture-source-dims', ['', '']);
+    source.setAttribute('width', '1');
+    source.setAttribute('height', '1');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 1;
+    img.height = 100;
+    img.style = 'object-fit: cover';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    check(picture, img, 'ref2');
+  }
+
+  // A <source> with width and height attributes updates the <img>'s dimension
+  // attribute source (and thus its presentational hint layout dimensions)
+  // before sizes=auto evaluates the <img>'s content box.
+  {
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.srcset = srcsetFor('picture-source-presentational-hint', [' 50h', ' 51h']);
+    source.setAttribute('width', '10');
+    source.setAttribute('height', '100');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 10;
+    img.height = 10;
+    img.className = 'use-pres-hint';
+    img.style = 'object-fit: cover';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    check(picture, img, 'ref2');
+  }
+  {
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.srcset = srcsetFor('picture-source-presentational-hint-small', [' 50h', ' 51h']);
+    source.setAttribute('width', '1000');
+    source.setAttribute('height', '10');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 1000;
+    img.height = 200;
+    img.className = 'use-pres-hint';
+    img.style = 'object-fit: contain';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    check(picture, img, 'ref1');
+  }
+
+  // A <source> with only a width or only a height attribute has no dimension
+  // attribute aspect ratio and does not fall back to the <img>'s.
+  {
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.srcset = srcsetFor('picture-source-width-only', [' 50h', '']);
+    source.setAttribute('width', '1');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 52;
+    img.height = 50;
+    img.style = 'width: 1000px; height: 10px; object-fit: contain';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    check(picture, img, 'ref1');
+  }
+
+  {
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.srcset = srcsetFor('picture-source-height-only', [' 50h', '']);
+    source.setAttribute('height', '1');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 52;
+    img.height = 50;
+    img.style = 'width: 1000px; height: 10px; object-fit: contain';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    check(picture, img, 'ref1');
+  }
+
+  // Dynamic change to computed 'object-fit' on an auto-sized img triggers
+  // source re-selection.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.style = 'object-fit: contain';
+    img.srcset = srcsetFor('dynamic-object-fit', [' 50h', ' 51h']);
+    const initialLoaded = waitForLoad(t, img);
+    mountInViewport(t, img);
+    await initialLoaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    const reloaded = waitForLoad(t, img);
+    img.style.objectFit = 'cover';
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref2);
+  }, 'Changing computed object-fit on an auto-sized img updates currentSrc');
+
+  // Changing computed 'object-fit' on a rendered img that does not allow
+  // auto-sizes is not a relevant mutation and does not fire load.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.sizes = 'contain 10px 1000px, 1000px';
+    img.style = 'object-fit: contain';
+    img.srcset = srcsetFor('non-auto-object-fit', [' 50h', ' 51h']);
+    const initialLoaded = waitForLoad(t, img);
+    mountInViewport(t, img);
+    await initialLoaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    let unexpectedEvent = false;
+    img.onload = img.onerror = () => { unexpectedEvent = true; };
+    img.style.objectFit = 'cover';
+    img.getBoundingClientRect();
+    await flushImagePipeline(t);
+    assert_false(unexpectedEvent);
+    assert_equals(baseUrl(img.currentSrc), ref1);
+  }, 'Changing computed object-fit when img does not allow auto-sizes does not fire load');
+
+  // Dynamic change to content-box height on an auto-sized img with
+  // object-fit: cover triggers source re-selection.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.style = 'height: 10px; object-fit: cover';
+    img.srcset = srcsetFor('dynamic-content-box-height', [' 50h', ' 51h']);
+    const initialLoaded = waitForLoad(t, img);
+    mountInViewport(t, img);
+    await initialLoaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    const reloaded = waitForLoad(t, img);
+    img.style.height = '100px';
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref2);
+  }, 'Changing content-box height on an auto-sized img with object-fit: cover updates currentSrc');
+
+  // Dynamic change to width/height attributes on an auto-sized img triggers
+  // source re-selection.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.width = 1;
+    img.height = 100;
+    img.style = 'object-fit: cover';
+    img.srcset = srcsetFor('dynamic-img-dims', ['', '']);
+    const initialLoaded = waitForLoad(t, img);
+    mountInViewport(t, img);
+    await initialLoaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    // Changing a dimension attribute without changing the selected candidate
+    // URL should not trigger a reload or other side effects.
+    let unexpectedEvent = false;
+    img.onload = img.onerror = () => { unexpectedEvent = true; };
+    img.height = 50;
+    await flushImagePipeline(t);
+    assert_false(unexpectedEvent);
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    let reloaded = waitForLoad(t, img);
+    img.height = 1;
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref2);
+  }, 'Changing dimension attributes on an auto-sized img updates currentSrc');
+
+  // Removing width or height on an auto-sized img clears the dimension
+  // attribute aspect ratio and triggers source re-selection without mutating
+  // srcset.
+  for (const attr of ['width', 'height']) {
+    async_promise_test(async (t) => {
+      const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+      const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+      const img = document.createElement('img');
+      img.className = 'use-pres-hint';
+      img.loading = 'lazy';
+      img.sizes = 'auto';
+      img.width = 1;
+      img.height = 1;
+      img.style = 'width: 1000px; height: 10px; object-fit: contain';
+      img.srcset = srcsetFor(`dynamic-img-remove-${attr}`, ['', '']);
+      const initialLoaded = waitForLoad(t, img);
+      mountInViewport(t, img);
+      await initialLoaded;
+      assert_equals(baseUrl(img.currentSrc), ref1);
+
+      const reloaded = waitForLoad(t, img);
+      img.removeAttribute(attr);
+      await reloaded;
+      assert_equals(baseUrl(img.currentSrc), ref2);
+    }, `Removing ${attr} attribute on an auto-sized img updates currentSrc`);
+  }
+
+  // Dynamic change to width/height attributes on a previous sibling <source>
+  // inside <picture> triggers source re-selection.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.setAttribute('width', '1');
+    source.setAttribute('height', '100');
+    source.srcset = srcsetFor('dynamic-source-dims', ['', '']);
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.style = 'object-fit: cover';
+    picture.appendChild(source);
+    picture.appendChild(img);
+    const initialLoaded = waitForLoad(t, img);
+    mountInViewport(t, picture);
+    await initialLoaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    const reloaded = waitForLoad(t, img);
+    source.setAttribute('height', '1');
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref2);
+  }, 'Changing dimension attributes on a <source> in <picture> updates currentSrc');
+
+  // Removing width or height on a previous sibling <source> inside <picture>
+  // triggers source re-selection without mutating srcset.
+  for (const attr of ['width', 'height']) {
+    async_promise_test(async (t) => {
+      const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+      const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+      const picture = document.createElement('picture');
+      const source = document.createElement('source');
+      const img = document.createElement('img');
+      source.setAttribute('width', '1');
+      source.setAttribute('height', '1');
+      source.srcset = srcsetFor(`dynamic-source-remove-${attr}`, ['', '']);
+      img.className = 'use-pres-hint';
+      img.loading = 'lazy';
+      img.sizes = 'auto';
+      img.style = 'width: 1000px; height: 10px; object-fit: contain';
+      picture.appendChild(source);
+      picture.appendChild(img);
+      const initialLoaded = waitForLoad(t, img);
+      mountInViewport(t, picture);
+      await initialLoaded;
+      assert_equals(baseUrl(img.currentSrc), ref1);
+
+      const reloaded = waitForLoad(t, img);
+      source.removeAttribute(attr);
+      await reloaded;
+      assert_equals(baseUrl(img.currentSrc), ref2);
+    }, `Removing ${attr} attribute on a <source> in <picture> updates currentSrc`);
+  }
+
+  // Changing a dimension attribute when the selected candidate URL does not
+  // change must not switch an unresolvable no-alt image to fallback layout.
+  async_promise_test(async (t) => {
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc =
+        '<!doctype html><base href="about:blank">' +
+        '<img srcset="small.png 50w, large.png 200w" sizes="50px" width="100">';
+    const loaded = new Promise(resolve => { iframe.onload = resolve; });
+    mountInViewport(t, iframe);
+    await loaded;
+
+    const img = iframe.contentDocument.querySelector('img');
+    assert_equals(img.offsetWidth, 100);
+
+    img.width = 200;
+    assert_equals(img.offsetWidth, 200);
+  }, 'Changing dimension attributes when selected source URL is unchanged preserves layout disposition');
+
+  // A display:none auto-sized img retains its two-dimensional last auto-sizes
+  // size (width, height, and object-fit) on subsequent mutation even when the
+  // candidate aspect ratio changes, and resets it when disconnected.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.sizes = 'auto, contain 10px 1000px, 1000px';
+    img.style = 'object-fit: cover';
+    // Initial aspect ratio 0.1 gives max(10px, 100px * 0.1) = 10px (ref1),
+    // distinguishing caching the 2D tuple (10px, 100px, cover) from caching a
+    // 1D concrete width of 10px.
+    img.srcset = srcsetFor('last-auto-sizes-initial', [' 500h', ' 510h']);
+    const initialLoaded = waitForLoad(t, img);
+    mountInViewport(t, img);
+    await initialLoaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    // Hide the image first, then change object-fit to contain while unrendered.
+    // Changing object-fit while display:none is not a relevant mutation (so
+    // img.complete remains true), and source selection while display:none with
+    // wide aspect ratios (50, 25.5) must use the retained 2D tuple
+    // (10px, 100px, cover) -> 5000px / 2550px (ref2).
+    img.style.display = 'none';
+    img.getBoundingClientRect();
+    img.style.objectFit = 'contain';
+    img.getBoundingClientRect();
+    await flushImagePipeline(t);
+    assert_true(img.complete, 'changing object-fit while display:none must not start a pending request');
+
+    let reloaded = waitForLoad(t, img);
+    img.srcset = srcsetFor('last-auto-sizes-hidden', [' 1h', ' 2h']);
+    await new Promise(resolve => t.step_timeout(resolve, 0));
+    img.loading = 'eager';
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref2);
+
+    // Removing the image from the document clears its last auto-sizes size, so
+    // it falls back to 'contain 10px 1000px' -> 10px (ref1).
+    img.loading = 'lazy';
+    img.remove();
+    reloaded = waitForLoad(t, img);
+    img.srcset = srcsetFor('last-auto-sizes-disconnected', [' 1h', ' 2h']);
+    await new Promise(resolve => t.step_timeout(resolve, 0));
+    img.loading = 'eager';
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+  }, 'A display:none auto-sized img retains its 2D last auto-sizes size and resets it when disconnected');
+
+  // Transitioning an auto-sized img from display:none to rendered re-evaluates
+  // its 2D content box and computed object-fit ('starts being rendered').
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.style = 'object-fit: contain';
+    img.srcset = srcsetFor('starts-being-rendered', [' 50h', ' 51h']);
+    const initialLoaded = waitForLoad(t, img);
+    mountInViewport(t, img);
+    await initialLoaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    // Change object-fit to cover while display:none: no re-selection occurs
+    // until the image starts being rendered again.
+    let unexpectedEvent = false;
+    img.onload = img.onerror = () => { unexpectedEvent = true; };
+    img.style.display = 'none';
+    img.getBoundingClientRect();
+    img.style.objectFit = 'cover';
+    img.getBoundingClientRect();
+    await flushImagePipeline(t);
+    assert_false(unexpectedEvent, 'changing object-fit while display:none must not fire load');
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    const reloaded = waitForLoad(t, img);
+    img.style.display = '';
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref2);
+  }, 'Transitioning an auto-sized img from display:none to rendered re-evaluates 2D content box and object-fit');
+
+  // moveBefore() does not run the removing steps, so moving an auto-sized img
+  // into display:none preserves its 2D last auto-sizes size tuple.
+  async_promise_test(async (t) => {
+    assert_implements(document.body.moveBefore, 'moveBefore is supported');
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+
+    const container = document.createElement('div');
+    const hiddenContainer = document.createElement('div');
+    hiddenContainer.style.display = 'none';
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.sizes = 'auto, contain 10px 1000px, 1000px';
+    img.style = 'object-fit: cover';
+    img.srcset = srcsetFor('move-before-initial', [' 500h', ' 510h']);
+    container.append(hiddenContainer, img);
+    const initialLoaded = waitForLoad(t, img);
+    mountInViewport(t, container);
+    await initialLoaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    hiddenContainer.moveBefore(img, null);
+    img.getBoundingClientRect();
+    await flushImagePipeline(t);
+    assert_true(img.complete);
+
+    const reloaded = waitForLoad(t, img);
+    img.srcset = srcsetFor('move-before-hidden', [' 1h', ' 2h']);
+    await new Promise(resolve => t.step_timeout(resolve, 0));
+    img.loading = 'eager';
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref2);
+  }, 'moveBefore into display:none does not reset the 2D last auto-sizes size');
+
+  // 'auto' preceded by a <media-condition> is invalid per the <source-size-list>
+  // grammar and must not trigger auto-sizes.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+
+    // Non-final '<media-condition> auto' is rejected and falls through to
+    // 'contain 10px 1000px' (ref1), rather than auto-sizing with cover (ref2)
+    // or 1D fallback 1000px (ref2).
+    const img1 = document.createElement('img');
+    img1.loading = 'lazy';
+    img1.sizes = '(min-width: 0px) auto, contain 10px 1000px, 1000px';
+    img1.style = 'object-fit: cover';
+    img1.srcset = srcsetFor('media-auto-nonfinal', [' 1h', ' 2h']);
+    const loaded1 = waitForLoad(t, img1);
+    mountInViewport(t, img1);
+    await loaded1;
+    assert_equals(baseUrl(img1.currentSrc), ref1);
+
+    // Final '<media-condition> auto' is also rejected and falls back to 100vw
+    // (ref2), rather than auto-sizing with contain on 10x100 (ref1).
+    const img2 = document.createElement('img');
+    img2.loading = 'lazy';
+    img2.sizes = '(max-width: 0px) 1px, (min-width: 0px) auto';
+    img2.style = 'object-fit: contain';
+    img2.srcset = srcsetFor('media-auto-final', [' 50h', ' 51h']);
+    const loaded2 = waitForLoad(t, img2);
+    mountInViewport(t, img2);
+    await loaded2;
+    assert_equals(baseUrl(img2.currentSrc), ref2);
+
+    // Same on <picture><source> when <img> allows auto-sizes.
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img3 = document.createElement('img');
+    source.sizes = '(min-width: 0px) auto, contain 10px 1000px, 1000px';
+    source.srcset = srcsetFor('media-auto-picture', [' 1h', ' 2h']);
+    img3.loading = 'lazy';
+    img3.sizes = 'auto';
+    img3.style = 'object-fit: cover';
+    picture.append(source, img3);
+    const loaded3 = waitForLoad(t, img3);
+    mountInViewport(t, picture);
+    await loaded3;
+    assert_equals(baseUrl(img3.currentSrc), ref1);
+  }, 'Media-conditioned auto in sizes is rejected and does not trigger auto-sizes');
+
+  // Explicit 2D sizes on <source> overrides sizes="auto" on <img loading="lazy">.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const picture = document.createElement('picture');
+    const source = document.createElement('source');
+    const img = document.createElement('img');
+    source.sizes = 'contain 10px 1000px, 1000px';
+    source.srcset = srcsetFor('source-explicit-2d-overrides-img-auto', [' 1h', ' 2h']);
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.style = 'object-fit: cover';
+    picture.append(source, img);
+    const loaded = waitForLoad(t, img);
+    mountInViewport(t, picture);
+    await loaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+  }, 'Explicit 2D sizes on <source> overrides sizes=auto on <img loading=lazy>');
+
+  // Ancestor CSS class changes to computed 'object-fit' omit load when the
+  // selected URL is unchanged (contain -> scale-down) and reload when it
+  // changes (scale-down -> cover).
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+    const wrapper = document.createElement('div');
+    wrapper.className = 'ancestor-contain';
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.sizes = 'auto';
+    img.srcset = srcsetFor('ancestor-object-fit', [' 50h', ' 51h']);
+    wrapper.appendChild(img);
+    const initialLoaded = waitForLoad(t, img);
+    mountInViewport(t, wrapper);
+    await initialLoaded;
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    let unexpectedEvent = false;
+    img.onload = img.onerror = () => { unexpectedEvent = true; };
+    wrapper.className = 'ancestor-scale-down';
+    img.getBoundingClientRect();
+    await flushImagePipeline(t);
+    assert_false(unexpectedEvent, 'contain -> scale-down with unchanged URL must omit load');
+    assert_equals(baseUrl(img.currentSrc), ref1);
+
+    const reloaded = waitForLoad(t, img);
+    wrapper.className = 'ancestor-cover';
+    await reloaded;
+    assert_equals(baseUrl(img.currentSrc), ref2);
+  }, 'Ancestor CSS class changes to computed object-fit omit load when URL is unchanged and reload when URL changes');
+
+  // Post-load sizes="auto" with object-fit: none or scale-down continues to use
+  // the content box rather than the loaded image's 16x16 concrete object size.
+  async_promise_test(async (t) => {
+    const ref1 = document.getElementById('ref1').currentSrc.split('?')[0];
+    const ref2 = document.getElementById('ref2').currentSrc.split('?')[0];
+
+    for (const fit of ['none', 'scale-down']) {
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.sizes = 'auto';
+      img.width = 1;
+      img.height = 1;
+      // On 200x200, green-16x16.png has 16x16 CSS concrete object size under
+      // both 'none' and 'scale-down', whereas the content box is 200x200 (ref2).
+      img.style = `width: 200px; height: 200px; object-fit: ${fit}`;
+      img.srcset = srcsetFor(`post-load-content-box-${fit}-1`, ['', '']);
+      const loaded1 = waitForLoad(t, img);
+      mountInViewport(t, img);
+      await loaded1;
+      assert_equals(baseUrl(img.currentSrc), ref2);
+
+      // Re-selecting after load with a new srcset must still use 200x200 (ref2),
+      // not 16x16 (which would select 50w ref1 at DPR <= 3).
+      const loaded2 = waitForLoad(t, img);
+      img.srcset = srcsetFor(`post-load-content-box-${fit}-2`, ['', '']);
+      await loaded2;
+      assert_equals(baseUrl(img.currentSrc), ref2);
+    }
+
+    // Verify 2D sensitivity in the same test so 1D browsers fail: on 1000x10
+    // with scale-down, post-load re-selection uses content box 1000x10 -> 10px (ref1).
+    const imgNarrow = document.createElement('img');
+    imgNarrow.loading = 'lazy';
+    imgNarrow.sizes = 'auto';
+    imgNarrow.width = 1;
+    imgNarrow.height = 1;
+    imgNarrow.style = 'width: 1000px; height: 10px; object-fit: scale-down';
+    imgNarrow.srcset = srcsetFor('post-load-content-box-narrow-1', ['', '']);
+    const narrowLoaded1 = waitForLoad(t, imgNarrow);
+    mountInViewport(t, imgNarrow);
+    await narrowLoaded1;
+    assert_equals(baseUrl(imgNarrow.currentSrc), ref1);
+
+    const narrowLoaded2 = waitForLoad(t, imgNarrow);
+    imgNarrow.srcset = srcsetFor('post-load-content-box-narrow-2', ['', '']);
+    await narrowLoaded2;
+    assert_equals(baseUrl(imgNarrow.currentSrc), ref1);
+  }, 'Post-load sizes=auto with object-fit none and scale-down uses content box rather than intrinsic concrete object size');
+
+  done();
+}
+</script>

@@ -1,0 +1,107 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Link headers preload images with 2D imagesizes and h descriptors using normative source selection</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#process-link-headers">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#select-an-image-source-from-a-source-set">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/images.html#normalise-the-source-densities">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
+<body>
+<script>
+const dpr = window.devicePixelRatio;
+
+const headerGroups = [
+  [
+    "resources/square.png?from-2d-header&base1",
+    "resources/square.png?from-2d-header&cover-0.5x",
+    "resources/square.png?from-2d-header&cover-1x",
+    "resources/square.png?from-2d-header&cover-2x",
+    "resources/square.png?from-2d-header&cover-4x",
+    "resources/square.png?from-2d-header&cover-8x",
+  ],
+  [
+    "resources/square.png?from-2d-header&base2",
+    "resources/square.png?from-2d-header&contain-0.5x",
+    "resources/square.png?from-2d-header&contain-1x",
+    "resources/square.png?from-2d-header&contain-2x",
+    "resources/square.png?from-2d-header&contain-4x",
+    "resources/square.png?from-2d-header&contain-8x",
+  ],
+  [
+    "resources/square.png?from-2d-header&base3",
+    "resources/square.png?from-2d-header&dup-first",
+    "resources/square.png?from-2d-header&dup-second",
+    "resources/square.png?from-2d-header&dup-2x",
+    "resources/square.png?from-2d-header&dup-4x",
+    "resources/square.png?from-2d-header&dup-8x",
+  ],
+  [
+    "resources/square.png?from-2d-header&base4",
+    "resources/square.png?from-2d-header&wonly-0.5x",
+    "resources/square.png?from-2d-header&wonly-1x",
+    "resources/square.png?from-2d-header&wonly-2x",
+    "resources/square.png?from-2d-header&wonly-4x",
+    "resources/square.png?from-2d-header&wonly-8x",
+  ],
+];
+
+const urls = headerGroups.flat();
+const expected = new Map(urls.map(u => [u, 0]));
+
+if (dpr <= 0.5) {
+  expected.set("resources/square.png?from-2d-header&cover-0.5x", 1);
+  expected.set("resources/square.png?from-2d-header&contain-0.5x", 1);
+  expected.set("resources/square.png?from-2d-header&wonly-0.5x", 1);
+} else if (dpr <= 1) {
+  expected.set("resources/square.png?from-2d-header&cover-1x", 1);
+  expected.set("resources/square.png?from-2d-header&contain-1x", 1);
+  expected.set("resources/square.png?from-2d-header&wonly-1x", 1);
+} else if (dpr <= 2) {
+  expected.set("resources/square.png?from-2d-header&cover-2x", 1);
+  expected.set("resources/square.png?from-2d-header&contain-2x", 1);
+  expected.set("resources/square.png?from-2d-header&wonly-2x", 1);
+} else if (dpr <= 4) {
+  expected.set("resources/square.png?from-2d-header&cover-4x", 1);
+  expected.set("resources/square.png?from-2d-header&contain-4x", 1);
+  expected.set("resources/square.png?from-2d-header&wonly-4x", 1);
+} else {
+  expected.set("resources/square.png?from-2d-header&cover-8x", 1);
+  expected.set("resources/square.png?from-2d-header&contain-8x", 1);
+  expected.set("resources/square.png?from-2d-header&wonly-8x", 1);
+}
+
+if (dpr <= 1) {
+  expected.set("resources/square.png?from-2d-header&dup-first", 1);
+} else if (dpr <= 2) {
+  expected.set("resources/square.png?from-2d-header&dup-2x", 1);
+} else if (dpr <= 4) {
+  expected.set("resources/square.png?from-2d-header&dup-4x", 1);
+} else {
+  expected.set("resources/square.png?from-2d-header&dup-8x", 1);
+}
+
+promise_test(async t => {
+  await new Promise(resolve => {
+    if (document.readyState === "complete") {
+      resolve();
+    } else {
+      window.addEventListener("load", resolve, { once: true });
+    }
+  });
+  verifyPreloadAndRTSupport();
+
+  // Wait until each Link header has preloaded at least one candidate so both
+  // passing and failing browsers finish immediately without hitting step_wait's timeout.
+  await t.step_wait(() => {
+    return headerGroups.every(group => group.some(u => numberOfResourceTimingEntries(u) >= 1));
+  }, "all Link header preloads completed", 5000, 50);
+
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  for (const [url, count] of expected) {
+    verifyNumberOfResourceTimingEntries(url, count);
+  }
+}, "Link header rel=preload with 2D imagesizes and srcset h descriptors selects the normative image candidate");
+</script>
+</body>

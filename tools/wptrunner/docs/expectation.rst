@@ -274,6 +274,24 @@ e.g. ``--log-wptreport=wptreport.json``.
                        intermittent statuses that did not occur in the
                        specified log files are removed from the list.
 
+--include PREFIX  Only update expectations for tests whose URL starts
+                  with ``PREFIX``. May be given more than once.
+
+--include-file FILE  Like ``--include``, reading one prefix per line
+                     from ``FILE``.
+
+--exclude PREFIX  Don't update expectations for tests whose URL starts
+                  with ``PREFIX``. May be given more than once.
+
+--exclude-file FILE  Like ``--exclude``, reading one prefix per line
+                     from ``FILE``.
+
+--include-manifest FILE  Only update expectations for the tests included
+                         by the include manifest ``FILE``.
+
+These select tests in the same way as the options of the same name to
+``wpt run``. Results in the logs for any other tests are ignored.
+
 Property Configuration
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -331,6 +349,11 @@ Add expectation data for some new tests that are expected to be
 platform-independent::
 
   wpt update-expectations tests.log
+
+Update only the expectations for the CSS tests in the results of a
+full run::
+
+  wpt update-expectations --include /css/ tests.log
 
 Why a Custom Format?
 --------------------

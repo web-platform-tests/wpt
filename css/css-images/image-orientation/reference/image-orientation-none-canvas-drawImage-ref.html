@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Images Module Level 3: image-orientation: none in canvas</title>
+<link rel="author" title="Said Abou-Hallawa" href="mailto:sabouhallawa@apple.com">
+<link rel="help" href="https://drafts.csswg.org/css-images-3/#propdef-image-orientation">
+<style>
+    body {
+        overflow: hidden;
+    }
+    div {
+        display: inline-block;
+        width: 100px;
+        vertical-align: top;
+    }
+    img {
+        display: none;
+    }
+</style>
+<script>
+    function runTest() {
+        let image = document.querySelector("img");
+        let canvases = document.querySelectorAll("canvas");
+        for (let i = 0; i < canvases.length; i++) {
+            let canvas = canvases[i];
+            canvas.width = image.width;
+            canvas.height = image.height;
+            let context = canvas.getContext("2d");
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        }
+    }
+</script>
+</head>
+<body onload="runTest()">
+    <p>CanvasRenderingContext2D.drawImage should not rotate images respecting
+       their EXIF orientation because image-orientation: none is specified.</p>
+    <div><img src="../support/exif-orientation-1-ul.jpg"/><canvas></canvas></div>
+    <div><canvas></canvas></div>
+    <div><canvas></canvas></div>
+    <div><canvas></canvas></div>
+    <div><canvas></canvas></div>
+    <div><canvas></canvas></div>
+    <div><canvas></canvas></div>
+    <div><canvas></canvas></div>
+    <div><canvas></canvas></div>
+</body>
+</html>

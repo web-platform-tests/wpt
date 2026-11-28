@@ -66,7 +66,7 @@ promise_test(async t => {
   const WT_CODE = 139;
   const HTTP_CODE = webtransport_code_to_http_code(WT_CODE);
   await writable.abort(
-      new WebTransportError({streamErrorCode: WT_CODE}));
+      new WebTransportError('', {streamErrorCode: WT_CODE}));
 
   const info = await query_stream_close_info(id);
 
@@ -90,7 +90,7 @@ promise_test(async t => {
   const WT_CODE = 52;
   const HTTP_CODE = webtransport_code_to_http_code(WT_CODE);
   await writer.abort(
-      new WebTransportError({streamErrorCode: WT_CODE}));
+      new WebTransportError('', {streamErrorCode: WT_CODE}));
 
   const info = await query_stream_close_info(id);
 
@@ -110,7 +110,7 @@ promise_test(async t => {
   const WT_CODE = 95;
   const HTTP_CODE = webtransport_code_to_http_code(WT_CODE);
   await writable.abort(
-      new WebTransportError({streamErrorCode: WT_CODE}));
+      new WebTransportError('', {streamErrorCode: WT_CODE}));
 
   const info = await query_stream_close_info(id);
 
@@ -133,7 +133,7 @@ promise_test(async t => {
 
   // We use a large chunk so that sending the FIN signal takes time.
   const chunk = new Uint8Array(64 * 1024);
-  const e = new WebTransportError({streamErrorCode: WT_CODE});
+  const e = new WebTransportError('', {streamErrorCode: WT_CODE});
   // Write a chunk, close the stream, and then abort the stream immediately to
   // abort the closing operation.
   // TODO: Check that the abort promise is correctly rejected/resolved based on

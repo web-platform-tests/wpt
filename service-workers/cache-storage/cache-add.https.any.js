@@ -1,6 +1,7 @@
 // META: title=Cache.add and Cache.addAll
 // META: global=window,worker
 // META: script=/common/get-host-info.sub.js
+// META: script=/common/utils.js
 // META: script=./resources/test-helpers.js
 // META: timeout=long
 
@@ -156,6 +157,30 @@ cache_test(function(cache, test) {
       cache.addAll(urls),
       'Cache.addAll should throw TypeError for an undefined argument.');
   }, 'Cache.addAll with a mix of valid and undefined arguments');
+
+for (const [invalidURL, description] of [
+  ['https://[invalid', 'a malformed URL'],
+  ['data:text/plain,not-http', 'a non-HTTP(S) URL'],
+]) {
+  cache_test(async (cache, test) => {
+    const key = token();
+    const controlKey = token();
+    const stashURL = '/fetch/api/resources/stash-';
+    const recordRequest = key => `${stashURL}put.py?key=${key}&value=received`;
+    const readRecord = async key => {
+      const response = await fetch(`${stashURL}take.py?key=${key}`);
+      assert_true(response.ok, 'The stash read should succeed');
+      return response.json();
+    };
+
+    await promise_rejects_js(test, TypeError, cache.addAll([recordRequest(key), invalidURL]));
+
+    // Use a successful batch to check that addAll() requests reach the stash.
+    await cache.addAll([recordRequest(controlKey)]);
+    assert_equals(await readRecord(controlKey), 'received', 'The server should receive the control request');
+    assert_equals(await readRecord(key), null, 'The server should not receive the first request from the rejected batch');
+  }, `Cache.addAll does not fetch earlier requests when a later input is ${description}`);
+}
 
 cache_test(function(cache) {
     return cache.addAll([])

@@ -66,6 +66,37 @@ function define_custom_element_in_window(window, name, observedAttributes) {
     };
 }
 
+function define_customized_built_in_element_in_window(window, name, observedAttributes) {
+    let log = [];
+
+    class CustomElement extends window.HTMLParagraphElement {
+        constructor() {
+            super();
+            log.push(create_constructor_log(this));
+        }
+        attributeChangedCallback(...args) {
+            log.push(create_attribute_changed_callback_log(this, ...args));
+        }
+        connectedCallback() { log.push(create_connected_callback_log(this)); }
+        disconnectedCallback() { log.push(create_disconnected_callback_log(this)); }
+        adoptedCallback(oldDocument, newDocument) { log.push({type: 'adopted', element: this, oldDocument: oldDocument, newDocument: newDocument}); }
+    }
+    CustomElement.observedAttributes = observedAttributes;
+
+    window.customElements.define(name, CustomElement, { extends: 'p' });
+
+    return {
+        name: name,
+        class: CustomElement,
+        takeLog: function () {
+            let currentLog = log; log = [];
+            currentLog.types = () => currentLog.map((entry) => entry.type);
+            currentLog.last = () => currentLog[currentLog.length - 1];
+            return currentLog;
+        }
+    };
+}
+
 function create_constructor_log(element) {
     return {type: 'constructed', element: element};
 }

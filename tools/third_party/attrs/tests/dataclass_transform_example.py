@@ -15,7 +15,6 @@ reveal_type(Define.__init__)  # noqa: F821
 
 @attr.define()
 class DefineConverter:
-    # mypy plugin adapts the "int" method signature, pyright does not
     with_converter: int = attr.field(converter=int)
 
 

@@ -31,7 +31,13 @@ class Point:
 pt = Point.from_row(row)
 ```
 
-Now you can instantiate `Point`s without creating fake row objects in your tests and you can have as many smart creation helpers as you want, in case more data sources appear.
+This is sometimes called a *named constructor* or a *factory method*.
+
+Now, you can instantiate `Point`s without creating fake row objects in your tests.
+You can also have as many smart creation helpers as you want.
+This flexibility is useful because additional data sources tend to appear over time.
+
+---
 
 For similar reasons, we strongly discourage from patterns like:
 
@@ -44,12 +50,15 @@ Try to design your classes in a way that is clean and convenient to use -- not b
 The database format can change anytime and you're stuck with a bad class design that is hard to change.
 Embrace functions and classmethods as a filter between reality and what's best for you to work with.
 
-:::{warning}
+:::{important}
 While *attrs*'s initialization concepts (including the following sections about validators and converters) are powerful, they are **not** intended to replace a fully-featured serialization or validation system.
 
 We want to help you to write a `__init__` that you'd write by hand, but with less boilerplate.
 
 If you look for powerful-yet-unintrusive serialization and validation for your *attrs* classes, have a look at our sibling project [*cattrs*](https://catt.rs/) or our [third-party extensions](https://github.com/python-attrs/attrs/wiki/Extensions-to-attrs).
+
+This separation of creating classes and serializing them is a conscious design decision.
+We don't think that your business model and your serialization format should be coupled.
 :::
 
 (private-attributes)=
@@ -57,20 +66,23 @@ If you look for powerful-yet-unintrusive serialization and validation for your *
 ## Private Attributes and Aliases
 
 One thing people tend to find confusing is the treatment of private attributes that start with an underscore.
-*attrs* follows the doctrine that [there is no such thing as a private argument](https://github.com/hynek/characteristic/issues/6) and strips the underscores from the name when writing the `__init__` method signature:
+Although there is [a convention](https://docs.python.org/3/tutorial/classes.html#tut-private) that members of an object that start with an underscore should be treated as private, consider that a core feature of *attrs* is to automatically create an `__init__` method whose arguments correspond to the members.
+There is no corresponding convention for private arguments: the entire signature of a function is its public interface to be used by callers.
+
+However, it is sometimes useful to accept a public argument when an object is constructed, but treat that attribute as private after the object is created, perhaps to maintain some invariant.
+As a convenience for this use case, the default behavior of *attrs* is that if you specify a member that starts with an underscore, it will strip the underscore from the name when it creates the `__init__` method signature:
 
 ```{doctest}
 >>> import inspect
 >>> from attrs import define
 >>> @define
-... class C:
-...    _x: int
->>> inspect.signature(C.__init__)
-<Signature (self, x: int) -> None>
+... class FileDescriptor:
+...    _fd: int
+>>> inspect.signature(FileDescriptor.__init__)
+<Signature (self, fd: int) -> None>
 ```
 
-There really isn't a right or wrong, it's a matter of taste.
-But it's important to be aware of it because it can lead to surprising syntax errors:
+Even if you're not using this feature, it's important to be aware of it because it can lead to surprising syntax errors:
 
 ```{doctest}
 >>> @define
@@ -83,6 +95,7 @@ SyntaxError: invalid syntax
 
 In this case a valid attribute name `_1` got transformed into an invalid argument name `1`.
 
+Whether this feature is useful to you is a matter of taste.
 If your taste differs, you can use the *alias* argument to {func}`attrs.field` to explicitly set the argument name.
 This can be used to override private attribute handling, or make other arbitrary changes to `__init__` argument names.
 
@@ -92,8 +105,9 @@ This can be used to override private attribute handling, or make other arbitrary
 ... class C:
 ...    _x: int = field(alias="_x")
 ...    y: int = field(alias="distasteful_y")
+...    _1: int = field(alias="underscore1")
 >>> inspect.signature(C.__init__)
-<Signature (self, _x: int, distasteful_y: int) -> None>
+<Signature (self, _x: int, distasteful_y: int, underscore1: int) -> None>
 ```
 
 (defaults)=
@@ -122,7 +136,7 @@ C(a=42, b=[], c=[], d={})
 
 It's important that the decorated method -- or any other method or property! -- doesn't have the same name as the attribute, otherwise it would overwrite the attribute definition.
 
-Please note that as with function and method signatures, `default=[]` will *not* do what you may think it might do:
+Similar to the [common gotcha with mutable default arguments](https://docs.python-guide.org/writing/gotchas/#mutable-default-arguments), `default=[]` will *not* do what you may think it might do:
 
 ```{doctest}
 >>> @define
@@ -189,7 +203,7 @@ Again, it's important that the decorated method doesn't have the same name as th
 
 ### Callables
 
-If you want to re-use your validators, you should have a look at the `validator` argument to {func}`attrs.field`.
+If you want to reuse your validators, you should have a look at the `validator` argument to {func}`attrs.field`.
 
 It takes either a callable or a list of callables (usually functions) and treats them as validators that receive the same arguments as with the decorator approach.
 Also as with the decorator approach, they are passed as *positional arguments* so you can name them however you want.
@@ -259,7 +273,7 @@ C(x=128)
 >>> C("128")
 Traceback (most recent call last):
    ...
-TypeError: ("'x' must be <class 'int'> (got '128' that is a <class 'str'>).", Attribute(name='x', default=NOTHING, validator=[<instance_of validator for type <class 'int'>>, <function fits_byte at 0x10fd7a0d0>], repr=True, cmp=True, hash=True, init=True, metadata=mappingproxy({}), type=None, converter=one), <class 'int'>, '128')
+TypeError: ("'x' must be <class 'int'> (got '128' that is a <class 'str'>).", Attribute(name='x', default=NOTHING, validator=[<instance_of validator for type <class 'int'>>, <function fits_byte at 0x10fd7a0d0>], repr=True, cmp=True, hash=True, init=True, metadata=mappingproxy({}), type=None, converter=None), <class 'int'>, '128')
 >>> C(256)
 Traceback (most recent call last):
    ...
@@ -352,6 +366,24 @@ A converter will override an explicit type annotation or `type` argument.
 {'return': None, 'x': <class 'str'>}
 ```
 
+If you need more control over the conversion process, you can wrap the converter with a {class}`attrs.Converter` and ask for the instance and/or the field that are being initialized:
+
+```{doctest}
+>>> def complicated(value, self_, field):
+...     return int(value) * self_.factor + field.metadata["offset"]
+>>> @define
+... class C:
+...     factor = 5  # not an *attrs* field
+...     x = field(
+...         metadata={"offset": 200},
+...         converter=attrs.Converter(
+...             complicated,
+...             takes_self=True, takes_field=True
+...     ))
+>>> C("42")
+C(x=410)
+```
+
 
 ## Hooking Yourself Into Initialization
 
@@ -367,7 +399,7 @@ For that purpose, *attrs* offers the following options:
 - `__attrs_post_init__` is automatically detected and run *after* *attrs* is done initializing your instance.
   This is useful if you want to derive some attribute from others or perform some kind of validation over the whole instance.
 
-- `__attrs_init__` is written and attached to your class *instead* of `__init__`, if *attrs* is told to not write one (i.e. `init=False` or a combination of `auto_detect=True` and a custom `__init__`).
+- `__attrs_init__` is written and attached to your class *instead* of `__init__`, if *attrs* is told to not write one (when `init=False` or a by a combination of `auto_detect=True` and a custom `__init__`).
   This is useful if you want full control over the initialization process, but don't want to set the attributes by hand.
 
 
@@ -386,6 +418,13 @@ C(x=42)
 ```
 
 If you need more control, use the custom init approach described next.
+
+:::{warning}
+You never need to use `super()` with *attrs* classes that inherit from other *attrs* classes.
+Each *attrs* class implements an `__init__` based on its own fields and those of all its base classes.
+
+You only need this escape hatch when subclassing non-*attrs* classes.
+:::
 
 
 ### Custom Init
@@ -437,7 +476,7 @@ attrs.exceptions.FrozenInstanceError: can't set attribute
 If you need to set attributes on a frozen class, you'll have to resort to the [same trick](how-frozen) as *attrs* and use {meth}`object.__setattr__`:
 
 ```{doctest}
->>> @define
+>>> @frozen
 ... class Frozen:
 ...     x: int
 ...     y: int = field(init=False)
@@ -512,3 +551,38 @@ class APIClient:
 ```
 
 This makes the class more testable.
+
+(init-subclass)=
+
+## *attrs* and `__init_subclass__`
+
+{meth}`object.__init_subclass__` is a special method that is called when a subclass of the class that defined it is created.
+
+For example:
+
+```{doctest}
+>>> class Base:
+...    @classmethod
+...    def __init_subclass__(cls):
+...        print(f"Base has been subclassed by {cls}.")
+>>> class Derived(Base):
+...    pass
+Base has been subclassed by <class 'Derived'>.
+```
+
+Unfortunately, a class decorator-based approach like *attrs* (or `dataclasses`) doesn't play well with `__init_subclass__`.
+With {term}`dict classes`, it is run *before* the class has been processed by *attrs* and in the case of {term}`slotted classes`, where *attrs* has to *replace* the original class, `__init_subclass__` is called *twice*: once for the original class and once for the *attrs* class.
+
+To alleviate this, *attrs* provides `__attrs_init_subclass__` which is also called once the class is done assembling.
+The base class doesn't even have to be an *attrs* class:
+
+```{doctest}
+>>> class Base:
+...    @classmethod
+...    def __attrs_init_subclass__(cls):
+...        print(f"Base has been subclassed by attrs {cls}.")
+>>> @define
+... class Derived(Base):
+...    pass
+Base has been subclassed by attrs <class 'Derived'>.
+```

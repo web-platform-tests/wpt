@@ -6,7 +6,7 @@ It's a tuple of {class}`attrs.Attribute` carrying metadata about each attribute.
 So it is fairly simple to build your own decorators on top of *attrs*:
 
 ```{doctest}
->>> from attr import define
+>>> from attrs import define
 >>> def print_attrs(cls):
 ...     print(cls.__attrs_attrs__)
 ...     return cls
@@ -50,8 +50,8 @@ Another common use case is to overwrite *attrs*'s defaults.
 
 ### Mypy
 
-Unfortunately, decorator wrapping currently [confuses](https://github.com/python/mypy/issues/5406) mypy's *attrs* plugin.
-At the moment, the best workaround is to hold your nose, write a fake *Mypy* plugin, and mutate a bunch of global variables:
+Unfortunately, decorator wrapping currently [confuses](https://github.com/python/mypy/issues/5406) Mypy's *attrs* plugin.
+At the moment, the best workaround is to hold your nose, write a fake Mypy plugin, and mutate a bunch of global variables:
 
 ```python
 from mypy.plugin import Plugin
@@ -79,7 +79,7 @@ def plugin(version):
     return MyPlugin
 ```
 
-Then tell *Mypy* about your plugin using your project's `mypy.ini`:
+Then tell Mypy about your plugin using your project's `mypy.ini`:
 
 ```ini
 [mypy]
@@ -87,21 +87,21 @@ plugins=<path to file>
 ```
 
 :::{warning}
-Please note that it is currently *impossible* to let mypy know that you've changed defaults like *eq* or *order*.
-You can only use this trick to tell *Mypy* that a class is actually an *attrs* class.
+Please note that it is currently *impossible* to let Mypy know that you've changed defaults like *eq* or *order*.
+You can only use this trick to tell Mypy that a class is actually an *attrs* class.
 :::
 
 
 ### Pyright
 
-Generic decorator wrapping is supported in [*Pyright*](https://github.com/microsoft/pyright) via `typing.dataclass_transform` / {pep}`689`.
+Generic decorator wrapping is supported in [Pyright](https://github.com/microsoft/pyright) via `typing.dataclass_transform` / {pep}`681`.
 
 For a custom wrapping of the form:
 
 ```
-@typing.dataclass_transform(field_specifiers=(attr.attrib, attr.field))
+@typing.dataclass_transform(field_specifiers=(attr.attrib, attrs.field))
 def custom_define(f):
-    return attr.define(f)
+    return attrs.define(f)
 ```
 
 ## Types
@@ -109,16 +109,16 @@ def custom_define(f):
 *attrs* offers two ways of attaching type information to attributes:
 
 - {pep}`526` annotations,
-- and the *type* argument to {func}`attr.ib`.
+- and the *type* argument to {func}`attr.ib` / {func}`attrs.field`.
 
 This information is available to you:
 
 ```{doctest}
->>> from attr import attrib, define, field, fields
+>>> from attrs import define, field, fields
 >>> @define
 ... class C:
 ...     x: int = field()
-...     y = attrib(type=str)
+...     y = field(type=str)
 >>> fields(C).x.type
 <class 'int'>
 >>> fields(C).y.type
@@ -126,6 +126,10 @@ This information is available to you:
 ```
 
 Currently, *attrs* doesn't do anything with this information but it's very useful if you'd like to write your own validators or serializers!
+
+Originally, we didn't add the *type* argument to the new {func}`attrs.field` API, because type annotations are the preferred way.
+But we reintroduced it later, so `field` can be used with the {func}`attrs.make_class` function.
+We strongly discourage the use of the *type* parameter outside of {func}`attrs.make_class`.
 
 (extending-metadata)=
 
@@ -214,7 +218,7 @@ For example, let's assume that you really don't like floats:
 Data(a=42, c='spam')
 ```
 
-A more realistic example would be to automatically convert data that you, e.g., load from JSON:
+A more realistic example would be to automatically convert data that you, for example, load from JSON:
 
 ```{doctest}
 >>> from datetime import datetime

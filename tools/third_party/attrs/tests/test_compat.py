@@ -2,6 +2,8 @@
 
 import types
 
+from typing import Protocol
+
 import pytest
 
 import attr
@@ -59,6 +61,5 @@ def test_attrsinstance_subclass_protocol():
     It's possible to subclass AttrsInstance and Protocol at once.
     """
 
-    class Foo(attr.AttrsInstance, attr._compat.Protocol):
-        def attribute(self) -> int:
-            ...
+    class Foo(attr.AttrsInstance, Protocol):
+        def attribute(self) -> int: ...

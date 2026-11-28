@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>AVIF: a layered image item with 2 layers renders its final layer</title>
+<link rel="help" href="https://aomediacodec.github.io/av1-avif/#layered-image-item">
+<link rel="match" href="layered-final-layer-green-ref.html">
+<!-- resources/layers-2.avif is a 100x100 layered (progressively renderable)
+     image item: 2 AV1 frames of the same picture concatenated in one item,
+     coloured blue then green, described by an a1lx property and with no
+     lsel selecting a particular layer.
+
+     A decoder that ignores the layering renders the last layer, and a decoder
+     that renders the layers as they arrive must still end on the last layer,
+     so either way the finished image is green. -->
+<img src="resources/layers-2.avif">

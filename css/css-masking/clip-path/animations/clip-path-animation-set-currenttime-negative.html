@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
+<title>Clip-Path Animations Shows Underlying Value When Current Time is Set Negative After Starting</title>
+<link rel="author" title="clchambers"  href="mailto:clchambers@microsoft.com">
 <link rel="help" href="https://drafts.csswg.org/css-shapes-1/#basic-shape-interpolation">
+<link rel="help" href="https://crbug.com/581870108">
 <link rel="match" href="clip-path-animation-set-currenttime-ref.html">
 <style>
   .container {
@@ -23,17 +26,27 @@
   }
 </style>
 <script src="/common/reftest-wait.js"></script>
+<script src="/web-animations/testcommon.js"></script>
 <script src="/web-animations/resources/timing-utils.js"></script>
 
 <body>
   <div class="container">
   </div>
-
   <script>
-    let animation = document.getAnimations()[0];
-    animation.ready.then(() => {
-      // With fill-mode: none, any negative time should return to the previous non-animated style.
-      animation.currentTime = -1000;
+    window.addEventListener('load', async () => {
+      await waitForCompositorReady();
+      let animation = document.querySelector(".container").getAnimations()[0];
+      await animation.ready;
+
+      // Let the animation make progress first
+      await waitForAnimationTime(animation, 100);
+
+      // Setting a negative currentTime means that this animation is no longer in effect.
+      // Because fill mode is none, the underlying value should be used instead.
+      await runAndWaitForFrameUpdate(() => {
+        animation.currentTime = -1000;
+      });
+
       requestAnimationFrame(takeScreenshot);
     });
   </script>

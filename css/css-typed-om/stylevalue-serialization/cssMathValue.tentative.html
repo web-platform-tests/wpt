@@ -142,4 +142,15 @@ for (const {value, cssText, description} of gTestCases) {
   }, description + ' serializes correctly');
 }
 
+test(() => {
+    for (const className of [CSSMathInvert, CSSMathNegate, CSSMathProduct, CSSMathSum, CSSMathMin, CSSMathMax]) {
+        let value = new CSSUnitValue(1, 'px');
+        for (let i = 0; i < 100000; i++) { value = new className(value); }
+        value = value.toString();
+    }
+    let value = new CSSMathClamp(1, 2, 3);
+    for (let i = 0; i < 100000; i++) { value = new CSSMathClamp(1, value, 3); }
+    value = value.toString();
+}, "Deeply nested operator serialization does not crash");
+
 </script>

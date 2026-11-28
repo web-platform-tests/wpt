@@ -131,26 +131,24 @@ test(t => {
   const div = addDiv(t);
   const anim = div.animate(
     {
-      marginInline: '100px',
-      margin: '200px',
+      borderBlockStart: '100px solid black',
+      borderTop: '200px solid black',
     },
     { duration: 1, easing: 'step-start' }
   );
-  assert_equals(getComputedStyle(div).marginLeft, '200px');
-  assert_equals(getComputedStyle(div).marginRight, '200px');
+  assert_equals(getComputedStyle(div).borderTopWidth, '200px');
 }, 'Physical shorthands win over logical shorthands');
 
 test(t => {
   const div = addDiv(t);
   const anim = div.animate(
     {
-      marginInline: '100px',
-      margin: 'var(--200px)',
+      borderBlockStart: '100px solid black',
+      borderTop: 'var(--200px) solid black',
     },
     { duration: 1, easing: 'step-start' }
   );
-  assert_equals(getComputedStyle(div).marginLeft, '200px');
-  assert_equals(getComputedStyle(div).marginRight, '200px');
+  assert_equals(getComputedStyle(div).borderTopWidth, '200px');
 }, 'Physical shorthands using variables win over logical shorthands');
 
 test(t => {

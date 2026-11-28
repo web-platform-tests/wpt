@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/autofill_helpers.js"></script>
+</head>
+<body>
+<form id="test_form">
+  <h2>Delivery Address</h2>
+  <div>
+    <label for="name">Name:</label>
+    <input
+      name="shipping-name"
+      id="name"
+      type="text"
+      autocomplete="shipping name"
+    />
+  </div>
+  <div>
+    <label for="email">E-Mail:</label>
+    <input
+      name="shipping-email"
+      id="email"
+      type="email"
+      autocomplete="shipping email"
+    />
+  </div>
+  <div>
+    <label for="phone">Phone:</label>
+    <input
+      name="shipping-phone"
+      id="phone"
+      type="tel"
+      autocomplete="shipping tel"
+    />
+  </div>
+  <div>
+    <label for="street">Street:</label>
+    <input
+      name="shipping-street"
+      id="street"
+      type="text"
+      autocomplete="shipping address-line1"
+    />
+  </div>
+  <div>
+    <label for="city">City:</label>
+    <input
+      name="shipping-city"
+      id="city"
+      type="text"
+      autocomplete="shipping address-level2"
+    />
+  </div>
+  <div>
+    <label for="postalcode">Postal Code:</label>
+    <input
+      name="shipping-postalcode"
+      id="postalcode"
+      type="text"
+      autocomplete="shipping postal-code"
+    />
+  </div>
+  <div>
+    <label for="state">Province/State:</label>
+    <input
+      name="shipping-state"
+      id="state"
+      type="text"
+      autocomplete="shipping address-level1"
+    />
+  </div>
+  <div>
+    <label for="country">Country:</label>
+    <input
+      name="shipping-country"
+      id="country"
+      type="text"
+      autocomplete="shipping country"
+    />
+  </div>
+</form>
+<script>
+  function set_element_value(id, value) {
+    document.getElementById(id).value = value;
+  }
+  function assertions() {
+    assert_element_has_value("name", "Santa Claus");
+    assert_element_has_value("email", "test@test.com");
+    assert_element_has_value("phone", "132 132 1234");
+    assert_element_has_value("street", "1 Main St");
+    assert_element_has_value("city", "North Pole");
+    assert_element_has_value("postalcode", "H0H 0H0");
+    assert_element_has_value("state", "ON");
+    assert_element_has_value("country", "CA");
+  }
+  async function setupTest() {
+    const form = create_form_for_data({"name": "Santa Claus", "address": "1 Main St", "city": "North Pole", "postal": "H0H 0H0", "state": "ON", "country": "CA", "tel": "132 132 1234", "email": "test@test.com"});
+    await test_driver.save_to_auto_fill(form);
+  }
+
+  // Test regular autofill of a full delivery address form starting at the top:
+  await promise_test(async t => {
+    if (!window.test_driver) {
+      return;
+    }
+
+    await setupTest();
+
+    await test_driver.get_autofill_suggestions(document.getElementById("test_form"), document.getElementById("name"));
+
+    assertions();
+  });
+
+  // Test autofill of a full delivery address form not starting at the top:
+  await promise_test(async t => {
+    if (!window.test_driver) {
+      return;
+    }
+
+    await setupTest();
+
+    await test_driver.get_autofill_suggestions(document.getElementById("test_form"), document.getElementById("street"));
+
+    assertions();
+  });
+
+
+  // Test autofill of a full previously filled address form:
+  await promise_test(async t => {
+    if (!window.test_driver) {
+      return;
+    }
+
+    await setupTest();
+
+    set_element_value("email", "test2@test.com");
+    set_element_value("phone", "999 999 9999");
+    set_element_value("street", "2 Main St");
+    set_element_value("city", "South Pole");
+    set_element_value("postalcode", "0H0 H0H");
+    set_element_value("state", "TX");
+    set_element_value("country", "TX");sd
+
+    await test_driver.get_autofill_suggestions(document.getElementById("test_form"), document.getElementById("name"));
+
+    assertions();
+
+    assert_element_has_value("name", "Santa Claus");
+    assert_element_has_value("email", "test2@test.com");
+    assert_element_has_value("phone", "999 999 9999");
+    assert_element_has_value("street", "2 Main St");
+    assert_element_has_value("city", "South Pole");
+    assert_element_has_value("postalcode", "0H0 H0H");
+    assert_element_has_value("state", "TX");
+    assert_element_has_value("country", "TX");
+  });
+</script>
+
+</body>

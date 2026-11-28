@@ -14,7 +14,7 @@ function wait_for_message_from_frame(frame) {
   return new Promise(resolve => {
     const message_handler = e => {
       if (e.source === frame.contentWindow) {
-        frame.removeEventListener('message', message_handler);
+        window.removeEventListener('message', message_handler);
         resolve(e.data);
       }
     };
@@ -55,9 +55,15 @@ async function test_client_url_helper(
   t.add_cleanup(_ => registration.unregister());
   await wait_for_state(t, registration.installing, 'activated');
 
-  const frame = await with_iframe(IFRAME_URL);
+  // The frame posts its first 'done' from an inline script while it is
+  // parsed, which can be before its load event, so listen for it before the
+  // frame starts loading rather than after with_iframe() resolves.
+  const frame = document.createElement('iframe');
+  frame.src = IFRAME_URL;
+  const first_message = wait_for_message_from_frame(frame);
+  document.body.appendChild(frame);
   t.add_cleanup(_ => frame.remove());
-  const message = await wait_for_message_from_frame(frame);
+  const message = await first_message;
   assert_equals(message, 'done', 'iframe loaded successfully');
 
   for (let navigation_kind_idx = 0;

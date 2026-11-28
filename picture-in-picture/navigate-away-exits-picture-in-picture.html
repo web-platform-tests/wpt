@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Navigating a top-level document away exits Picture-in-Picture</title>
+<meta name="timeout" content="long">
+<link rel="help" href="https://w3c.github.io/picture-in-picture/#unloading-steps">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body></body>
+<script>
+'use strict';
+
+const HELPER = '/picture-in-picture/resources/unload-document-helper.html';
+
+promise_test(async t => {
+  const popup = window.open(HELPER, '_blank');
+  t.add_cleanup(() => popup.close());
+  await t.step_wait(
+      () => popup.location.pathname === HELPER && popup.videoReady,
+      'the popup has loaded the helper document');
+  const video = await popup.videoReady;
+
+  await test_driver.bless('enter Picture-in-Picture from popup', null, popup);
+  const pipWindow = await video.requestPictureInPicture();
+
+  const oldDocument = popup.document;
+  assert_equals(oldDocument.pictureInPictureElement, video,
+                'pictureInPictureElement is set inside the popup document');
+
+  popup.location.href = '/common/blank.html';
+  await t.step_wait(
+      () => popup.document !== oldDocument &&
+            popup.document.readyState === 'complete',
+      'the popup has navigated away');
+
+  await t.step_wait(
+      () => pipWindow.width === 0 && pipWindow.height === 0,
+      'pipWindow.width and pipWindow.height become 0 after the popup ' +
+      'navigates away');
+  assert_equals(oldDocument.pictureInPictureElement, null,
+                'the unloaded document no longer has a pictureInPictureElement');
+  assert_equals(popup.document.pictureInPictureElement, null,
+                'the new popup document has no pictureInPictureElement');
+}, 'Navigating a top-level document away closes its Picture-in-Picture window');
+</script>

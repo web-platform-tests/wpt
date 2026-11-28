@@ -131,6 +131,10 @@ class UnderspecifiedStoragePartitionException(BidiException):
     error_code = "underspecified storage partition"
 
 
+class UnexpectedAlertOpenException(BidiException):
+    error_code = "unexpected alert open"
+
+
 class UnknownCommandException(BidiException):
     error_code = "unknown command"
 

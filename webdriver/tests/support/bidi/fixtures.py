@@ -342,6 +342,26 @@ def wait_for_future_safe(configuration):
 
 
 @pytest.fixture
+def open_user_prompt(bidi_session, subscribe_events, wait_for_event, wait_for_future_safe):
+    """Open a user prompt from a timer so that no command is pending when it
+    opens. Return the browsingContext.userPromptOpened event data."""
+
+    async def open_user_prompt(context, prompt_type="alert", message="test"):
+        await subscribe_events(events=["browsingContext.userPromptOpened"])
+        on_prompt_opened = wait_for_event("browsingContext.userPromptOpened")
+
+        await bidi_session.script.evaluate(
+            expression=f"setTimeout(() => window.{prompt_type}('{message}'), 0)",
+            target=ContextTarget(context["context"]),
+            await_promise=False,
+        )
+
+        return await wait_for_future_safe(on_prompt_opened)
+
+    return open_user_prompt
+
+
+@pytest.fixture
 def current_time(bidi_session, top_context):
     """Get the current time stamp in ms from the remote end.
 

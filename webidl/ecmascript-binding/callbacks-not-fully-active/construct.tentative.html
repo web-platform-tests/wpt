@@ -1,0 +1,54 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Constructing a callback function from a realm that isn't fully active</title>
+<link rel=help href="https://webidl.spec.whatwg.org/#construct-a-callback-function">
+<link rel=help href="https://github.com/whatwg/webidl/issues/993">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=resources/helper.js></script>
+<body>
+<script>
+// Not constructing can throw, which is reported for upgrades.
+setup({allow_uncaught_exception: true});
+
+let counter = 0;
+
+// It extends this window's HTMLElement, since super() uses the custom element
+// registry of HTMLElement's realm.
+function createConstructor(realm) {
+  return realm.callback(
+      '(mark, Base) => class extends Base { constructor() { mark(); super(); } }', HTMLElement);
+}
+
+for (const state of STATES) {
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = createConstructor(realm);
+    await realm.setState(state);
+    const name = `x-construct-${counter++}`;
+    customElements.define(name, callback.value);
+    ignoreExceptions(() => document.createElement(name));
+    assert_called_iff_fully_active(state, callback);
+  }, `createElement(): ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = createConstructor(realm);
+    await realm.setState(state);
+    const name = `x-construct-${counter++}`;
+    document.body.append(document.createElement(name));
+    customElements.define(name, callback.value);
+    assert_called_iff_fully_active(state, callback);
+  }, `Upgrade on define(): ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = createConstructor(realm);
+    await realm.setState(state);
+    const name = `x-construct-${counter++}`;
+    customElements.define(name, callback.value);
+    document.createElement('div').innerHTML = `<${name}></${name}>`;
+    assert_called_iff_fully_active(state, callback);
+  }, `Upgrade from innerHTML: ${state}`);
+}
+</script>

@@ -1,0 +1,109 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Calling a user object's operation from a realm that isn't fully active</title>
+<link rel=help href="https://webidl.spec.whatwg.org/#call-a-user-objects-operation">
+<link rel=help href="https://github.com/whatwg/webidl/issues/993">
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=resources/helper.js></script>
+<body>
+<script>
+function createObject(realm, operation) {
+  return realm.callback(`mark => ({ ${operation}() { mark(); } })`);
+}
+
+// Resolves once a message event has been dispatched to `listener`, if called.
+function postMessageTo(t, listener) {
+  window.addEventListener('message', listener);
+  t.add_cleanup(() => window.removeEventListener('message', listener));
+  return new Promise(resolve => {
+    window.addEventListener('message', resolve, {once: true});
+    window.postMessage('', '*');
+  });
+}
+
+for (const state of STATES) {
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    const target = new EventTarget();
+    target.addEventListener('x', callback.value);
+    target.dispatchEvent(new Event('x'));
+    assert_called_iff_fully_active(state, callback);
+  }, `EventListener function, dispatchEvent(): ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = createObject(realm, 'handleEvent');
+    await realm.setState(state);
+    const target = new EventTarget();
+    target.addEventListener('x', callback.value);
+    target.dispatchEvent(new Event('x'));
+    assert_called_iff_fully_active(state, callback);
+  }, `EventListener object, dispatchEvent(): ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    await postMessageTo(t, callback.value);
+    assert_called_iff_fully_active(state, callback);
+  }, `EventListener function, postMessage(): ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    ignoreExceptions(() => {
+      document.createTreeWalker(document.body, NodeFilter.SHOW_ALL, callback.value).nextNode();
+    });
+    assert_called_iff_fully_active(state, callback);
+  }, `NodeFilter function, TreeWalker: ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = createObject(realm, 'acceptNode');
+    await realm.setState(state);
+    ignoreExceptions(() => {
+      document.createTreeWalker(document.body, NodeFilter.SHOW_ALL, callback.value).nextNode();
+    });
+    assert_called_iff_fully_active(state, callback);
+  }, `NodeFilter object, TreeWalker: ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    ignoreExceptions(() => {
+      document.createNodeIterator(document.body, NodeFilter.SHOW_ALL, callback.value).nextNode();
+    });
+    assert_called_iff_fully_active(state, callback);
+  }, `NodeFilter function, NodeIterator: ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = realm.callback();
+    await realm.setState(state);
+    ignoreExceptions(() => document.evaluate('//x:a', document, callback.value));
+    assert_called_iff_fully_active(state, callback);
+  }, `XPathNSResolver function: ${state}`);
+
+  promise_test(async t => {
+    const realm = await createRealm(t);
+    const callback = createObject(realm, 'lookupNamespaceURI');
+    await realm.setState(state);
+    ignoreExceptions(() => document.evaluate('//x:a', document, callback.value));
+    assert_called_iff_fully_active(state, callback);
+  }, `XPathNSResolver object: ${state}`);
+}
+
+promise_test(async t => {
+  const realm = await createRealm(t);
+  const callback = realm.callback();
+  const dispatched = postMessageTo(t, callback.value);
+  await realm.setState('removed');
+  await dispatched;
+  assert_false(callback.called, 'callback is not called');
+}, 'EventListener function, postMessage() before removal');
+</script>

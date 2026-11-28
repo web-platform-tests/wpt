@@ -1,5 +1,6 @@
 # flake8: noqa
 
+from .autofill import Autofill
 from .bluetooth import Bluetooth
 from .browser import Browser
 from .browsing_context import BrowsingContext

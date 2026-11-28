@@ -247,6 +247,17 @@
     };
     window.test_driver_internal.in_automation = true;
 
+    window.test_driver_internal.bidi.autofill.trigger = function (params) {
+        if (!params?.element) {
+            throw new Error("`element` is required in autofill.trigger");
+        }
+        return create_action("bidi.autofill.trigger", {
+            // Default to the element's window.
+            context: get_context(params.element),
+            ...params
+        });
+    };
+
     window.test_driver_internal.bidi.bluetooth.handle_request_device_prompt =
         function(params) {
         return create_action('bidi.bluetooth.handle_request_device_prompt', {

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<meta name="variant" content="?document-policy=strict-origin-when-cross-origin">
+<meta name="variant" content="?document-policy=no-referrer">
+<meta name="variant" content="?document-policy=same-origin">
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#typedef-request-url-modifier-referrer-policy-modifier">
+<link rel="help" href="https://w3c.github.io/webappsec-referrer-policy/#integration-with-css">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/security-features/resources/common.sub.js"></script>
+<script src="/referrer-policy/css-integration/resources/css-subresource-referrer.js"></script>
+<script>
+// A referrer-policy() request URL modifier can only make the referrer policy
+// stricter than the policy that would apply without the modifier (the style
+// sheet's, or the document's for inline styles), never looser.
+//
+// Each top-level key below sets the document's `<meta name="referrer">` via
+// the `?document-policy=` variant query parameter. Each entry invokes
+// `testCssSubresourceReferrer()` to load a CSS subresource (with or without
+// `url()` request URL modifiers) and assert the `Referer` header received by
+// the server. Modifier-less control cases are paired with the corresponding
+// modifier cases so that failures due to base-policy behavior or unsupported
+// modifier syntax are easy to distinguish.
+const cases = {
+  // Document referrer policy: `strict-origin-when-cross-origin` (the default).
+  'strict-origin-when-cross-origin': [
+    // Control (no modifiers): an external `<link rel="stylesheet">` served with
+    // `Referrer-Policy: no-referrer` loads a cross-origin `background-image`.
+    // The style sheet's `no-referrer` policy applies, so no referrer is sent.
+    {stylesheet: 'external', stylesheet_referrer_policy: 'no-referrer',
+     subresource: 'image', target: 'cross-origin', expected: 'no referrer'},
+    // An external `<link rel="stylesheet">` served with
+    // `Referrer-Policy: no-referrer` loads a cross-origin
+    // `background-image: url(... referrer-policy(unsafe-url))`.
+    // The modifier cannot loosen the style sheet's `no-referrer` policy, so no
+    // referrer is sent.
+    {stylesheet: 'external', stylesheet_referrer_policy: 'no-referrer',
+     subresource: 'image', target: 'cross-origin',
+     modifiers: 'referrer-policy(unsafe-url)', expected: 'no referrer'},
+    // Control (no modifiers): an element's inline `style` attribute loads a
+    // cross-origin `background-image`.
+    // The document's `strict-origin-when-cross-origin` policy applies, so only
+    // the origin is sent.
+    {stylesheet: 'style-attribute', subresource: 'image',
+     target: 'cross-origin', expected: 'the origin'},
+    // An element's inline `style` attribute loads a cross-origin
+    // `background-image: url(... referrer-policy(unsafe-url))`.
+    // The modifier cannot loosen the document's
+    // `strict-origin-when-cross-origin` policy, so only the origin is sent.
+    {stylesheet: 'style-attribute', subresource: 'image',
+     target: 'cross-origin', modifiers: 'referrer-policy(unsafe-url)',
+     expected: 'the origin'},
+  ],
+  // Document referrer policy: `no-referrer`.
+  'no-referrer': [
+    // Control (no modifiers): a `<style>` element's `@font-face` rule loads a
+    // cross-origin font (`@font-face` always uses CORS).
+    // The document's `no-referrer` policy applies, so no referrer is sent.
+    {stylesheet: 'inline', subresource: 'font', target: 'cross-origin',
+     expected: 'no referrer'},
+    // A `<style>` element's `@font-face` rule loads a cross-origin font with
+    // `src: url(... cross-origin(anonymous) referrer-policy(unsafe-url))`.
+    // The modifier cannot loosen the document's `no-referrer` policy, so no
+    // referrer is sent.
+    {stylesheet: 'inline', subresource: 'font', target: 'cross-origin',
+     modifiers: 'cross-origin(anonymous) referrer-policy(unsafe-url)',
+     expected: 'no referrer'},
+    // Control (no modifiers): an element's inline `style` attribute loads a
+    // cross-origin `background-image`.
+    // The document's `no-referrer` policy applies, so no referrer is sent.
+    {stylesheet: 'style-attribute', subresource: 'image',
+     target: 'cross-origin', expected: 'no referrer'},
+    // An element's inline `style` attribute loads a cross-origin
+    // `background-image: url(... referrer-policy(unsafe-url))`.
+    // The modifier cannot loosen the document's `no-referrer` policy, so no
+    // referrer is sent.
+    {stylesheet: 'style-attribute', subresource: 'image',
+     target: 'cross-origin', modifiers: 'referrer-policy(unsafe-url)',
+     expected: 'no referrer'},
+    // Control (no modifiers): a `<style>` element's `@import url(...)` loads a
+    // cross-origin style sheet.
+    // The document's `no-referrer` policy applies, so no referrer is sent.
+    {stylesheet: 'inline', subresource: 'import', target: 'cross-origin',
+     expected: 'no referrer'},
+    // A `<style>` element's `@import url(... referrer-policy(unsafe-url))`
+    // loads a cross-origin style sheet.
+    // The modifier cannot loosen the document's `no-referrer` policy, so no
+    // referrer is sent.
+    {stylesheet: 'inline', subresource: 'import', target: 'cross-origin',
+     modifiers: 'referrer-policy(unsafe-url)', expected: 'no referrer'},
+    // Control (no modifiers): a `<style>` element loads a same-origin SVG
+    // `filter` (without `cross-origin(anonymous)`, SVG filter fetches require
+    // `same-origin` mode).
+    // The document's `no-referrer` policy applies, so no referrer is sent.
+    {stylesheet: 'inline', subresource: 'svg', svg_property: 'filter',
+     target: 'same-origin', expected: 'no referrer'},
+    // A `<style>` element loads a cross-origin SVG filter with
+    // `filter: url(... cross-origin(anonymous) referrer-policy(unsafe-url))`.
+    // The modifier cannot loosen the document's `no-referrer` policy, so no
+    // referrer is sent.
+    {stylesheet: 'inline', subresource: 'svg', svg_property: 'filter',
+     target: 'cross-origin',
+     modifiers: 'cross-origin(anonymous) referrer-policy(unsafe-url)',
+     expected: 'no referrer'},
+  ],
+  // Document referrer policy: `same-origin`.
+  // `same-origin` and `origin` are incomparable: `same-origin` sends no
+  // referrer to cross-origin URLs, while `origin` sends only the origin to
+  // same-origin URLs. The most permissive policy that reveals no more than
+  // either is `no-referrer`.
+  'same-origin': [
+    // Control (no modifiers): a `<style>` element loads a cross-origin
+    // `background-image`.
+    // The document's `same-origin` policy sends no referrer cross-origin.
+    {stylesheet: 'inline', subresource: 'image', target: 'cross-origin',
+     expected: 'no referrer'},
+    // A `<style>` element loads a cross-origin
+    // `background-image: url(... referrer-policy(origin))`.
+    // Restricting `same-origin` by `origin` produces `no-referrer`, so no
+    // referrer is sent (unlike `origin`, which would send the origin).
+    {stylesheet: 'inline', subresource: 'image', target: 'cross-origin',
+     modifiers: 'referrer-policy(origin)', expected: 'no referrer'},
+    // Control (no modifiers): a `<style>` element loads a same-origin
+    // `background-image`.
+    // The document's `same-origin` policy sends the full URL same-origin.
+    {stylesheet: 'inline', subresource: 'image', target: 'same-origin',
+     expected: 'the full URL'},
+    // A `<style>` element loads a same-origin
+    // `background-image: url(... referrer-policy(origin))`.
+    // Restricting `same-origin` by `origin` produces `no-referrer`, so no
+    // referrer is sent (unlike `origin`, which would send the origin, and
+    // `same-origin`, which would send the full URL).
+    {stylesheet: 'inline', subresource: 'image', target: 'same-origin',
+     modifiers: 'referrer-policy(origin)', expected: 'no referrer'},
+  ],
+};
+for (const params of cases[documentReferrerPolicy()]) {
+  testCssSubresourceReferrer(params);
+}
+</script>

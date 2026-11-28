@@ -17,19 +17,25 @@ test(function() {
     // https://webidl.spec.whatwg.org/#abstract-opdef-converttoint
     [[0, 0],
      [-0, 0],
-     [-1, 4294967295],
-     [-100, 4294967196],
+     [-1, 'IndexSizeError'],
+     [-100, 'IndexSizeError'],
      [101, 101],
-     [-2147483648, 2147483648],
+     [-2147483648, 'IndexSizeError'],
      [2147483647, 2147483647],
-     [2147483648, 2147483648],
      [NaN, 0],
      [Infinity, 0],
      [-Infinity, 0]].forEach(function (pair) {
         var input = pair[0];
         var expected = pair[1];
-        region.lines = input;
-        assert_equals(region.lines, expected);
+
+        if (expected === 'IndexSizeError') {
+          assert_throws(expected, function() {
+            region.lines = input;
+          });
+        } else {
+          region.lines = input;
+          assert_equals(region.lines, expected);
+        }
     });
 
 }, document.title + ' script-created region');

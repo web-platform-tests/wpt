@@ -3,6 +3,8 @@ import time
 
 from webdriver.error import NoSuchWindowException
 
+from tests.support.classic.gesture import flush_stale_input
+
 
 @pytest.fixture
 def session_new_window(capabilities, session):
@@ -76,6 +78,9 @@ def release_actions(session):
 
     try:
         session.actions.release()
+        # Release Actions doesn't release a held touch in some WebKit-based
+        # remote ends, see flush_stale_input.
+        flush_stale_input(session)
     except NoSuchWindowException:
         pass
 

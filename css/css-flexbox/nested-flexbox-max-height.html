@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<link rel="author" title="Przemyslaw Gorszkowski" href="mailto:pgorszkowski@igalia.com">
+<link rel="help" href="https://bugs.webkit.org/show_bug.cgi?id=282036">
+
+<link href="support/flexbox.css" rel="stylesheet">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+
+Test passes if only the green square is visible.
+
+<div id="container" class="flexbox column" style="max-height: 100px; height: 100px; width: 100px;">
+    <div class="flexbox column justify-content-center" style="height: 400px; background: green" data-expected-height="100"><div></div></div>
+</div>
+<script>
+checkLayout('#container');
+</script>

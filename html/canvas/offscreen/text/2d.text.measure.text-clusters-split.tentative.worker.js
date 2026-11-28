@@ -43,6 +43,14 @@ t.step(function() {
   // [UAX#29]: https://unicode.org/reports/tr29/
   // [UAX#29] GB9: × (Extend | ZWJ)
   assertClusterIndexes('X\u200DY', [0, 2]);
+  // [UAX#29] GB9c (Unicode 18): InCB=Linker InCB=Extend* × InCB=Consonant.
+  // A preceding consonant is no longer required.
+  assertClusterIndexes('\u094D\u0915', [0]);
+  assertClusterIndexes('\u094D\u0308\u0915', [0]);
+  assertClusterIndexes('\u1B44\u1B13', [0]);
+  assertClusterIndexes('\u1CF5\u0995', [0]);
+  // GB9c does not prevent a break before a non-consonant.
+  assertClusterIndexes('\u094D\u0308X', [0, 2]);
   // [UAX#29] GB11: \p{Extended_Pictographic} Extend* ZWJ × \p{Extended_Pictographic}
   assertClusterIndexes('\u{1FFFD}\u200D\u{1FFFD}', [0]);
   t.done();

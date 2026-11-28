@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Fieldset readonly - which control types are affected</title>
+<link rel="author" title="Teo Eterovic" href="https://github.com/teoeter">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#attr-fieldset-readonly">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#concept-fe-readonly">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id="log"></div>
+<form>
+  <fieldset id=fs readonly>
+    <!-- Input types that support being readonly per spec -->
+    <input type=text id=i_text>
+    <input type=search id=i_search>
+    <input type=url id=i_url>
+    <input type=tel id=i_tel>
+    <input type=email id=i_email>
+    <input type=password id=i_password>
+    <input type=date id=i_date>
+    <input type=month id=i_month>
+    <input type=week id=i_week>
+    <input type=time id=i_time>
+    <input type="datetime-local" id=i_dtl>
+    <input type=number id=i_number>
+    <textarea id=i_ta></textarea>
+
+    <!-- Controls that do NOT support readonly per spec -->
+    <input type=checkbox id=i_checkbox>
+    <input type=radio id=i_radio>
+    <input type=file id=i_file>
+    <input type=submit id=i_submit>
+    <input type=reset id=i_reset>
+    <input type=button id=i_button>
+    <input type=image id=i_image>
+    <input type=range id=i_range>
+    <input type=color id=i_color>
+    <input type=hidden id=i_hidden>
+    <button id=i_btn>click</button>
+    <select id=i_sel><option>a</option></select>
+  </fieldset>
+</form>
+<script>
+  // Per spec, only inputs in states that support readonly, textarea, and FACE
+  // are affected by the readonly fieldset propagation.
+  const affected = ['i_text', 'i_search', 'i_url', 'i_tel', 'i_email', 'i_password',
+                    'i_date', 'i_month', 'i_week', 'i_time', 'i_dtl', 'i_number', 'i_ta'];
+
+  // The IDL readOnly attribute on these inputs reflects their own content
+  // attribute. They have no `readonly` content attribute, and the fieldset
+  // propagation does not apply to these states/types.
+  const unaffected = ['i_checkbox', 'i_radio', 'i_file', 'i_submit', 'i_reset',
+                      'i_button', 'i_image', 'i_range', 'i_color', 'i_hidden'];
+
+  for (const id of affected) {
+    test(function () {
+      assert_true(document.getElementById(id).readOnly,
+        `#${id} should be readonly inside readonly fieldset`);
+    }, `${id.replace('i_', '')} is read-only inside a readonly fieldset`);
+  }
+
+  for (const id of unaffected) {
+    test(function () {
+      // readOnly IDL attribute exists on HTMLInputElement but reflects only its
+      // own content attribute, which we did not set. The fieldset propagation
+      // must not flip it on for these types.
+      assert_false(document.getElementById(id).readOnly,
+        `#${id} should not have readOnly set`);
+    }, `${id.replace('i_', '')} input is unaffected by readonly fieldset (readOnly stays false)`);
+  }
+
+  test(function () {
+    // <button> has no readOnly IDL attribute
+    assert_false('readOnly' in document.getElementById('i_btn'),
+      "<button> has no readOnly IDL attribute");
+  }, "button is unaffected by readonly fieldset");
+
+  test(function () {
+    // <select> has no readOnly IDL attribute
+    assert_false('readOnly' in document.getElementById('i_sel'),
+      "<select> has no readOnly IDL attribute");
+  }, "select is unaffected by readonly fieldset");
+</script>

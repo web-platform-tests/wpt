@@ -36,6 +36,65 @@ async def test_unsubscribe_from_module(bidi_session, new_tab, wait_for_bidi_even
     remove_listener_load()
 
 
+@pytest.mark.parametrize("event", [
+    "browsingContext.historyUpdated",
+    "browsingContext",
+    "input",
+    "log",
+    "network",
+    "script",
+])
+async def test_unsubscribe_from_known_event_or_module(
+      bidi_session, subscribe_events, event
+):
+    await subscribe_events(events=[event])
+    await bidi_session.session.unsubscribe(events=[event])
+
+
+@pytest.mark.parametrize("subscription_events, events", [
+    pytest.param(
+        ["browsingContext"],
+        ["browsingContext", "browsingContext.load"],
+        id="module-then-event",
+    ),
+    pytest.param(
+        ["browsingContext"],
+        ["browsingContext.load", "browsingContext"],
+        id="event-then-module",
+    ),
+    pytest.param(
+        ["browsingContext.load"],
+        ["browsingContext.load", "browsingContext.load"],
+        id="repeated-event",
+    ),
+])
+async def test_unsubscribe_normalizes_event_names(
+      bidi_session, subscribe_events, new_tab, wait_for_bidi_events, inline,
+      subscription_events, events
+):
+    await subscribe_events(events=subscription_events)
+    await bidi_session.session.unsubscribe(events=events)
+
+    received_events = []
+
+    async def on_event(method, _):
+        received_events.append(method)
+
+    remove_listener = bidi_session.add_event_listener(
+        "browsingContext.load", on_event
+    )
+
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=inline("")
+    )
+
+    with pytest.raises(TimeoutException):
+        await wait_for_bidi_events(received_events, 1, timeout=0.5)
+
+    assert received_events == []
+    remove_listener()
+
+
 async def test_subscribe_to_module_unsubscribe_from_one_event(
       bidi_session, wait_for_event, wait_for_future_safe, new_tab, inline
 ):

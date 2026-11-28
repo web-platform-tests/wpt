@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<link rel="help" href="https://html.spec.whatwg.org/#unhandled-promise-rejections">
-<script>
+// META: global=window,dedicatedworker,shadowrealm
+
+// https://html.spec.whatwg.org/#unhandled-promise-rejections
+
 'use strict';
 setup({
   allow_uncaught_exception: true
@@ -12,7 +10,7 @@ async_test(function(t) {
   var e = new Error('e');
   var p = Promise.reject(e);
 
-  window.onunhandledrejection = function(evt) {
+  globalThis.onunhandledrejection = function(evt) {
     t.step(function() {
       assert_equals(evt.promise, p);
       assert_equals(evt.reason, e);
@@ -26,6 +24,5 @@ async_test(function(t) {
     });
   };
 
-  window.onrejectionhandled = t.unreached_func('rejectionhandled event should not be invoked');
+  globalThis.onrejectionhandled = t.unreached_func('rejectionhandled event should not be invoked');
 }, 'Attaching a handler in unhandledrejection should not trigger rejectionhandled.');
-</script>

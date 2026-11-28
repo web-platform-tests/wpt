@@ -1,0 +1,56 @@
+<!doctype html>
+<title>SVG &lt;use&gt;: changing only fragment of external resource with Cache-Control: no-store does not refetch</title>
+<link rel="help" href="https://svgwg.org/svg2-draft/struct.html#UseElement">
+<link rel="help" href="https://svgwg.org/svg2-draft/linking.html#processingURL">
+<!--
+  This test is .tentative because SVG 2
+  (https://svgwg.org/svg2-draft/linking.html#processingURL-absolute) only
+  treats URLs matching the host document base URL as same-document references,
+  and https://svgwg.org/svg2-draft/linking.html#processingURL-parsing only
+  states that user agents "may re-use the documents for subsequent references,
+  so long as doing so does not violate the processing mode, caching, and CORS
+  requirements on the resource."
+  Under Cache-Control: no-store, SVG 2 does not strictly forbid refetching when
+  `href` is mutated, even when only the fragment identifier changes. Keeping
+  the already-loaded external document on the <use> element avoids redundant
+  refetches and allows synchronous fragment switching.
+-->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/rendering-utils.js"></script>
+<svg width="100" height="100"></svg>
+<script>
+promise_test(async t => {
+  const svg = document.querySelector('svg');
+  const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+  t.add_cleanup(() => use.remove());
+
+  const resourceUrl = new URL(
+      `support/use-external-fragment-no-store.py?key=${token()}`,
+      location.href).href;
+
+  async function getFetchCount() {
+    const response = await fetch(`${resourceUrl}&action=count`);
+    assert_equals(response.status, 200);
+    return Number(await response.text());
+  }
+
+  use.setAttribute('href', `${resourceUrl}#first`);
+  svg.appendChild(use);
+
+  while (use.getBBox().width === 0) {
+    await waitForAtLeastOneFrame();
+  }
+  assert_equals(use.getBBox().width, 10, 'initial width matches #first');
+  assert_equals(await getFetchCount(), 1, 'initial fetch count');
+
+  use.setAttribute('href', `${resourceUrl}#second`);
+  while (use.getBBox().width !== 50) {
+    await waitForAtLeastOneFrame();
+  }
+  assert_equals(
+      await getFetchCount(), 1,
+      'changing only fragment identifier should not refetch');
+}, 'Changing only the fragment identifier of external SVG <use> with Cache-Control: no-store');
+</script>

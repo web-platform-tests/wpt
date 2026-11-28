@@ -1,0 +1,5 @@
+#foo {
+  width: 100px;
+  height: 100px;
+  background: url("/images/blue.png?pipe=trickle(d1)");
+}

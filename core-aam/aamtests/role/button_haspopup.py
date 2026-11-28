@@ -5,10 +5,6 @@ import pytest
 TEST_HTML = {
     "true": "<div id=test role=button aria-haspopup=true>click me</div>",
     "menu": "<div id=test role=button aria-haspopup=menu>click me</div>",
-    "listbox": "<div id=test role=button aria-haspopup=listbox>click me</div>",
-    "tree": "<div id=test role=button aria-haspopup=tree>click me</div>",
-    "grid": "<div id=test role=button aria-haspopup=grid>click me</div>",
-    "dialog": "<div id=test role=button aria-haspopup=dialog>click me</div>"
 }
 
 @pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
@@ -36,12 +32,15 @@ def test_axapi(axapi, session, inline, test_html):
     _, subrole = axapi.AXUIElementCopyAttributeValue(node, "AXSubrole", None)
     assert subrole is None
 
-# @pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
-# def test_ia2(ia2, session, inline, test_html):
-#     session.url = inline(test_html)
-#
-#     # Spec:
-#     # Role: ROLE_SYSTEM_BUTTONMENU
+@pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
+def test_ia2(ia2, session, inline, test_html):
+    session.url = inline(test_html)
+
+    # Spec:
+    # Role: ROLE_SYSTEM_BUTTONMENU
+
+    node = ia2.find_node("test", session.url)
+    assert ia2.get_role(node) == "ROLE_SYSTEM_BUTTONMENU"
 
 @pytest.mark.parametrize("test_html", TEST_HTML.values(), ids=TEST_HTML.keys())
 def test_uia(uia, session, inline, test_html):

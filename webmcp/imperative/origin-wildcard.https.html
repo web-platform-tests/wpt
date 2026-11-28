@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>WebMCP fromOrigins origin wildcard</title>
+<meta name="timeout" content="long">
+<link rel="help" href="https://webmachinelearning.github.io/webmcp/#model-context-get-tool-options">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<body>
+<script>
+const hostInfo = get_host_info();
+const remoteOrigins = [
+  hostInfo.HTTPS_REMOTE_ORIGIN,
+  hostInfo.HTTPS_OTHER_NOTSAMESITE_ORIGIN,
+];
+
+async function createContext(t, origin, {allow = 'tools *', sandbox} = {}) {
+  const uuid = token();
+  const iframe = document.createElement('iframe');
+  const executorPath =
+    '/html/browsers/browsing-the-web/remote-context-helper/resources/executor-window.py';
+  iframe.src = `${origin}${executorPath}?uuid=${uuid}`;
+  iframe.allow = allow;
+  if (sandbox !== undefined) {
+    iframe.setAttribute('sandbox', sandbox);
+  }
+  const loaded = new Promise(resolve => iframe.onload = resolve);
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+  await loaded;
+  return new RemoteContext(uuid);
+}
+
+async function registerRemoteTool(context, name, exposedTo) {
+  await context.execute_script(async (name, exposedTo) => {
+    await document.modelContext.registerTool({
+      name,
+      description: 'Iframe tool',
+      execute: async () => 'iframe result',
+    }, {exposedTo});
+  }, [name, exposedTo]);
+}
+
+const cases = [
+  {name: 'omitted options', options: undefined, crossOriginNames: []},
+  {name: 'empty array', options: {fromOrigins: []}, crossOriginNames: []},
+  {
+    name: 'explicit origin',
+    options: {fromOrigins: [remoteOrigins[0]]},
+    crossOriginNames: ['remote_tool_0'],
+  },
+  {
+    name: 'origin wildcard',
+    options: {fromOrigins: ['*']},
+    crossOriginNames: ['remote_tool_0', 'remote_tool_1'],
+  },
+  {
+    name: 'origin wildcard before an explicit origin',
+    options: {fromOrigins: ['*', remoteOrigins[0]]},
+    crossOriginNames: ['remote_tool_0', 'remote_tool_1'],
+  },
+  {
+    name: 'origin wildcard after an explicit origin',
+    options: {fromOrigins: [remoteOrigins[0], '*']},
+    crossOriginNames: ['remote_tool_0', 'remote_tool_1'],
+  },
+  {
+    name: 'duplicate origin wildcards',
+    options: {fromOrigins: ['*', '*']},
+    crossOriginNames: ['remote_tool_0', 'remote_tool_1'],
+  },
+];
+
+for (const {name, options, crossOriginNames} of cases) {
+  promise_test(async t => {
+    const controller = new AbortController();
+    t.add_cleanup(() => controller.abort());
+    await document.modelContext.registerTool({
+      name: 'parent_tool',
+      description: 'Parent tool',
+      execute: async () => 'parent result',
+    }, {signal: controller.signal});
+
+    const contexts = await Promise.all(
+      [self.origin, ...remoteOrigins].map(origin => createContext(t, origin)));
+    await registerRemoteTool(contexts[0], 'same_origin_tool', []);
+    for (let index = 0; index < remoteOrigins.length; ++index) {
+      await registerRemoteTool(
+        contexts[index + 1], `remote_tool_${index}`, [self.origin]);
+    }
+
+    const tools = await document.modelContext.getTools(options);
+    assert_array_equals(
+      tools.map(tool => tool.name),
+      ['parent_tool', ...crossOriginNames, 'same_origin_tool']);
+    for (const tool of tools) {
+      const expectedOrigin = tool.name.startsWith('remote_tool_') ?
+        remoteOrigins[Number(tool.name.slice(-1))] : self.origin;
+      assert_equals(tool.origin, expectedOrigin);
+    }
+  }, `fromOrigins ${name} preserves same-origin tools and filters cross-origin tools`);
+}
+
+promise_test(async t => {
+  const context = await createContext(t, remoteOrigins[0]);
+  await registerRemoteTool(context, 'executable_tool', [self.origin]);
+  const tools = await document.modelContext.getTools({fromOrigins: ['*']});
+  assert_equals(tools.length, 1);
+  assert_equals(await document.modelContext.executeTool(tools[0]), 'iframe result');
+}, 'A tool discovered through the origin wildcard can be executed with explicit provider exposure');
+
+for (const exposedTo of [[], [remoteOrigins[1]]]) {
+  promise_test(async t => {
+    const context = await createContext(t, remoteOrigins[0]);
+    await registerRemoteTool(context, 'private_tool', exposedTo);
+    const tools = await document.modelContext.getTools({fromOrigins: ['*']});
+    assert_array_equals(tools, []);
+  }, `The origin wildcard does not bypass exposedTo ${JSON.stringify(exposedTo)}`);
+}
+
+promise_test(async t => {
+  const context = await createContext(
+    t, remoteOrigins[0], {allow: "tools 'none'"});
+  const errorName = await context.execute_script(async () => {
+    try {
+      await document.modelContext.getTools({fromOrigins: ['*']});
+      return null;
+    } catch (error) {
+      return error.name;
+    }
+  });
+  assert_equals(errorName, 'NotAllowedError');
+}, 'The origin wildcard does not bypass the tools Permissions Policy');
+
+promise_test(async t => {
+  const context = await createContext(
+    t, self.origin, {sandbox: 'allow-scripts'});
+  assert_equals(await context.execute_script(() => self.origin), 'null');
+  await registerRemoteTool(context, 'opaque_tool', [self.origin]);
+  const tools = await document.modelContext.getTools({fromOrigins: ['*']});
+  assert_array_equals(tools, []);
+}, 'The origin wildcard does not discover tools from opaque origins');
+
+for (const fromOrigins of [[], ['*']]) {
+  promise_test(async t => {
+    const context = await createContext(
+      t, self.origin, {sandbox: 'allow-scripts'});
+    await registerRemoteTool(context, 'opaque_tool', []);
+    const names = await context.execute_script(async fromOrigins => {
+      const tools = await document.modelContext.getTools({fromOrigins});
+      return tools.map(tool => tool.name);
+    }, [fromOrigins]);
+    assert_array_equals(names, ['opaque_tool']);
+  }, `Opaque documents retain same-origin discovery with fromOrigins ${JSON.stringify(fromOrigins)}`);
+}
+
+for (const invalid of [
+  '/',
+  'https://example:bogus',
+  'https://\ud800.com',
+  'http://example.com',
+  'about:blank',
+  '*.example.com',
+  ' *',
+  '* ',
+]) {
+  for (const fromOrigins of [[invalid], ['*', invalid], [invalid, '*']]) {
+    promise_test(async t => {
+      await promise_rejects_dom(t, 'SecurityError',
+        document.modelContext.getTools({fromOrigins}));
+    }, `fromOrigins ${JSON.stringify(fromOrigins)} rejects invalid or non-potentially-trustworthy entries`);
+  }
+}
+</script>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<title>enumerateDevices: test enumerateDevices should not expose camera devices in iframe if blocked by Permissions Policy </title>
+<link rel="help" href="https://w3c.github.io/mediacapture-main/#dom-mediadevices-enumeratedevices">
+<meta name='assert' content='Check that the enumerateDevices() method should not exposed camera devices in iframe if blocked by Permissions POlicy.'/>
+</head>
+<body>
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test checks for the absence of camera in
+<code>navigator.mediaDevices.enumerateDevices()</code> method in an iframe blocked by Permissions Policy.</p>
+<div id='log'></div>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+"use strict";
+  promise_test(async (t) => {
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute("allow", "camera 'none'");
+    iframe.src = "/mediacapture-streams/iframe-enumerate-nogum.html";
+    document.body.appendChild(iframe);
+    const loadWatcher = new EventWatcher(t, iframe, ['load']);
+    await loadWatcher.wait_for('load');
+    const msgWatcher = new EventWatcher(t, window, ['message']);
+    frames[0].postMessage('run', '*')
+    const e = await msgWatcher.wait_for('message');
+    const iframeDevices = e.data.devices;
+    const kinds = iframeDevices.map(({kind}) => kind);
+    for (const mediaInfo of iframeDevices) {
+      assert_not_equals(mediaInfo.deviceId, undefined, "mediaInfo's deviceId should exist.");
+      assert_not_equals(mediaInfo.kind, undefined,     "mediaInfo's kind     should exist.");
+      assert_not_equals(mediaInfo.label, undefined,    "mediaInfo's label    should exist.");
+      assert_not_equals(mediaInfo.groupId, undefined,  "mediaInfo's groupId  should exist.");
+      assert_in_array(mediaInfo.kind, ["audioinput", "audiooutput"]);
+    }
+  }, "Camera is not exposed in mediaDevices.enumerateDevices() in iframe blocked by Permissions Policy");
+</script>
+</body>
+</html>

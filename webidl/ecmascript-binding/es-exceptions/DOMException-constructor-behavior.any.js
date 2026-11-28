@@ -8,6 +8,8 @@ test(function() {
                 "Not passing a name should end up with 'Error' as the name");
   assert_equals(ex.message, "",
                 "Not passing a message should end up with empty string as the message");
+  assert_equals(ex.cause, undefined,
+                "Not passing a cause should end up with undefined as the cause");
 }, 'new DOMException()');
 
 test(function() {
@@ -16,6 +18,8 @@ test(function() {
                "The name property should be inherited");
   assert_false(ex.hasOwnProperty("message"),
                "The message property should be inherited");
+  assert_false(ex.hasOwnProperty("cause"),
+               "The cause property should be inherited");
 }, 'new DOMException(): inherited-ness');
 
 test(function() {
@@ -24,6 +28,8 @@ test(function() {
                 "Not passing a name should end up with 'Error' as the name");
   assert_equals(ex.message, "null",
                 "Passing null as message should end up with stringified 'null' as the message");
+  assert_equals(ex.cause, undefined,
+                "Not passing a cause should end up with undefined as the cause");
 }, 'new DOMException(null)');
 
 test(function() {
@@ -32,6 +38,8 @@ test(function() {
                 "Not passing a name should end up with 'Error' as the name");
   assert_equals(ex.message, "",
                 "Not passing a message should end up with empty string as the message");
+  assert_equals(ex.cause, undefined,
+                "Not passing a cause should end up with undefined as the cause");
 }, 'new DOMException(undefined)');
 
 test(function() {
@@ -40,6 +48,8 @@ test(function() {
                "The name property should be inherited");
   assert_false(ex.hasOwnProperty("message"),
                "The message property should be inherited");
+  assert_false(ex.hasOwnProperty("cause"),
+               "The cause property should be inherited");
 }, 'new DOMException(undefined): inherited-ness');
 
 test(function() {
@@ -47,6 +57,8 @@ test(function() {
   assert_equals(ex.name, "Error",
                 "Not passing a name should still end up with 'Error' as the name");
   assert_equals(ex.message, "foo", "Should be using passed-in message");
+  assert_equals(ex.cause, undefined,
+                "Not passing a cause should end up with undefined as the cause");
 }, 'new DOMException("foo")');
 
 test(function() {
@@ -55,6 +67,8 @@ test(function() {
                "The name property should be inherited");
   assert_false(ex.hasOwnProperty("message"),
               "The message property should be inherited");
+  assert_false(ex.hasOwnProperty("cause"),
+              "The cause property should be inherited");
 }, 'new DOMException("foo"): inherited-ness');
 
 test(function() {
@@ -62,6 +76,8 @@ test(function() {
   assert_equals(ex.name, "Error",
                 "Passing undefined for name should end up with 'Error' as the name");
   assert_equals(ex.message, "bar", "Should still be using passed-in message");
+  assert_equals(ex.cause, undefined,
+                "Not passing a cause should end up with undefined as the cause");
 }, 'new DOMException("bar", undefined)');
 
 test(function() {
@@ -70,6 +86,8 @@ test(function() {
   assert_equals(ex.message, "bar", "Should still be using passed-in message");
   assert_equals(ex.code, DOMException.NOT_SUPPORTED_ERR,
                 "Should have the right exception code");
+  assert_equals(ex.cause, undefined,
+                "Not passing a cause should end up with undefined as the cause");
 }, 'new DOMException("bar", "NotSupportedError")');
 
 test(function() {
@@ -78,6 +96,8 @@ test(function() {
               "The name property should be inherited");
   assert_false(ex.hasOwnProperty("message"),
               "The message property should be inherited");
+  assert_false(ex.hasOwnProperty("cause"),
+              "The cause property should be inherited");
 }, 'new DOMException("bar", "NotSupportedError"): inherited-ness');
 
 test(function() {
@@ -86,7 +106,85 @@ test(function() {
   assert_equals(ex.message, "bar", "Should still be using passed-in message");
   assert_equals(ex.code, 0,
                 "Should have 0 for code for a name not in the exception names table");
+  assert_equals(ex.cause, undefined,
+                "Not passing a cause should end up with undefined as the cause");
 }, 'new DOMException("bar", "foo")');
+
+test(function() {
+  var ex = new DOMException("bar", {});
+  assert_equals(ex.name, "Error",
+                "Passing empty dictionary for options should end up with 'Error' as the name");
+  assert_equals(ex.message, "bar", "Should still be using passed-in message");
+  assert_equals(ex.cause, undefined,
+                "Not passing a cause should end up with undefined as the cause");
+}, 'new DOMException("bar", {})');
+
+test(function() {
+  var ex = new DOMException("bar", {});
+  assert_false(ex.hasOwnProperty("name"),
+               "The name property should be inherited");
+  assert_false(ex.hasOwnProperty("message"),
+               "The message property should be inherited");
+  assert_false(ex.hasOwnProperty("cause"),
+               "The cause property should be inherited");
+}, 'new DOMException("bar", {}): inherited-ness');
+
+test(function() {
+  var ex = new DOMException("bar", { name: "NotSupportedError" });
+  assert_equals(ex.name, "NotSupportedError", "Should be using the passed-in name");
+  assert_equals(ex.message, "bar", "Should still be using passed-in message");
+  assert_equals(ex.code, DOMException.NOT_SUPPORTED_ERR,
+                "Should have the right exception code");
+  assert_equals(ex.cause, undefined,
+                "Not passing a cause should end up with undefined as the cause");
+}, 'new DOMException("bar", { name: "NotSupportedError" })');
+
+test(function() {
+  var ex = new DOMException("bar", { name: "NotSupportedError" });
+  assert_false(ex.hasOwnProperty("name"),
+               "The name property should be inherited");
+  assert_false(ex.hasOwnProperty("message"),
+               "The message property should be inherited");
+  assert_false(ex.hasOwnProperty("cause"),
+               "The cause property should be inherited");
+}, 'new DOMException("bar", { name: "NotSupportedError" }): inherited-ness');
+
+test(function() {
+  var ex = new DOMException("bar", { cause: "foo" });
+  assert_equals(ex.name, "Error",
+                "Not passing a name should end up with 'Error' as the name");
+  assert_equals(ex.message, "bar", "Should still be using passed-in message");
+  assert_equals(ex.cause, "foo", "Should be using the passed-in cause");
+}, 'new DOMException("bar", { cause: "foo" })');
+
+test(function() {
+  var ex = new DOMException("bar", { cause: "foo" });
+  assert_false(ex.hasOwnProperty("name"),
+               "The name property should be inherited");
+  assert_false(ex.hasOwnProperty("message"),
+               "The message property should be inherited");
+  assert_false(ex.hasOwnProperty("cause"),
+               "The cause property should be inherited");
+}, 'new DOMException("bar", { cause: "foo" }): inherited-ness');
+
+test(function() {
+  var ex = new DOMException("bar", { name: "NotSupportedError", cause: "foo" });
+  assert_equals(ex.name, "NotSupportedError", "Should be using the passed-in name");
+  assert_equals(ex.message, "bar", "Should still be using passed-in message");
+  assert_equals(ex.code, DOMException.NOT_SUPPORTED_ERR,
+                "Should have the right exception code");
+  assert_equals(ex.cause, "foo", "Should be using the passed-in cause");
+}, 'new DOMException("bar", { name: "NotSupportedError", cause: "foo" })');
+
+test(function() {
+  var ex = new DOMException("bar", { name: "NotSupportedError", cause: "foo" });
+  assert_false(ex.hasOwnProperty("name"),
+               "The name property should be inherited");
+  assert_false(ex.hasOwnProperty("message"),
+               "The message property should be inherited");
+  assert_false(ex.hasOwnProperty("cause"),
+               "The cause property should be inherited");
+}, 'new DOMException("bar", { name: "NotSupportedError", cause: "foo" }): inherited-ness');
 
 [
   {name: "IndexSizeError", code: 1},

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>selectionchange fires once for multiple selection mutations in the same task</title>
+<link rel="help" href="https://w3c.github.io/selection-api/#selectionchange-event">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="container">text</div>
+<script>
+
+promise_test(async t => {
+  let selectionChangeCount = 0;
+  const handler = () => ++selectionChangeCount;
+  document.addEventListener("selectionchange", handler);
+  t.add_cleanup(() => document.removeEventListener("selectionchange", handler));
+
+  const range = document.createRange();
+  range.setStart(container.firstChild, 0);
+  range.setEnd(container.firstChild, 4);
+  getSelection().removeAllRanges();
+  getSelection().addRange(range);
+  await new Promise(r => step_timeout(r, 0));
+  // Reset after setup — only count events triggered by the call under test.
+  selectionChangeCount = 0;
+
+  // Collapse to start and then immediately restore — coalesced into one event.
+  getSelection().collapseToStart();
+  getSelection().removeAllRanges();
+  getSelection().addRange(range);
+  // selectionchange is queued as a task, not fired synchronously.
+  await new Promise(r => step_timeout(r, 0));
+  assert_equals(selectionChangeCount, 1);
+}, "selectionchange fires once when selection is changed and then restored in the same task");
+
+</script>

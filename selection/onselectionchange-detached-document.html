@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>getSelection() returns null on a detached document</title>
+<link rel="help" href="https://w3c.github.io/selection-api/#dom-document-getselection">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+
+test(() => {
+  const doc = document.implementation.createHTMLDocument("");
+  assert_equals(doc.getSelection(), null);
+}, "getSelection() returns null on a detached document");
+
+</script>

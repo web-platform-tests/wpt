@@ -162,6 +162,21 @@ sox -n -r 48000 sfx.wav synth 1 sine 480
 ffmpeg -i sfx.wav -frames:a 10 -acodec aac -b:a 96K sfx-aac.mp4
 ```
 
+### sfx-5.1.adts, sfx-5.1-opus.ogg
+Each channel carries a distinct tone: FL 500Hz, FR 700Hz, FC 900Hz, LFE 100Hz,
+BL 1100Hz, BR 1300Hz.
+```
+for codec in aac libopus
+do
+  [ $codec = aac ] && out=sfx-5.1.adts || out=sfx-5.1-opus.ogg
+  ffmpeg -f lavfi -i sine=f=500:r=48000:d=1 -f lavfi -i sine=f=700:r=48000:d=1 \
+    -f lavfi -i sine=f=900:r=48000:d=1 -f lavfi -i sine=f=100:r=48000:d=1 \
+    -f lavfi -i sine=f=1100:r=48000:d=1 -f lavfi -i sine=f=1300:r=48000:d=1 \
+    -filter_complex "[0][1][2][3][4][5]join=inputs=6:channel_layout=5.1:map=0.0-FL|1.0-FR|2.0-FC|3.0-LFE|4.0-BL|5.0-BR" \
+    -c:a $codec -b:a 384k $out
+done
+```
+
 ### sfx-*.wav
 ```
 sox -n -r 48000 sfx.wav synth 1 sine 480

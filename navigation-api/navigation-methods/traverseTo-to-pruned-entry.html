@@ -1,0 +1,391 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const waitForLoad = t => new Promise(resolve => {
+  if (document.readyState === "complete") {
+    t.step_timeout(resolve, 0);
+  } else {
+    window.addEventListener("load", () => t.step_timeout(resolve, 0), { once: true });
+  }
+});
+
+async function createIframe(t, { sandbox = null } = {}) {
+  const iframe = document.createElement("iframe");
+  if (sandbox !== null) {
+    iframe.sandbox = sandbox;
+  }
+  iframe.src = "/common/blank.html";
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await new Promise(resolve => iframe.onload = () => t.step_timeout(resolve, 0));
+  return iframe;
+}
+
+promise_test(async t => {
+  await waitForLoad(t);
+  let start_length = navigation.entries().length;
+  let start_index = navigation.currentEntry.index;
+  await navigation.navigate("#foo").finished;
+  let target_key = navigation.currentEntry.key;
+  assert_equals(navigation.entries().length, start_length + 1);
+  await navigation.back().finished;
+  assert_equals(navigation.currentEntry.index, start_index);
+
+  // Traverse forward then immediately do a same-document push. This will
+  // truncate the back forward list, and by the time the traverse commits, the
+  // destination key will no longer be present in navigation.entries(). The
+  // traverse should abort. Because the traverse aborts before the navigate
+  // event fires, the navigateerror event should not fire.
+  let clobbered = false;
+  navigation.onnavigate = t.step_func(e => {
+    assert_not_equals(e.navigationType, "traverse", "traverse navigate event should not fire");
+  });
+  navigation.onnavigateerror = t.unreached_func("navigateerror should not fire");
+
+  let traverse_value = navigation.traverseTo(target_key);
+  let settled_before_clobber = false;
+  traverse_value.committed.then(
+    t.unreached_func("committed should not fulfill"),
+    t.step_func(() => {
+      if (!clobbered) {
+        settled_before_clobber = true;
+      }
+    })
+  );
+
+  // Flush microtasks before clobbering to ensure the rejection doesn't happen
+  // synchronously before push/navigate, and only rejects when the traversal task runs.
+  await Promise.resolve();
+  assert_false(settled_before_clobber, "committed should not settle before clobbering");
+
+  clobbered = true;
+  await navigation.navigate("#clobber").finished;
+  assert_equals(navigation.currentEntry.index, start_index + 1);
+  await promise_rejects_dom(t, "AbortError", traverse_value.committed);
+  await promise_rejects_dom(t, "AbortError", traverse_value.finished);
+
+  // This leaves navigation.entries() in a consistent state where traversing
+  // back and forward still works.
+  navigation.onnavigate = null;
+  await navigation.back().finished;
+  assert_equals(navigation.currentEntry.index, start_index);
+  await navigation.forward().finished;
+  assert_equals(navigation.currentEntry.index, start_index + 1);
+}, "If forward pruning clobbers the target of a top-level traverseTo, abort");
+
+promise_test(async t => {
+  await waitForLoad(t);
+  const child = await createIframe(t);
+  const nav = child.contentWindow.navigation;
+  const childHistory = child.contentWindow.history;
+  const childDOMException = child.contentWindow.DOMException;
+
+  await nav.navigate("#1").finished;
+  await nav.navigate("#2").finished;
+  await nav.back().finished;
+  // Wait for the queued popstate/hashchange task from nav.back() to finish.
+  await new Promise(r => t.step_timeout(r, 0));
+  assert_equals(nav.entries().length, 3);
+  assert_equals(nav.currentEntry.index, 1);
+
+  const targetKey = nav.entries()[2].key;
+  nav.onnavigate = t.step_func(e => {
+    assert_not_equals(e.navigationType, "traverse", "traverse navigate event should not fire in iframe");
+  });
+  nav.onnavigateerror = t.unreached_func("navigateerror should not fire in iframe");
+  child.contentWindow.onpopstate = t.unreached_func("popstate should not fire in iframe");
+
+  let committedSettled = false;
+  let finishedSettled = false;
+  const result = nav.traverseTo(targetKey);
+  result.committed.then(
+    t.unreached_func("committed should not fulfill"),
+    () => { committedSettled = true; }
+  );
+  result.finished.then(
+    t.unreached_func("finished should not fulfill"),
+    () => { finishedSettled = true; }
+  );
+
+  // Clobber the target entry via pushState while the traversal is in flight.
+  childHistory.pushState({}, "", "#pushed");
+
+  // Promise rejection happens asynchronously on the navigation and traversal
+  // task source when firing the traverse navigate event, not synchronously
+  // during pushState().
+  assert_false(committedSettled, "committed should not settle synchronously inside pushState()");
+  assert_false(finishedSettled, "finished should not settle synchronously inside pushState()");
+  await Promise.resolve();
+  assert_false(committedSettled, "committed should not settle in a microtask right after pushState()");
+  assert_false(finishedSettled, "finished should not settle in a microtask right after pushState()");
+
+  await promise_rejects_dom(t, "AbortError", childDOMException, result.committed);
+  await promise_rejects_dom(t, "AbortError", childDOMException, result.finished);
+
+  assert_equals(child.contentWindow.location.hash, "#pushed");
+  assert_equals(nav.entries().length, 3);
+  assert_equals(nav.currentEntry.index, 2);
+  assert_equals(new URL(nav.currentEntry.url).hash, "#pushed");
+
+  // Ensure subsequent traversals in the iframe still work.
+  nav.onnavigate = null;
+  child.contentWindow.onpopstate = null;
+  await nav.back().finished;
+  assert_equals(nav.currentEntry.index, 1);
+  assert_equals(child.contentWindow.location.hash, "#1");
+}, "traverseTo() in a same-origin iframe aborts when pushState prunes the target entry, and rejects after pushState()");
+
+promise_test(async t => {
+  await waitForLoad(t);
+  const child = await createIframe(t);
+  const nav = child.contentWindow.navigation;
+  const childHistory = child.contentWindow.history;
+  const childDOMException = child.contentWindow.DOMException;
+
+  await nav.navigate("#1").finished;
+  await nav.navigate("#2").finished;
+  await nav.back().finished;
+  // Wait for the queued popstate/hashchange task from nav.back() to finish.
+  await new Promise(r => t.step_timeout(r, 0));
+  assert_equals(nav.entries().length, 3);
+  assert_equals(nav.currentEntry.index, 1);
+
+  const targetKey = nav.entries()[2].key;
+  nav.onnavigate = t.step_func(e => {
+    assert_not_equals(e.navigationType, "traverse", "traverse navigate event should not fire in iframe");
+  });
+  nav.onnavigateerror = t.unreached_func("navigateerror should not fire in iframe");
+  child.contentWindow.onpopstate = t.unreached_func("popstate should not fire in iframe");
+
+  const result = nav.traverseTo(targetKey);
+  await new Promise(r => t.step_timeout(r, 0));
+  childHistory.pushState({}, "", "#pushed");
+
+  await promise_rejects_dom(t, "AbortError", childDOMException, result.committed);
+  await promise_rejects_dom(t, "AbortError", childDOMException, result.finished);
+  assert_equals(child.contentWindow.location.hash, "#pushed");
+  assert_equals(nav.entries().length, 3);
+  assert_equals(nav.currentEntry.index, 2);
+}, "traverseTo() in a same-origin iframe aborts when pushState prunes the target entry after a task (#12574)");
+
+promise_test(async t => {
+  await waitForLoad(t);
+  const child = await createIframe(t);
+  const childWin = child.contentWindow;
+  const nav = childWin.navigation;
+
+  childWin.history.pushState({}, "", "#1");
+  childWin.history.pushState({}, "", "#2");
+  childWin.history.back();
+  await new Promise(r => childWin.addEventListener("popstate", r, { once: true }));
+  assert_equals(childWin.location.hash, "#1");
+
+  // Traverse forward in the iframe using classic history API, then immediately
+  // prune the forward entry with pushState() without any navigation API call.
+  nav.onnavigate = t.step_func(e => {
+    assert_not_equals(e.navigationType, "traverse", "traverse navigate event should not fire");
+  });
+  childWin.onpopstate = t.unreached_func("popstate should not fire for aborted traversal");
+
+  childWin.history.forward();
+  childWin.history.pushState({}, "", "#clobber");
+  childWin.history.pushState({}, "", "#clobber2");
+
+  await new Promise(r => t.step_timeout(r, 20));
+  assert_equals(childWin.location.hash, "#clobber2");
+  assert_equals(nav.entries().length, 4);
+  assert_equals(nav.currentEntry.index, 3);
+  assert_equals(new URL(nav.currentEntry.url).hash, "#clobber2");
+}, "Classic history traversal in an iframe to a pruned entry aborts with no navigation API call involved");
+
+promise_test(async t => {
+  await waitForLoad(t);
+  const child = await createIframe(t);
+  const childWin = child.contentWindow;
+  const nav = childWin.navigation;
+
+  childWin.history.pushState({}, "", "#1");
+  childWin.history.pushState({}, "", "#2");
+  assert_equals(childWin.location.hash, "#2");
+
+  // Traverse 1 step back in the iframe so #2 is a forward entry, then call
+  // top-level history.forward() (no navigation API call) and prune #2 in child.
+  childWin.history.back();
+  await new Promise(r => childWin.addEventListener("popstate", r, { once: true }));
+  assert_equals(childWin.location.hash, "#1");
+
+  childWin.onpopstate = t.unreached_func("popstate should not fire");
+  history.forward();
+  childWin.history.pushState({}, "", "#clobbered");
+
+  await new Promise(r => t.step_timeout(r, 20));
+  assert_equals(childWin.location.hash, "#clobbered");
+  assert_equals(nav.currentEntry.index, 2);
+}, "top-level history.forward() targeting a child entry that gets pruned by child.history.pushState() aborts");
+
+promise_test(async t => {
+  await waitForLoad(t);
+  const child = await createIframe(t);
+  const childWin = child.contentWindow;
+  const nav = childWin.navigation;
+
+  // Step 0: child=#0
+  // Step 1: child=#1
+  // Step 2: child=#2
+  childWin.history.pushState({}, "", "#1");
+  childWin.history.pushState({}, "", "#2");
+  assert_equals(childWin.location.hash, "#2");
+
+  // Queue go(-2) (to #0) and history.back() (from #2). When go(-2) finishes on
+  // #0, pushState("#clobber") in its popstate handler prunes #1 and #2.
+  childWin.addEventListener("popstate", () => {
+    childWin.history.pushState({}, "", "#clobber");
+  }, { once: true });
+
+  childWin.history.go(-2);
+  childWin.history.back();
+
+  await new Promise(r => t.step_timeout(r, 30));
+  assert_equals(childWin.location.hash, "#clobber");
+  assert_equals(nav.entries().length, 2);
+  assert_equals(nav.currentEntry.index, 1);
+}, "history.back() to an entry pruned by an earlier traversal's popstate pushState() aborts with no navigation API call involved");
+
+promise_test(async t => {
+  await waitForLoad(t);
+  const iframe = document.createElement("iframe");
+  iframe.sandbox = "allow-scripts";
+  iframe.src = "/common/blank.html";
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await new Promise(resolve => iframe.onload = () => t.step_timeout(resolve, 0));
+
+  // Navigate the sandboxed iframe to a same-origin URL (which still has an
+  // opaque origin due to sandbox="allow-scripts", so navigation has entries
+  // and events disabled) that performs a same-document fragment navigation and
+  // then history.back().
+  const resultPromise = new Promise(resolve => {
+    window.addEventListener("message", function onMsg(e) {
+      if (e.source === iframe.contentWindow && typeof e.data === "object") {
+        window.removeEventListener("message", onMsg);
+        resolve(e.data);
+      }
+    });
+  });
+
+  iframe.srcdoc = `<!doctype html><script>
+    window.addEventListener("message", e => {
+      if (e.data === "run") {
+        window.addEventListener("hashchange", () => {
+          window.addEventListener("popstate", () => {
+            parent.postMessage({
+              hash: location.hash,
+              entriesLength: navigation.entries().length,
+              currentEntry: navigation.currentEntry
+            }, "*");
+          }, { once: true });
+          history.back();
+        }, { once: true });
+        location.hash = "#a";
+      }
+    });
+  <\/script>`;
+  await new Promise(resolve => iframe.onload = () => t.step_timeout(resolve, 0));
+  iframe.contentWindow.postMessage("run", "*");
+  const data = await resultPromise;
+  assert_equals(data.hash, "");
+  assert_equals(data.entriesLength, 0);
+  assert_equals(data.currentEntry, null);
+}, "Same-document history.back() in a sandboxed iframe (entries and events disabled) is not aborted");
+
+promise_test(async t => {
+  await waitForLoad(t);
+  const child1 = await createIframe(t);
+  const child2 = await createIframe(t);
+  const nav1 = child1.contentWindow.navigation;
+  const nav2 = child2.contentWindow.navigation;
+
+  // Create a joint session history step that changes both child1 and child2:
+  // Step 0: child1=#0, child2=#0
+  // Step 1: child1=#1, child2=#0
+  // Step 2: child1=#1, child2=#1
+  await nav1.navigate("#1").finished;
+  await nav2.navigate("#1").finished;
+
+  // Traverse back 2 steps to Step 0 so both child1 and child2 are at their initial entries.
+  history.go(-2);
+  await Promise.all([
+    new Promise(r => child1.contentWindow.addEventListener("popstate", r, { once: true })),
+    new Promise(r => child2.contentWindow.addEventListener("popstate", r, { once: true }))
+  ]);
+  await new Promise(r => t.step_timeout(r, 0));
+  assert_equals(nav1.currentEntry.index, 0);
+  assert_equals(nav2.currentEntry.index, 0);
+
+  // Now traverse forward to Step 2 (which targets child1=#1 and child2=#1),
+  // but immediately prune child2's forward entry with pushState in child2!
+  // child1's target entry (#1) is still valid and should apply, while child2's
+  // target entry was pruned and should abort in child2.
+  nav2.onnavigate = t.step_func(e => {
+    assert_not_equals(e.navigationType, "traverse", "child2 traverse navigate event should not fire");
+  });
+  child2.contentWindow.onpopstate = t.unreached_func("child2 popstate should not fire");
+
+  const child1Popstate = new Promise(r => child1.contentWindow.addEventListener("popstate", r, { once: true }));
+  history.go(2);
+  child2.contentWindow.history.pushState({}, "", "#clobber2");
+
+  await child1Popstate;
+  await new Promise(r => t.step_timeout(r, 20));
+
+  assert_equals(child1.contentWindow.location.hash, "#1", "child1 should have completed its traversal");
+  assert_equals(nav1.currentEntry.index, 1, "child1 currentEntry index should be updated");
+  assert_equals(child2.contentWindow.location.hash, "#clobber2", "child2 should stay on the clobbered entry");
+  assert_equals(nav2.currentEntry.index, 1, "child2 currentEntry index should be at the pushed entry");
+}, "A multi-frame traversal where one child frame's target entry is pruned aborts that frame while applying the other child frame");
+
+promise_test(async t => {
+  await waitForLoad(t);
+  const child = await createIframe(t);
+  const childNav = child.contentWindow.navigation;
+  const startHash = location.hash;
+
+  // Step 0: top=startHash, child=#0
+  // Step 1: top=#top1, child=#0
+  // Step 2: top=#top1, child=#child1
+  await navigation.navigate("#top1").finished;
+  await childNav.navigate("#child1").finished;
+
+  // Traverse back 2 steps to Step 0 so both top and child are at their initial entries.
+  history.go(-2);
+  await Promise.all([
+    new Promise(r => window.addEventListener("popstate", r, { once: true })),
+    new Promise(r => child.contentWindow.addEventListener("popstate", r, { once: true }))
+  ]);
+  await new Promise(r => t.step_timeout(r, 0));
+  assert_equals(location.hash, startHash);
+  assert_equals(child.contentWindow.location.hash, "");
+
+  // Traverse forward 2 steps (targeting top=#top1 and child=#child1), and
+  // immediately prune child's forward entry via pushState in child.
+  // Top should still complete its traversal to #top1 while child aborts.
+  childNav.onnavigate = t.step_func(e => {
+    assert_not_equals(e.navigationType, "traverse", "child traverse navigate event should not fire");
+  });
+  child.contentWindow.onpopstate = t.unreached_func("child popstate should not fire");
+
+  const topPopstate = new Promise(r => window.addEventListener("popstate", r, { once: true }));
+  history.go(2);
+  child.contentWindow.history.pushState({}, "", "#childClobber");
+
+  await topPopstate;
+  await new Promise(r => t.step_timeout(r, 20));
+
+  assert_equals(location.hash, "#top1", "top should have completed its traversal");
+  assert_equals(child.contentWindow.location.hash, "#childClobber", "child should stay on the clobbered entry");
+  assert_equals(childNav.currentEntry.index, 1);
+}, "A multi-frame traversal where a child frame aborts still applies the top-level traversal");
+</script>
+</body>

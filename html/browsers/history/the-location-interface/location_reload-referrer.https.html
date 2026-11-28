@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>location.reload() reuses the referrer stored in the document state</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-location-reload">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#document-state-request-referrer">
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+// A navigates to B, then B calls location.reload(). Reloading B must reuse the
+// referrer stored in B's document state by the A -> B navigation, rather than
+// computing a new referrer from B's own URL.
+//
+// The Sec-Fetch-Site half of this is covered by
+// /html/browsers/browsing-the-web/history-traversal/document-state.https.html.
+// That test asserts Sec-Fetch-Site before the referrer, so an engine that fails
+// it never reports the referrer at all. These tests check only the referrer.
+
+async function reloadAfterNavigation(bOrigin) {
+  const rcHelper = new RemoteContextHelper();
+  const A = await rcHelper.addWindow();
+  const aURL = await A.executeScript(() => location.href);
+
+  const B = await A.navigateToNew(bOrigin ? {origin: bOrigin} : {});
+  const bURL = await B.executeScript(() => location.href);
+
+  const beforeReload = {
+    header: (await B.getRequestHeaders()).get('referer'),
+    documentReferrer: await B.executeScript(() => document.referrer),
+  };
+
+  await B.navigate(() => {
+    location.reload();
+  }, []);
+
+  const afterReload = {
+    header: (await B.getRequestHeaders()).get('referer'),
+    documentReferrer: await B.executeScript(() => document.referrer),
+  };
+
+  return {aURL, bURL, beforeReload, afterReload};
+}
+
+const scenarios = [
+  {
+    name: 'cross-site',
+    bOrigin: 'HTTPS_NOTSAMESITE_ORIGIN',
+    checkOrigins: (a, b) => assert_not_equals(a, b, 'A and B are cross-origin'),
+    // strict-origin-when-cross-origin reduces a cross-origin referrer to the origin.
+    expectedReferrer: r => new URL(r.aURL).origin + '/',
+  },
+  {
+    name: 'same-origin',
+    bOrigin: null,
+    checkOrigins: (a, b) => assert_equals(a, b, 'A and B are same-origin'),
+    expectedReferrer: r => r.aURL,
+  },
+];
+
+for (const scenario of scenarios) {
+  let result;
+  const run = () => result ??= reloadAfterNavigation(scenario.bOrigin);
+
+  promise_test(async () => {
+    const r = await run();
+    scenario.checkOrigins(new URL(r.aURL).origin, new URL(r.bURL).origin);
+    const expected = scenario.expectedReferrer(r);
+
+    assert_equals(r.beforeReload.header, expected,
+        'precondition: Referer header on the A -> B navigation');
+    assert_equals(r.afterReload.header, expected,
+        'Referer header on the location.reload() of B');
+  }, `location.reload() after a ${scenario.name} navigation sends the ` +
+     `original Referer header`);
+
+  promise_test(async () => {
+    const r = await run();
+    scenario.checkOrigins(new URL(r.aURL).origin, new URL(r.bURL).origin);
+    const expected = scenario.expectedReferrer(r);
+
+    assert_equals(r.beforeReload.documentReferrer, expected,
+        'precondition: document.referrer after the A -> B navigation');
+    assert_equals(r.afterReload.documentReferrer, expected,
+        'document.referrer after the location.reload() of B');
+  }, `location.reload() after a ${scenario.name} navigation keeps the ` +
+     `original document.referrer`);
+}
+</script>
+</body>

@@ -1,6 +1,6 @@
 // META: variant=?exclude=(RTCSessionDescription|RTCPeerConnectionIceErrorEvent|RTCRtpReceiver|RTCDtlsTransport|RTCIceTransport|RTCDTMFToneChangeEvent|RTCError|RTCErrorEvent)
 // META: variant=?include=(RTCSessionDescription|RTCPeerConnectionIceErrorEvent|RTCRtpReceiver|RTCDtlsTransport|RTCIceTransport|RTCDTMFToneChangeEvent|RTCError|RTCErrorEvent)
-// META: script=/common/subset-tests-by-key.js
+// META: script=/common/subset-idlharness-by-name.js
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
 // META: script=./RTCPeerConnection-helper.js
@@ -123,6 +123,8 @@ idl_test(
   ['webrtc'],
   ['webidl', 'mediacapture-streams', 'hr-time', 'dom', 'html', 'websockets'],
   async idlArray => {
+    idlArray.set_test_filter(subset_idlharness_by_name);
+
     idlArray.add_objects({
       RTCPeerConnection: [`new RTCPeerConnection()`],
       RTCSessionDescription: [`new RTCSessionDescription({ type: 'offer' })`],

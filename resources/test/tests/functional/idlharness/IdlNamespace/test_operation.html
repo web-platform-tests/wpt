@@ -74,6 +74,47 @@ namespace Absent {
 };
 `);
 idlArray.test();
+
+// The test filter applies to namespaces
+(() => {
+  Object.defineProperty(self, "qux", {
+    value: Object.defineProperty({}, "Truth", {
+      value: function() {},
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    }),
+    writable: true,
+    enumerable: false,
+    configurable: true,
+  });
+
+  const idlArray = new IdlArray();
+  idlArray.add_idls(`
+[Exposed=Window]
+namespace qux {
+  undefined Truth();
+};
+partial namespace qux {
+  undefined Lies();
+};
+`);
+  idlArray.set_test_filter((name, memberName) => memberName === "Truth");
+  idlArray.test();
+})();
+
+// A filtered namespace object is not checked for being absent where it isn't exposed
+(() => {
+  const idlArray = new IdlArray();
+  idlArray.add_idls(`
+[Exposed=Worker]
+namespace Hidden {
+  undefined Lies();
+};
+`);
+  idlArray.set_test_filter(() => false);
+  idlArray.test();
+})();
 </script>
 <script type="text/json" id="expected">
 {
@@ -241,6 +282,12 @@ idlArray.test();
     },
     {
       "name": "Absent namespace: existence and properties of namespace object",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "qux namespace: operation Truth()",
       "status_string": "PASS",
       "properties": {},
       "message": null

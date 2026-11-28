@@ -95,6 +95,11 @@ the global scope.
 .. js:autofunction:: test_driver.refresh
 ```
 
+### User Activation ###
+```eval_rst
+.. js:autofunction:: test_driver.consume_user_activation
+```
+
 ### Window State ###
 ```eval_rst
 .. js:autofunction:: test_driver.minimize_window

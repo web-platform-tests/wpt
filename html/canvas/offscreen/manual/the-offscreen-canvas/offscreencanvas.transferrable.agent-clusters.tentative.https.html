@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Placeholder canvas elements of OffscreenCanvas objects transferred to other agent clusters</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/canvas.html#the-offscreencanvas-interface">
+<link rel="help" href="https://github.com/whatwg/html/issues/10112">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="resources/agent-cluster-destinations.js"></script>
+<body>
+<script>
+"use strict";
+
+// The HTML Standard only pushes the bitmap of an OffscreenCanvas object to its placeholder canvas
+// element when the event loop of the OffscreenCanvas object's relevant agent updates the rendering.
+// That does not happen for shared workers, service workers, or dedicated workers created by shared
+// workers. It also does not say what happens to the origin-clean flag of a placeholder canvas
+// element.
+
+for (const destination of destinations.filter(d => !d.rendersToPlaceholder)) {
+  async_test(t => {
+    const placeholder = createPlaceholderCanvas(t);
+    destination.send(t, placeholder.transferControlToOffscreen()).then(t.step_func(result => {
+      assert_equals(result, "message");
+      waitForCanvas(t, placeholder, isLime).then(t.step_func_done());
+    }), t.step_func(e => assert_unreached(`Setting up the destination failed: ${e}`)));
+  }, `Drawing to an OffscreenCanvas transferred to ${destination.name} updates its placeholder ` +
+     `canvas element`);
+}
+
+const taintedImageTests = [
+  {
+    name: "a same-origin iframe",
+    origin: location.origin,
+    imageOrigin: get_host_info().HTTPS_REMOTE_ORIGIN
+  },
+  {
+    name: "a cross-site iframe",
+    origin: get_host_info().HTTPS_NOTSAMESITE_ORIGIN,
+    imageOrigin: location.origin
+  }
+];
+
+for (const { name, origin, imageOrigin } of taintedImageTests) {
+  async_test(t => {
+    const placeholder = createPlaceholderCanvas(t);
+    const image = `${imageOrigin}/images/green-100x50.png`;
+    const src = resourceURL(`agent-cluster-taint-receiver.html?image=${encodeURIComponent(image)}`,
+                            origin);
+    sendToIframe(t, placeholder.transferControlToOffscreen(), src).then(t.step_func(result => {
+      assert_equals(result, "message");
+      waitForCanvas(t, placeholder, value => !isTransparent(value)).then(
+        t.step_func_done(value => assert_equals(value, "SecurityError")));
+    }), t.step_func(e => assert_unreached(`Setting up the destination failed: ${e}`)));
+  }, `Drawing a cross-origin image to an OffscreenCanvas transferred to ${name} makes its ` +
+     `placeholder canvas element not origin-clean`);
+}
+</script>

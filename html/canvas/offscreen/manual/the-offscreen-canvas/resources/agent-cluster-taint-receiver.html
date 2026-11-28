@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script>
+// Draws the image given by the image parameter, without CORS, to the OffscreenCanvas object it
+// receives.
+const imageURL = new URL(location).searchParams.get("image");
+onmessage = async e => {
+  const canvas = e.data;
+  const image = new Image();
+  image.src = imageURL;
+  try {
+    await image.decode();
+    canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+  } catch (error) {
+    parent.postMessage(`drawing threw ${error.name}`, "*");
+    return;
+  }
+  requestAnimationFrame(() => {});
+  parent.postMessage("message", "*");
+};
+onmessageerror = () => parent.postMessage("messageerror", "*");
+</script>

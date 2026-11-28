@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>Transferring OffscreenCanvas objects to other agent clusters</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/canvas.html#the-offscreencanvas-interface">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="resources/agent-cluster-destinations.js"></script>
+<body>
+<script>
+"use strict";
+
+// OffscreenCanvas objects can be transferred to any agent cluster, with or without a placeholder
+// canvas element. Where the receiving end gets rendering updates, what it draws is pushed to the
+// placeholder canvas element. For the other destinations, see
+// offscreencanvas.transferrable.agent-clusters.tentative.https.html.
+
+for (const destination of destinations) {
+  async_test(t => {
+    destination.send(t, new OffscreenCanvas(10, 10)).then(
+      t.step_func_done(result => assert_equals(result, "message")),
+      t.step_func(e => assert_unreached(`Setting up the destination failed: ${e}`)));
+  }, `OffscreenCanvas without a placeholder canvas element transferred to ${destination.name}`);
+
+  if (destination.rendersToPlaceholder) {
+    async_test(t => {
+      const placeholder = createPlaceholderCanvas(t);
+      destination.send(t, placeholder.transferControlToOffscreen()).then(t.step_func(result => {
+        assert_equals(result, "message");
+        waitForCanvas(t, placeholder, isLime).then(t.step_func_done());
+      }), t.step_func(e => assert_unreached(`Setting up the destination failed: ${e}`)));
+    }, `Drawing to an OffscreenCanvas transferred to ${destination.name} updates its placeholder ` +
+       `canvas element`);
+  } else {
+    async_test(t => {
+      const placeholder = createPlaceholderCanvas(t);
+      destination.send(t, placeholder.transferControlToOffscreen()).then(
+        t.step_func_done(result => assert_equals(result, "message")),
+        t.step_func(e => assert_unreached(`Setting up the destination failed: ${e}`)));
+    }, `OffscreenCanvas with a placeholder canvas element transferred to ${destination.name}`);
+  }
+}
+</script>

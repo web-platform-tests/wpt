@@ -18,6 +18,14 @@ const errorOnPull = {
   }
 };
 
+const readAsArray = async (readable) => {
+  const result = [];
+  for await (const chunk of readable) {
+    result.push(chunk);
+  }
+  return result;
+};
+
 // To stop pull() being called immediately when the stream is created, we need to set highWaterMark to 0.
 const hwm0 = { highWaterMark: 0 };
 
@@ -446,3 +454,141 @@ promise_test(async t => {
   await delay(0);
   assert_true(aborted, "pipeTo should be aborted now");
 }, "pipeTo on a teed readable byte stream should only be aborted when both branches are aborted");
+
+promise_test(async t => {
+  let readController;
+  const rs = new ReadableStream({
+    start(c) {
+      readController = c;
+    }
+  });
+  const written = [];
+  const ws = new WritableStream({
+    write(chunk) {
+      written.push(chunk);
+    }
+  });
+  const abortController = new AbortController();
+  const pipePromise = rs.pipeTo(ws, {
+    signal: abortController.signal,
+    preventAbort: true,
+    preventCancel: true,
+  });
+  await delay(0);
+  readController.enqueue('a');
+  readController.enqueue('b');
+  readController.close();
+  abortController.abort(new Error());
+  await promise_rejects_js(t, Error, pipePromise,
+                           'pipePromise should reject with Error');
+  assert_array_equals(written, ['a'], 'chunk should have been written');
+  assert_array_equals(
+      await readAsArray(rs),
+      ['b'],
+      'second chunk should not have been read',
+  );
+}, 'chunk enqueued before abort in the same task is written');
+
+promise_test(async (t) => {
+  let readController;
+  const rs = new ReadableStream({
+    start(c) {
+      readController = c;
+    },
+  });
+  let writeController;
+  const written = [];
+  const ws = new WritableStream({
+    start(c) {
+      writeController = c;
+    },
+    write(chunk) {
+      written.push(chunk);
+    },
+  });
+  const abortController = new AbortController();
+  const pipePromise = rs.pipeTo(ws, {
+    signal: abortController.signal,
+    preventAbort: true,
+    preventCancel: true,
+  });
+  await delay(0);
+  readController.enqueue('a');
+  readController.enqueue('b');
+  readController.close();
+  const abortError = new Error('abortError');
+  abortController.abort(abortError);
+  const writeError = new Error('writeError');
+  writeController.error(writeError);
+  await promise_rejects_exactly(
+      t,
+      abortError,
+      pipePromise,
+      'pipePromise should reject with the error passed to abort',
+  );
+  assert_array_equals(written, [], 'chunk should not have been written');
+  assert_array_equals(
+      await readAsArray(rs),
+      ['b'],
+      'first chunk should have been read',
+  );
+}, 'chunk enqueued before abort in the same task is not written if error was called');
+
+promise_test(async (t) => {
+  let readController;
+  const rs = new ReadableStream({
+    start(c) {
+      readController = c;
+    },
+  });
+  let writeController;
+  const written = [];
+  const ws = new WritableStream(
+      {
+        start(c) {
+          writeController = c;
+        },
+        write(chunk) {
+          written.push(chunk);
+        },
+      },
+      {highWaterMark: Infinity},
+  );
+  // Allow streams to start.
+  await delay(0);
+  // Put `ws` in "erroring" state.
+  const writer = ws.getWriter();
+  const writerError = new Error('writerError');
+  // Enqueue a chunk to stop the abort from completing synchronously.
+  writer.write('x');
+  writer.abort(writerError);
+  writer.releaseLock();
+  // Start then abort the pipe.
+  const abortController = new AbortController();
+  const pipePromise = rs.pipeTo(ws, {
+    signal: abortController.signal,
+    preventAbort: true,
+    preventCancel: true,
+  });
+  // State is "erroring" so desiredSize is null, so nothing is read from `rs`.
+  readController.enqueue('a');
+  readController.close();
+  const abortError = new Error('abortError');
+  abortController.abort(abortError);
+  await promise_rejects_exactly(
+      t,
+      abortError,
+      pipePromise,
+      'pipePromise should reject with the error from aborting ws',
+  );
+  assert_array_equals(
+      written,
+      ['x'],
+      'read chunk should not have been written',
+  );
+  assert_array_equals(
+      await readAsArray(rs),
+      ['a'],
+      'no chunks should have been read',
+  );
+}, 'chunk enqueued with WritableStream erroring is not written');

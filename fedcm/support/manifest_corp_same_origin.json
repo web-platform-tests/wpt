@@ -1,0 +1,6 @@
+{
+  "accounts_endpoint": "accounts.py?pipe=header(Cross-Origin-Resource-Policy,same-origin)",
+  "client_metadata_endpoint": "client_metadata.py?pipe=header(Cross-Origin-Resource-Policy,same-origin)",
+  "id_assertion_endpoint": "token.py",
+  "login_url": "login.html"
+}

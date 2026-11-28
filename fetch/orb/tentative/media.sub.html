@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>ORB and audio, video, and multipart responses</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/fetch/orb/resources/utils.js"></script>
+<body>
+<script>
+const media = "http://{{domains[www1]}}:{{ports[http][0]}}/fetch/orb/resources/media.py";
+
+function url(params) {
+  return `${media}?${new URLSearchParams(params)}`;
+}
+
+const allowed = [
+  [testAudioInitiator, { src: "flac" }, "unlabeled FLAC"],
+  [testAudioInitiator, { src: "adts" }, "unlabeled AAC in ADTS"],
+  [testAudioInitiator, { src: "matroska" }, "unlabeled Matroska"],
+  ...["avc1", "isom", "M4A ", "M4V ", "mmp4", "qt  "].map(brand =>
+    [testAudioInitiator, { src: "mp4", brand }, `unlabeled MP4 with brand "${brand}"`]),
+  [testAudioInitiator, { src: "mp3-320kbps" }, "unlabeled MP3 with 1440-byte frames"],
+  [testAudioInitiator, { src: "mp3", offset: 1001, type: "audio/mpeg" },
+   "MP3 that starts mid-frame labeled audio/mpeg"],
+  [testAudioInitiator, { src: "adts", offset: 100, type: "audio/aac" },
+   "AAC in ADTS that starts mid-frame labeled audio/aac"],
+  [testAudioInitiator, { src: "adts", offset: 100, type: "audio/aacp" },
+   "AAC in ADTS that starts mid-frame labeled audio/aacp"],
+  [testImageInitiator, { src: "mjpeg", type: "multipart/x-mixed-replace; boundary=frame" },
+   "multipart/x-mixed-replace image"],
+];
+
+const blocked = [
+  [testAudioInitiator, { src: "mp3", offset: 1001 }, "unlabeled MP3 that starts mid-frame"],
+];
+
+for (const [test, params, description] of allowed) {
+  promise_test(t => test(t, url(params)), `ORB shouldn't block ${description}`);
+}
+
+for (const [test, params, description] of blocked) {
+  promise_test(t => promise_rejects_js(t, TypeError, test(t, url(params))),
+               `ORB should block ${description}`);
+}
+</script>

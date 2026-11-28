@@ -42,7 +42,8 @@ test(t => {
 //
 //   iterations - animation-iteration-count
 //   direction - animation-direction
-//   delay - animation-delay
+//   delay - animation-delay-start
+//   endDelay - animation-delay-end
 //   fill - animation-fill-mode
 //
 // Which we test in two batches, overriding two properties each time and using
@@ -117,7 +118,53 @@ test(t => {
     'Direction should be the value set by style'
   );
 }, 'AnimationEffect.updateTiming({ delay, fill }) causes changes to'
-   + ' the animation-delay and animation-fill-mode to be ignored');
+   + ' the animation-delay-start and animation-fill-mode to be ignored');
+
+test(t => {
+  const div = addDiv(t);
+  div.style.animation = 'anim-empty 100s';
+
+  const animation = div.getAnimations()[0];
+  animation.effect.updateTiming({ endDelay: 2 * MS_PER_SEC });
+
+  div.style.animationDelayEnd = '4s';
+  div.style.animationDelayStart = '6s';
+
+  assert_equals(
+    animation.effect.getTiming().endDelay,
+    2 * MS_PER_SEC,
+    'End delay should be the value set by the API'
+  );
+  assert_equals(
+    animation.effect.getTiming().delay,
+    6 * MS_PER_SEC,
+    'Start delay should be the value set by style'
+  );
+}, 'AnimationEffect.updateTiming({ endDelay }) causes changes to'
+   + ' the animation-delay-end to be ignored');
+
+test(t => {
+  const div = addDiv(t);
+  div.style.animation = 'anim-empty 100s';
+
+  const animation = div.getAnimations()[0];
+  animation.effect.updateTiming({ delay: 2 * MS_PER_SEC });
+
+  div.style.animationDelayStart = '4s';
+  div.style.animationDelayEnd = '6s';
+
+  assert_equals(
+    animation.effect.getTiming().delay,
+    2 * MS_PER_SEC,
+    'Start delay should be the value set by the API'
+  );
+  assert_equals(
+    animation.effect.getTiming().endDelay,
+    6 * MS_PER_SEC,
+    'End delay should be the value set by style'
+  );
+}, 'AnimationEffect.updateTiming({ delay }) causes changes to'
+   + ' the animation-delay-start to be ignored');
 
 test(t => {
   const div = addDiv(t);
@@ -145,27 +192,27 @@ test(t => {
   const animation = div.getAnimations()[0];
   animation.effect.updateTiming({
     easing: 'steps(4)',
-    endDelay: 2 * MS_PER_SEC,
     iterationStart: 4,
   });
 
   div.style.animationDuration = '6s';
   div.style.animationTimingFunction = 'ease-in';
+  div.style.animationDelayEnd = '8s';
 
   assert_equals(
     animation.effect.getTiming().easing,
     'steps(4)',
-    'endDelay should be the value set by the API'
-  );
-  assert_equals(
-    animation.effect.getTiming().endDelay,
-    2 * MS_PER_SEC,
-    'endDelay should be the value set by the API'
+    'easing should be the value set by the API'
   );
   assert_equals(
     animation.effect.getTiming().iterationStart,
     4,
-    'iterationStart should be the value set by style'
+    'iterationStart should be the value set by the API'
+  );
+  assert_equals(
+    animation.effect.getTiming().endDelay,
+    8 * MS_PER_SEC,
+    'endDelay should be the value set by style'
   );
 }, 'AnimationEffect properties that do not map to animation-* properties'
    + ' should not be changed when animation-* style is updated');

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test: modifying style of div inside foreignObject that is duplicated with use</title>
+<link rel="help" href="https://w3c.github.io/svgwg/svg2-draft/struct.html#UseElement:~:text=Previous%20versions%20of%20SVG,subtree%20to%20be%20cloned.">
+<link rel="match" href="reference/green-100x100.html">
+<style>
+div { width: 50px; height: 50px; }
+</style>
+<svg>
+  <rect width="100" height="100" fill="blue" />
+  <foreignObject id="box" width="50" height="50">
+    <div id="testdiv" style="background-color: red;"></div>
+  </foreignObject>
+  <use href="#box" x="50" y="0" />
+  <use href="#box" x="0" y="50" />
+  <use href="#box" x="50" y="50" />
+</svg>
+<script type="text/javascript">
+    document.getElementById("testdiv").style.backgroundColor = 'green';
+</script>

@@ -29,6 +29,6 @@
 
     const secondEvent = await fullScreenChange();
     assert_equals(document.fullscreenElement, null);
-    assert_equals(event.target, single);
+    assert_equals(secondEvent.target, single);
   });
 </script>

@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HTML partial updates: mutation records for the adoption agency algorithm inside a template for</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#adoption-agency-algorithm">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#current-active-template">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mutation-records.js"></script>
+<div id="target"><?marker name="m"></div>
+<script>
+  const target = document.getElementById("target");
+  const getRecords = collectRecords(target, {
+    childList: true,
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+</script>
+<template for="m"><b>1<p>2</b>3</p></template>
+<script>
+  test(() => {
+    assert_equals(target.innerHTML, "<b>1</b><p><b>2</b>3</p>");
+  }, "The adoption agency algorithm runs inside the template for");
+
+  test(() => {
+    const records = getRecords();
+    const p = target.querySelector("p");
+    const statuses = records.map(r => r.activeTemplateStatus);
+    assert_equals(statuses[0], "start");
+    assert_equals(statuses[statuses.length - 1], "end");
+    for (const record of records.slice(1, -1)) {
+      assert_equals(record.activeTemplateStatus, "update", describeRecord(record));
+      assert_equals(record.activeTemplateAttributes, records[0].activeTemplateAttributes);
+    }
+    assert_true(records.some(r => r.removedNodes[0] === p),
+      "moving the p element out of the b element is observed");
+    assert_true(records.some(r => r.target === target && r.addedNodes[0] === p),
+      "inserting the p element into the target is observed");
+  }, "Mutations made by the adoption agency algorithm have the update status");
+</script>

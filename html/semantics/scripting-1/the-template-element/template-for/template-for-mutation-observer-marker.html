@@ -1,0 +1,70 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HTML partial updates: mutation records for a template for that inserts at a marker</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#current-active-template">
+<link rel="help" href="https://dom.spec.whatwg.org/#dom-mutationobserverinit-activetemplateattributefilter">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mutation-records.js"></script>
+<div id="outer"><div id="target">a<?marker name="m">b</div></div>
+<script>
+  const outer = document.getElementById("outer");
+  const target = document.getElementById("target");
+  const getFilteredRecords = collectRecords(target, {
+    childList: true,
+    activeTemplateAttributeFilter: [],
+  });
+  const getPlainRecords = collectRecords(target, { childList: true });
+  const getSubtreeRecords = collectRecords(outer, {
+    childList: true,
+    subtree: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+  const getNonSubtreeRecords = collectRecords(outer, {
+    childList: true,
+    subtree: false,
+    activeTemplateAttributeFilter: ["for"],
+  });
+</script>
+<template for="m"><i>x</i></template>
+<script>
+  test(() => {
+    const records = getFilteredRecords();
+    assert_array_equals(records.map(describeRecord), [
+      `start: added [] removed [] between "a" and <?marker>`,
+      `update: added [<i>] removed [] between "a" and <?marker>`,
+      `end: added [] removed [<?marker>] between <i> and "b"`,
+    ]);
+    for (const record of records) {
+      assert_equals(record.target, target);
+    }
+  }, "An empty start record marks the start, and the end record removes the marker");
+
+  test(() => {
+    const records = getPlainRecords();
+    assert_array_equals(records.map(describeRecord), [
+      `null: added [<i>] removed [] between "a" and <?marker>`,
+      `null: added [] removed [<?marker>] between <i> and "b"`,
+    ]);
+    for (const record of records) {
+      assert_equals(record.activeTemplateAttributes, null);
+    }
+  }, "An observer without activeTemplateAttributeFilter does not get the empty start record");
+
+  test(() => {
+    const subtreeRecords = getSubtreeRecords();
+    const i = target.querySelector("i");
+    assert_array_equals(subtreeRecords.map(describeRecord), [
+      `start: added [] removed [] between "a" and <?marker>`,
+      `update: added [<i>] removed [] between "a" and <?marker>`,
+      `update: added ["x"] removed [] between null and null`,
+      `end: added [] removed [<?marker>] between <i> and "b"`,
+    ]);
+    assert_array_equals(subtreeRecords.map(r => r.target), [target, target, i, target]);
+    for (const record of subtreeRecords) {
+      assert_equals(record.activeTemplateAttributes, subtreeRecords[0].activeTemplateAttributes);
+      assert_equals(record.activeTemplateAttributes["for"], "m");
+    }
+    assert_equals(getNonSubtreeRecords().length, 0);
+  }, "Ancestor observers receive active template records only when subtree is true");
+</script>

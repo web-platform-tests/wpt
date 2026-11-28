@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HTML partial updates: mutation record for a template for without a target</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#current-active-template">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mutation-records.js"></script>
+<div id="container"><script>
+  const container = document.getElementById("container");
+  const getFilteredRecords = collectRecords(container, {
+    childList: true,
+    activeTemplateAttributeFilter: ["for", "data-x"],
+  });
+  const getPlainRecords = collectRecords(container, { childList: true });
+</script><template for="missing" data-x="1"><b>content</b></template></div>
+<script>
+  test(() => {
+    const records = getFilteredRecords();
+    assert_array_equals(records.map(describeRecord), [
+      `abort: added [<template>] removed [] between <script> and null`,
+    ]);
+    const attributes = records[0].activeTemplateAttributes;
+    assert_equals(Object.getPrototypeOf(attributes), null);
+    assert_true(Object.isFrozen(attributes));
+    assert_array_equals(Object.keys(attributes), ["for", "data-x"]);
+    assert_equals(attributes["for"], "missing");
+    assert_equals(attributes["data-x"], "1");
+  }, "Inserting the inert template element is reported as an abort record");
+
+  test(() => {
+    const records = getPlainRecords();
+    assert_array_equals(records.map(describeRecord), [
+      `null: added [<template>] removed [] between <script> and null`,
+    ]);
+    assert_equals(records[0].activeTemplateAttributes, null);
+  }, "An observer without activeTemplateAttributeFilter gets a record with null status");
+</script>

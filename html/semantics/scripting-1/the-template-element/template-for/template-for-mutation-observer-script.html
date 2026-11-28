@@ -1,0 +1,95 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HTML partial updates: mutation records when script runs during a template for patch</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#current-active-template">
+<link rel="help" href="https://dom.spec.whatwg.org/#dom-mutationobserverinit-activetemplateattributefilter">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/mutation-records.js"></script>
+<div id="target"><?marker name="m"></div>
+<div id="cd-target">a<?marker name="cd"></div>
+<script>
+  const target = document.getElementById("target");
+  const cdTarget = document.getElementById("cd-target");
+  const getRecords = collectRecords(target, {
+    childList: true,
+    activeTemplateAttributeFilter: [],
+  });
+  const getCdRecords = collectRecords(cdTarget, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    characterData: true,
+    activeTemplateAttributeFilter: ["for"],
+  });
+</script>
+<template for="m"><b>1</b><script>target.append(document.createElement("u"));</script><i>2</i></template>
+<template for="cd"><script>cdTarget.firstChild.data = "ab"; cdTarget.setAttribute("data-a", "1");</script></template>
+<script>
+  test(() => {
+    assert_array_equals(getRecords().map(describeRecord), [
+      `start: added [] removed [] between null and <?marker>`,
+      `update: added [<b>] removed [] between null and <?marker>`,
+      `update: added [<script>] removed [] between <b> and <?marker>`,
+      `null: added [<u>] removed [] between <?marker> and null`,
+      `update: added [<i>] removed [] between <script> and <?marker>`,
+      `end: added [] removed [<?marker>] between <i> and <u>`,
+    ]);
+    for (const record of getRecords()) {
+      if (record.activeTemplateStatus === null) {
+        assert_equals(record.activeTemplateAttributes, null);
+      }
+    }
+  }, "Mutations made by script while a template for is being parsed have null activeTemplateStatus");
+
+  test(t => {
+    const iframe = document.createElement("iframe");
+    document.body.append(iframe);
+    t.add_cleanup(() => iframe.remove());
+    const doc = iframe.contentDocument;
+    doc.open();
+    doc.write(`<div id="outer"><div id="inner"><?marker name="tm"></div></div>`);
+    const outer = doc.getElementById("outer");
+    const inner = doc.getElementById("inner");
+    const getTransientRecords = collectRecords(outer, {
+      childList: true,
+      subtree: true,
+      activeTemplateAttributeFilter: ["for"],
+    });
+    doc.write(`<template for="tm"><br>`);
+    inner.remove();
+    doc.write(`<hr></template>`);
+    doc.close();
+
+    const records = getTransientRecords();
+    assert_array_equals(records.map(describeRecord), [
+      `start: added [] removed [] between null and <?marker>`,
+      `update: added [<br>] removed [] between null and <?marker>`,
+      `null: added [] removed [<div>] between null and null`,
+      `update: added [<hr>] removed [] between <br> and <?marker>`,
+      `end: added [] removed [<?marker>] between <hr> and null`,
+    ]);
+    assert_array_equals(records.map(r => r.target), [inner, inner, outer, inner, inner]);
+    assert_equals(records[2].activeTemplateAttributes, null);
+    const templateRecords = records.filter(r => r.activeTemplateStatus !== null);
+    assert_equals(templateRecords.length, 4);
+    for (const record of templateRecords) {
+      assert_equals(record.activeTemplateAttributes, templateRecords[0].activeTemplateAttributes);
+      assert_equals(record.activeTemplateAttributes["for"], "tm");
+    }
+  }, "Transient registered observers preserve activeTemplateAttributeFilter when the target is detached mid-patch");
+
+  test(() => {
+    const records = getCdRecords();
+    assert_array_equals(records.map(r => `${r.type}:${r.activeTemplateStatus}`), [
+      "childList:start",
+      "childList:update",
+      "childList:update",
+      "characterData:null",
+      "attributes:null",
+      "childList:end",
+    ]);
+    assert_equals(records[3].activeTemplateAttributes, null);
+    assert_equals(records[4].activeTemplateAttributes, null);
+  }, "characterData and attributes records queued during a template for patch have null activeTemplateStatus and activeTemplateAttributes");
+</script>

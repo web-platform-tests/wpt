@@ -13,7 +13,7 @@
             }
         }
 
-        return getFeatures(document?.currentScript?.src ?? '');
+        return getFeatures(globalThis.document?.currentScript?.src ?? '');
     })();
 
     function assertBidiIsEnabled(){

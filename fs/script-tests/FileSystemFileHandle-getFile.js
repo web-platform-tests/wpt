@@ -51,3 +51,108 @@ directory_test(async (t, root) => {
   const file = await fileHandle.getFile();
   assert_equals(file.name, fileName);
 }, 'getFile() returns expected name');
+
+// Ways to change the entry behind a File returned by getFile(), and the
+// DOMException the File API requires when reading the stale File afterwards.
+const kInvalidations = [
+  {
+    description: 'removeEntry()',
+    invalidate: async (t, root, handle) => root.removeEntry(handle.name),
+    error: 'NotFoundError',
+  },
+  {
+    description: 'createWritable()',
+    invalidate: async (t, root, handle, contents = kModifiedContents) => {
+      const writer = await cleanup_writable(t, await handle.createWritable());
+      await writer.write(contents);
+      await writer.close();
+    },
+    error: 'NotReadableError',
+  },
+];
+
+for (const {description: invalidateDesc, invalidate, error} of kInvalidations) {
+  directory_test(async (t, root) => {
+    const handle =
+        await createFileWithContents('file.txt', kOriginalContents, root);
+    const file = await handle.getFile();
+
+    const text = await file.text();
+    const buffer = await file.arrayBuffer();
+    const lastModified = file.lastModified;
+
+    await invalidate(t, root, handle);
+
+    assert_equals(text, kOriginalContents, 'text() result is unchanged');
+    assert_equals(
+        new TextDecoder().decode(buffer), kOriginalContents,
+        'arrayBuffer() result is unchanged');
+    assert_equals(file.name, handle.name, 'name is unchanged');
+    assert_equals(file.size, kOriginalContents.length, 'size is unchanged');
+    assert_equals(file.lastModified, lastModified, 'lastModified is unchanged');
+  }, `Data read from a getFile() File before ${invalidateDesc} stays valid`);
+
+  for (const {description: readerDesc, read} of kReaders) {
+    directory_test(async (t, root) => {
+      await promise_rejects_read(
+          t, error, readAfterChange(t, root, invalidate, sameBlob, read),
+          readerDesc);
+    }, `Reading a getFile() File with ${readerDesc} after ` +
+           `${invalidateDesc} rejects`);
+  }
+
+  for (const {description: blobDesc, derive} of kDerivedBlobs) {
+    directory_test(async (t, root) => {
+      await promise_rejects_read(
+          t, error, readAfterChange(t, root, invalidate, derive, textOf),
+          blobDesc + ' the File');
+    }, `${blobDesc} a getFile() File is invalidated by ${invalidateDesc}`);
+  }
+
+  directory_test(async (t, root) => {
+    const sliceAfterChange = file => {
+      const slice = file.slice(1, file.size);
+      assert_equals(slice.size, file.size - 1, 'slice() itself succeeds');
+      return textOf(slice);
+    };
+    await promise_rejects_read(
+        t, error,
+        readAfterChange(t, root, invalidate, sameBlob, sliceAfterChange),
+        'a slice created after the change');
+  }, `A slice of a getFile() File created after ${invalidateDesc} ` +
+         'is invalidated');
+
+  directory_test(async (t, root) => {
+    const handle =
+        await createFileWithContents('file.txt', kOriginalContents, root);
+    const file = await handle.getFile();
+
+    const fromBuffer = new Blob([await file.arrayBuffer()]);
+    const fromText = new Blob([await file.text()]);
+
+    await invalidate(t, root, handle);
+
+    assert_equals(
+        await fromBuffer.text(), kOriginalContents,
+        'Blob built from arrayBuffer() result is readable');
+    assert_equals(
+        await fromText.text(), kOriginalContents,
+        'Blob built from text() result is readable');
+  }, `Blobs built from data read before ${invalidateDesc} stay readable`);
+
+  directory_test(async (t, root) => {
+    const handle =
+        await createFileWithContents('file.txt', kLargeContents, root);
+    const file = await handle.getFile();
+    const reader = file.stream().getReader();
+    const firstChunk = await readFirstChunk(reader);
+    assert_less_than(
+        firstChunk.length, file.size, 'first chunk does not cover the file');
+
+    await invalidate(t, root, handle, kLargeModifiedContents);
+
+    await promise_rejects_read(
+        t, error, readRemainingChunks(reader), 'remaining chunks');
+  }, 'A stream() read of a getFile() File in progress during ' +
+         `${invalidateDesc} rejects`);
+}

@@ -2878,8 +2878,6 @@
             this.set_status(status, message, stack);
             this.phase = this.phases.HAS_RESULT;
             this.done();
-        } finally {
-            this.current_test = null;
         }
     };
 

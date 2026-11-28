@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Test: Image shape with margin + shape-margin on a left float</title>
+    <link rel="author" title="Rebecca Hauck" href="rhauck@adobe.com"/>
+    <link rel="help" href="http://www.w3.org/TR/css-shapes-1/#shapes-from-image"/>
+    <link rel="help" href="http://www.w3.org/TR/css-shapes-1/#shape-outside-property"/>
+    <link rel="help" href="http://www.w3.org/TR/css-shapes/#shape-margin-property"/>
+    <link rel="match" href="reference/shape-image-margin-002-ref.html"/>
+    <meta name="flags" content="ahem image"/>
+    <meta name="assert" content="This test verifies that the image shape that defines the float
+                                 area is clipped to the float's margin box and respects the
+                                 shape-margin extending beyond the margin, causing the
+                                 text to be pushed below the defined shape."/>
+    <style type="text/css">
+        .container {
+              position: relative;
+              font-family: Ahem;
+              font-size: 50px;
+              line-height: 50px;
+        }
+        #test {
+            width: 180px;
+            height: 100px;
+            color: rgb(0, 100, 0);
+        }
+        #shape-div {
+            float: left;
+            width: 100px;
+            height: 160px;
+            margin: 20px;
+            shape-margin: 30px;
+            shape-outside: url(support/square.png);
+        }
+        #ref {
+            position: absolute;
+            top: 200px;
+        }
+        #line {
+            width: 100px;
+            border-top: 1px solid black;
+        }
+        #failure {
+            width: 50px;
+            height: 99px;
+            background-color: red;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <p>
+        The test passes if the green rectangle is below the line. There should be no red.
+    </p>
+    <div id="ref">
+        <div id="line"></div>
+        <div id="failure"></div>
+    </div>
+    <div id="test" class="container">
+        <div id="shape-div"></div>
+        x<br/>x
+    </div>
+</body>
+</html>

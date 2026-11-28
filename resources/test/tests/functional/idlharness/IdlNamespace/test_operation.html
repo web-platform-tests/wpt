@@ -74,6 +74,35 @@ namespace Absent {
 };
 `);
 idlArray.test();
+
+// Untested namespace members are not tested, but a partial's members are
+(() => {
+  Object.defineProperty(self, "quux", {
+    value: Object.defineProperty({}, "g", {
+      value: function() {},
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    }),
+    writable: true,
+    enumerable: false,
+    configurable: true,
+  });
+
+  const idlArray = new IdlArray();
+  idlArray.add_untested_idls(`
+[Exposed=Window]
+namespace quux {
+  undefined f();
+};
+`);
+  idlArray.add_idls(`
+partial namespace quux {
+  undefined g();
+};
+`);
+  idlArray.test();
+})();
 </script>
 <script type="text/json" id="expected">
 {
@@ -241,6 +270,24 @@ idlArray.test();
     },
     {
       "name": "Absent namespace: existence and properties of namespace object",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial namespace quux: original namespace defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial namespace quux: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "quux namespace: operation g()",
       "status_string": "PASS",
       "properties": {},
       "message": null

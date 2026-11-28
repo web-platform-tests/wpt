@@ -42,7 +42,13 @@ def assert_events(events, expected_events):
         events_not_seen) == 0, f"Extra events received: {events_not_seen}"
 
 
-def assert_pointer_events(session, expected_events, target, pointer_type):
+def assert_pointer_events(
+    session,
+    expected_events,
+    target,
+    pointer_type,
+    expected_pointer_ids=None,
+):
     events = session.execute_script("return window.recordedEvents;")
     assert len(events) == len(expected_events)
     event_types = [e["type"] for e in events]
@@ -51,6 +57,10 @@ def assert_pointer_events(session, expected_events, target, pointer_type):
     for e in events:
         assert e["target"] == target
         assert e["pointerType"] == pointer_type
+
+    if expected_pointer_ids is not None:
+        pointer_ids = [e["pointerId"] for e in events]
+        assert pointer_ids == expected_pointer_ids
 
 
 def record_pointer_events(session, element):
@@ -61,6 +71,7 @@ def record_pointer_events(session, element):
         function onPointerEvent(event) {
             window.recordedEvents.push({
                 "pointerType": event.pointerType,
+                "pointerId": event.pointerId,
                 "target": event.target.id,
                 "type": event.type,
             });

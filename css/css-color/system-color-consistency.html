@@ -75,5 +75,24 @@
     test_not_canvas("LinkText", colorScheme);
     test_not_canvas("ActiveText", colorScheme);
     test_not_canvas("VisitedText", colorScheme);
+
+    // Verify that system colors are specific values. While for most system colors
+    // it is not specified which exact value they should resolve to, for these
+    // they are specified to exact values.
+    const EXPECTED_LINK_TEXT_COLOR = {
+      light: ['#0000EE', 'rgb(0, 0, 238)'],
+      dark: ['#9E9EFF', 'rgb(158, 158, 255)'],
+    };
+    const EXPECTED_VISITED_TEXT_COLOR = {
+      light: ['#551A8B', 'rgb(85, 26, 139)'],
+      dark: ['#D0ADF0', 'rgb(208, 173, 240)'],
+    };
+    const EXPECTED_ACTIVE_TEXT_COLOR = {
+      light: ['#EE0000', 'rgb(238, 0, 0)'],
+      dark: ['#FF0000', 'rgb(255, 0, 0)'],
+    };
+    test_computed_value('color', 'LinkText', EXPECTED_LINK_TEXT_COLOR[colorScheme], `has the exact value as blue link (${colorScheme})`);
+    test_computed_value('color', 'VisitedText', EXPECTED_VISITED_TEXT_COLOR[colorScheme], `has exact value as purple link (${colorScheme})`);
+    test_computed_value('color', 'ActiveText', EXPECTED_ACTIVE_TEXT_COLOR[colorScheme], `has exact value as red link (${colorScheme})`);
   });
 </script>

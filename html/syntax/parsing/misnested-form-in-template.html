@@ -9,7 +9,7 @@
 <script>
 test(function() {
   const wrapper = document.querySelector('div');
-  const expectedContent = "A<template><br>BC<form>D<div>E</div></form>FG</template>H";
+  const expectedContent = "A<template contentnamespace=\"html\"><br>BC<form>D<div>E</div></form>FG</template>H";
   const actualContent = wrapper.innerHTML.trim();
   assert_equals(actualContent, expectedContent, "The parsed structure should match the expected result with correctly nested elements.");
 }, "Testing parsing of misnested <form> tags inside <template>");

@@ -57,7 +57,13 @@
       options = {},
     ) {
       const wrapped_html = `<div>${placeholder}</div>${patch}`;
-      const wrapped_expected_output = `<div>${expected_output}</div>${options.tail ? patch : ""}`;
+      const tail =
+        typeof options.tail === "string"
+          ? options.tail
+          : options.tail
+            ? patch
+            : "";
+      const wrapped_expected_output = `<div>${expected_output}</div>${tail}`;
       for (const method of [
         "innerHTML",
         "iframe",
@@ -188,14 +194,14 @@
       `<?start name="">Old<?end>`,
       `<template for="">New</template>`,
       `<?start name=""?>Old<?end ?>`,
-      { tail: true },
+      { tail: `<template contentnamespace="html" for="">New</template>` },
     );
     add_test_scenario(
       "Empty marker name with <?marker>",
       `<?marker name="">Old`,
       `<template for="">New</template>`,
       `<?marker name=""?>Old`,
-      { tail: true },
+      { tail: `<template contentnamespace="html" for="">New</template>` },
     );
 
     // The <span> is left open at </template>, so the current node is the <span>

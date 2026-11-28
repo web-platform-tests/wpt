@@ -29,7 +29,7 @@ test(() => {
   assert_equals(emptyForTemplate.tagName, "TEMPLATE");
   assert_not_equals(emptyForTemplate.content.querySelector('#ok-empty'), null);
 
-  assert_equals(container.innerHTML.trim().replace(/\s+/g, ' '), '<span>Before</span> <template id="empty-for-template" for=""> <span id="ok-empty">Allowed</span> </template> <span>After</span>');
+  assert_equals(container.innerHTML.trim().replace(/\s+/g, ' '), '<span>Before</span> <template contentnamespace="html" id="empty-for-template" for=""> <span id="ok-empty">Allowed</span> </template> <span>After</span>');
 }, "A template with an empty for attribute is ignored and attached to the DOM");
 </script>
 </body>

@@ -4,6 +4,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#treelike">
 <link rel="author" title="Oriol Brufau" href="mailto:obrufau@igalia.com">
 <meta name="assert" content="This test checks the validity of various selectors containing tree-abiding pseudo-elements." />
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#element-like">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
@@ -38,10 +39,10 @@ test_valid_selector("::file-selector-button:focus");
 test_valid_selector("::file-selector-button:active");
 test_valid_selector("::file-selector-button:is(:hover)");
 
-test_invalid_selector("::file-selector-button::before");
+test_valid_selector("::file-selector-button::before");
 test_invalid_selector("::file-selector-button#id");
 test_invalid_selector("::file-selector-button#class");
-test_invalid_selector("::file-selector-button:host");
+test_valid_selector("::file-selector-button:host");
 
 // Combinations of the above
 test_invalid_selector("::before::before");

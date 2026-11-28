@@ -48,6 +48,9 @@
   `;
 
   test(() => {
-    assert_equals(anchor_host_root.querySelector("#anchored").offsetLeft, 37, "#anchored is positioned using fallback");
-  }, "anchor() in shadow tree should not match host anchor-name");
+    // An anchor name is a loosely matched tree-scoped name, so a reference inside the
+    // host's shadow tree matches a name declared on the host itself.
+    // https://drafts.csswg.org/css-shadow-1/#tree-scoped-name
+    assert_equals(anchor_host_root.querySelector("#anchored").offsetLeft, 8, "#anchored is positioned against its host");
+  }, "anchor() in shadow tree should match host anchor-name");
 </script>

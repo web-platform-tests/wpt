@@ -266,4 +266,35 @@
     await failOnTimeout(window.control_ran.promise);
     assert_array_equals(window.events, ["control-defer"]);
   }, "element.streamPrependHTMLUnsafe: defer scripts do not run if the reference child is removed before a trailing '<' is flushed by close()");
+
+  promise_test(async (t) => {
+    window.events = [];
+
+    const iframe = document.createElement("iframe");
+    t.add_cleanup(() => iframe.remove());
+    iframe.srcdoc = "<!doctype html><body><div id='target'></div></body>";
+    await new Promise((resolve) => {
+      iframe.addEventListener("load", resolve, { once: true });
+      document.body.appendChild(iframe);
+    });
+
+    const iframeDOMException = iframe.contentWindow.DOMException;
+    iframe.contentWindow.events = window.events;
+    const controlDone = fetch("resources/slow.js?pipe=trickle(d0.5)&defer_destroyed_doc_control=1")
+      .then((r) => r.text())
+      .then(() => new Promise((r) => t.step_timeout(r, 0)));
+    const target = iframe.contentDocument.getElementById("target");
+    const writer = target.streamHTMLUnsafe({ runScripts: true }).getWriter();
+    await writer.write(
+      "<script defer src='resources/slow.js?pipe=trickle(d0.2)&defer_destroyed_doc=1'><" + "/script>" +
+      "<p id='before-remove'>before</p>"
+    );
+
+    iframe.remove();
+
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.closed));
+    await promise_rejects_dom(t, "InvalidStateError", iframeDOMException, failOnTimeout(writer.close()));
+    await controlDone;
+    assert_array_equals(window.events, [], "Defer script in destroyed document does not execute");
+  }, "Removing iframe while defer script is pending errors the stream with InvalidStateError and does not execute defer scripts");
 </script>

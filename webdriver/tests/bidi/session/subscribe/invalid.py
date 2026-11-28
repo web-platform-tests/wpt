@@ -149,6 +149,20 @@ async def test_params_user_context_and_contexts(bidi_session, top_context):
         await bidi_session.session.subscribe(events=["browsingContext.load"], user_contexts=["default"], contexts=[top_context["context"]])
 
 
+async def test_params_user_context_and_empty_contexts(bidi_session):
+    with pytest.raises(InvalidArgumentException):
+        await bidi_session.session.subscribe(events=["browsingContext.load"], user_contexts=["default"], contexts=[])
+
+
+async def test_params_empty_user_contexts_and_contexts(bidi_session, top_context):
+    with pytest.raises(InvalidArgumentException):
+        await bidi_session.session.subscribe(
+            events=["browsingContext.load"],
+            user_contexts=[],
+            contexts=[top_context["context"]],
+        )
+
+
 async def test_subscribe_to_closed_user_context(bidi_session, create_user_context):
     user_context = await create_user_context()
     await bidi_session.browser.remove_user_context(user_context=user_context)

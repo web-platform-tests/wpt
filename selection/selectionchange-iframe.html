@@ -1,0 +1,53 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>selectionchange event in iframes</title>
+<link rel="help" href="https://w3c.github.io/selection-api/#selectionchange-event">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+"use strict";
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+
+  const loaded = new Promise(resolve => {
+    iframe.addEventListener("load", resolve, {once: true});
+  });
+  document.body.appendChild(iframe);
+  await loaded;
+
+  const childDocument = iframe.contentDocument;
+  const childSelection = childDocument.getSelection();
+  assert_not_equals(childSelection, null, "The iframe must have a selection");
+
+  childDocument.body.innerHTML =
+    "<div id='target'>test <span>nested</span></div>";
+  const target = childDocument.getElementById("target");
+
+  let childEvents = 0;
+  let parentEvents = 0;
+  let childEventTarget = null;
+
+  document.addEventListener("selectionchange", () => parentEvents++);
+  childDocument.addEventListener("selectionchange", event => {
+    childEvents++;
+    childEventTarget = event.target;
+  });
+
+  childSelection.setBaseAndExtent(target, 0, target, 1);
+  assert_equals(childEvents, 0, "The child event must be scheduled");
+  assert_equals(parentEvents, 0,
+    "No parent event must fire synchronously");
+
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+
+  assert_equals(childEvents, 1,
+    "The iframe document must receive one event");
+  assert_equals(childEventTarget, childDocument,
+    "The event target must be the iframe document");
+  assert_equals(parentEvents, 0,
+    "The parent document must not receive an event");
+}, "selectionchange fires on the iframe document whose selection changed");
+</script>

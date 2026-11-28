@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+  <meta charset="UTF-8">
+
+  <title>CSS Reference File</title>
+
+  <link rel="author" title="Gérard Talbot" href="http://www.gtalbot.org/BrowserBugsSection/css21testsuite/">
+
+  <style>
+  div
+    {
+      font-size: 32px;
+      line-height: 3;
+    }
+
+  div.floated-right
+    {
+      float: right;
+    }
+
+  div.fontsize16px
+    {
+      font-size: 16px;
+      line-height: 1;
+    }
+  </style>
+
+  <div>a<ruby><rb>&nbsp;</rb><rt>b</ruby>c
+    <div class="floated-right">Far Right</div>
+  </div>
+
+  <div class="floated-right fontsize16px">Far Right</div>
+
+  <div>def</div>
+
+  <div class="floated-right">g<ruby><rb>&nbsp;</rb><rt>h</ruby>i</div>
+
+  <div>Far Left</div>
+
+  <div class="floated-right">jkm</div>
+
+  <div class="fontsize16px">Far Left</div>

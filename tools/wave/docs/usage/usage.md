@@ -177,7 +177,7 @@ The first option downloads the results the same way it is persisted on the serve
 This form is especially useful if you want to import the session details with the results into other instances of the WAVE Test Runner.  
 Furthermore, there is the option to download the raw result in JSON format of all finished APIs.
 This the same JSON you get by clicking on the "JSON" button in the API results column, but of all finished APIs in a ZIP file.
-Lastly, you can download a static HTML page, similiar to the results view.  
+Lastly, you can download a static HTML page, similar to the results view.  
 Finally, at the bottom of the page you can find the list of malfunctioning tests that have been added from the list of last timed-out test files.
 Remove tests by clicking their corresponding button with the trashcan icon.
 

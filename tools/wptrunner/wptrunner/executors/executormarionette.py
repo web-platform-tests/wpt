@@ -683,16 +683,16 @@ class MarionettePrintProtocolPart(PrintProtocolPart):
         self.runner_handle = None
 
     def load_runner(self):
-        url = urljoin(self.parent.executor.server_url("http"), "/print_pdf_runner.html")
-        self.logger.debug("Loading %s" % url)
+        self.url = urljoin(self.parent.executor.server_url("http"), "/print_pdf_runner.html")
+        self.logger.debug("Loading %s" % self.url)
         try:
-            self.marionette.navigate(url)
+            self.marionette.navigate(self.url)
         except Exception as e:
             self.logger.critical(
                 "Loading initial page %s failed. Ensure that the "
                 "there are no other programs bound to this port and "
                 "that your firewall rules or network setup does not "
-                "prevent access.\n%s" % (url, traceback.format_exc(e)))
+                "prevent access.\n%s" % (self.url, traceback.format_exc(e)))
             raise
         self.runner_handle = self.marionette.current_window_handle
 
@@ -718,6 +718,10 @@ class MarionettePrintProtocolPart(PrintProtocolPart):
         handle = self.marionette.current_window_handle
         _switch_to_window(self.marionette, self.runner_handle)
         try:
+            current_url = self.marionette.get_url()
+            assert (
+                current_url == self.url
+            ), f"Runner window has unexpected URL: {current_url}"
             rv = self.marionette.execute_async_script("""
 let callback = arguments[arguments.length - 1];
 render('%s').then(result => callback(result))""" % pdf_base64, new_sandbox=False, sandbox=None)

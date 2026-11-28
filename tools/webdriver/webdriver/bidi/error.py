@@ -99,6 +99,10 @@ class NoSuchScriptException(BidiException):
     error_code = "no such script"
 
 
+class NoSuchTemporaryDirectoryException(BidiException):
+    error_code = "no such temporary directory"
+
+
 class NoSuchUserContextException(BidiException):
     error_code = "no such user context"
 
@@ -113,6 +117,14 @@ class SessionNotCreatedException(BidiException):
 
 class UnableToCaptureScreenException(BidiException):
     error_code = "unable to capture screen"
+
+
+class UnableToCreateTemporaryDirectoryException(BidiException):
+    error_code = "unable to create temporary directory"
+
+
+class UnableToRemoveTemporaryDirectoryException(BidiException):
+    error_code = "unable to remove temporary directory"
 
 
 class UnableToSetCookieException(BidiException):

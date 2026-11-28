@@ -770,4 +770,23 @@
 
   // The else keyword is recognized after substitution, so a var() that expands to else matches.
   test_if_with_custom_properties('if(var(--else): true_value; else: false_value)', [['--else', 'else']], 'true_value');
+
+  // style() queries with range syntax in the condition, negative operands
+  test_if('if(style(-1 = -1): true_value; else: false_value)', 'true_value');
+  test_if('if(style(-1 > -2): true_value; else: false_value)', 'true_value');
+  test_if('if(style(-1 >= -2): true_value; else: false_value)', 'true_value');
+  test_if('if(style(-1 < -2): true_value; else: false_value)', 'false_value');
+  test_if('if(style(-1 <= -2): true_value; else: false_value)', 'false_value');
+  test_if('if(style(-1 < -1): true_value; else: false_value)', 'false_value');
+  test_if('if(style(-2 < -1): true_value; else: false_value)', 'true_value');
+  test_if('if(style(-1px = -1px): true_value; else: false_value)', 'true_value');
+  test_if('if(style(-0.5 = -0.5): true_value; else: false_value)', 'true_value');
+  test_if('if(style(calc(0 - 1) = calc(0 - 1)): true_value; else: false_value)', 'true_value');
+  test_if('if(style(-3 <= -2 <= -1): true_value; else: false_value)', 'true_value');
+  test_if('if(style(-1 >= -2 >= -3): true_value; else: false_value)', 'true_value');
+  test_if('if(style(-1 <= -2 <= -3): true_value; else: false_value)', 'false_value');
+  test_if('if(style(-3 <= -2 <= 1): true_value; else: false_value)', 'true_value');
+  test_if('if(style(-1 <= -2 <= 1): true_value; else: false_value)', 'false_value');
+  test_if_with_custom_properties('if(style(--x >= -1): true_value; else: false_value)', [['--x', '-1']], 'true_value');
+  test_if_with_custom_properties('if(style(--x <= -2): true_value; else: false_value)', [['--x', '-1']], 'false_value');
 </script>

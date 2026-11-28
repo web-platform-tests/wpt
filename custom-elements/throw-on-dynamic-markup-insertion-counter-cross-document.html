@@ -1,0 +1,193 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Custom Elements: create an element for a token guards both the node document and the parser's Document across cross-document adoption</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/parsing.html#create-an-element-for-the-token">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#throw-on-dynamic-markup-insertion-counter">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+function createFrame(t) {
+  const frame = document.createElement("iframe");
+  document.body.appendChild(frame);
+  t.add_cleanup(() => frame.remove());
+  return frame;
+}
+
+const dynamicMarkupMethods = [
+  ["document.open()", (doc) => doc.open()],
+  ["document.write()", (doc) => doc.write("<b>injected</b>")],
+  ["document.writeln()", (doc) => doc.writeln("<b>injected</b>")],
+  ["document.close()", (doc) => doc.close()],
+];
+
+for (const callbackType of ["constructor", "attributeChangedCallback"]) {
+  for (const [methodName, invoke] of dynamicMarkupMethods) {
+    test((t) => {
+      const parserFrame = createFrame(t);
+      const targetFrame = createFrame(t);
+      const parserWin = parserFrame.contentWindow;
+      const parserDoc = parserFrame.contentDocument;
+      const targetWin = targetFrame.contentWindow;
+      const targetDoc = targetFrame.contentDocument;
+
+      let ran = false;
+      let caught = null;
+      window.adoptIntoTarget = (el) => targetDoc.body.appendChild(el);
+      t.add_cleanup(() => {
+        delete window.adoptIntoTarget;
+      });
+      targetWin.customElements.define("x-probe", class extends targetWin.HTMLElement {
+        static observedAttributes = ["title"];
+        constructor() {
+          super();
+          if (callbackType === "constructor") {
+            ran = true;
+            try {
+              invoke(parserDoc);
+            } catch (e) {
+              caught = e;
+            }
+          }
+        }
+        attributeChangedCallback() {
+          if (callbackType === "attributeChangedCallback") {
+            ran = true;
+            try {
+              invoke(parserDoc);
+            } catch (e) {
+              caught = e;
+            }
+          }
+        }
+      });
+
+      parserDoc.open();
+      parserDoc.write(
+        `<div id="parent"><script>parent.adoptIntoTarget(document.getElementById("parent"));<\/script>` +
+        `<x-probe title="val"></x-probe></div>`
+      );
+      parserDoc.write(`<span id="after">ok</span>`);
+      parserDoc.close();
+
+      assert_true(ran, `${callbackType} should have run synchronously`);
+      assert_throws_dom("InvalidStateError", parserWin.DOMException, () => {
+        if (caught !== null) {
+          throw caught;
+        }
+      });
+      assert_equals(parserDoc.querySelector("b"), null);
+      assert_not_equals(parserDoc.getElementById("after"), null, "parserDoc counter was decremented");
+      assert_not_equals(targetDoc.querySelector("#parent > x-probe"), null);
+    }, `${methodName} on parser's Document throws InvalidStateError in ${callbackType} when parent moved to another document`);
+
+    test((t) => {
+      const parserFrame = createFrame(t);
+      const targetFrame = createFrame(t);
+      const parserDoc = parserFrame.contentDocument;
+      const targetWin = targetFrame.contentWindow;
+      const targetDoc = targetFrame.contentDocument;
+
+      let ran = false;
+      let caught = null;
+      window.adoptIntoTarget = (el) => targetDoc.body.appendChild(el);
+      t.add_cleanup(() => {
+        delete window.adoptIntoTarget;
+      });
+      targetWin.customElements.define("x-probe", class extends targetWin.HTMLElement {
+        static observedAttributes = ["title"];
+        constructor() {
+          super();
+          if (callbackType === "constructor") {
+            ran = true;
+            try {
+              invoke(targetDoc);
+            } catch (e) {
+              caught = e;
+            }
+          }
+        }
+        attributeChangedCallback() {
+          if (callbackType === "attributeChangedCallback") {
+            ran = true;
+            try {
+              invoke(targetDoc);
+            } catch (e) {
+              caught = e;
+            }
+          }
+        }
+      });
+
+      parserDoc.open();
+      parserDoc.write(
+        `<div id="parent"><script>parent.adoptIntoTarget(document.getElementById("parent"));<\/script>` +
+        `<x-probe title="val"></x-probe></div>`
+      );
+      parserDoc.close();
+
+      assert_true(ran, `${callbackType} should have run synchronously`);
+      assert_throws_dom("InvalidStateError", targetWin.DOMException, () => {
+        if (caught !== null) {
+          throw caught;
+        }
+      });
+      assert_equals(targetDoc.querySelector("b"), null);
+      assert_not_equals(targetDoc.querySelector("#parent > x-probe"), null);
+      targetDoc.close();
+    }, `${methodName} on target Document throws InvalidStateError in ${callbackType} when parent moved to another document`);
+
+    test((t) => {
+      const parserFrame = createFrame(t);
+      const targetFrame = createFrame(t);
+      const unrelatedFrame = createFrame(t);
+      const parserDoc = parserFrame.contentDocument;
+      const targetWin = targetFrame.contentWindow;
+      const targetDoc = targetFrame.contentDocument;
+      const unrelatedDoc = unrelatedFrame.contentDocument;
+
+      let ran = false;
+      let caught = null;
+      window.adoptIntoTarget = (el) => targetDoc.body.appendChild(el);
+      t.add_cleanup(() => {
+        delete window.adoptIntoTarget;
+      });
+      targetWin.customElements.define("x-probe", class extends targetWin.HTMLElement {
+        static observedAttributes = ["title"];
+        constructor() {
+          super();
+          if (callbackType === "constructor") {
+            ran = true;
+            try {
+              invoke(unrelatedDoc);
+            } catch (e) {
+              caught = e;
+            }
+          }
+        }
+        attributeChangedCallback() {
+          if (callbackType === "attributeChangedCallback") {
+            ran = true;
+            try {
+              invoke(unrelatedDoc);
+            } catch (e) {
+              caught = e;
+            }
+          }
+        }
+      });
+
+      parserDoc.open();
+      parserDoc.write(
+        `<div id="parent"><script>parent.adoptIntoTarget(document.getElementById("parent"));<\/script>` +
+        `<x-probe title="val"></x-probe></div>`
+      );
+      parserDoc.close();
+
+      assert_true(ran, `${callbackType} should have run synchronously`);
+      assert_equals(caught, null);
+    }, `${methodName} on unrelated Document does not throw in ${callbackType} when parent moved to another document`);
+  }
+}
+</script>
+</body>

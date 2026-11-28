@@ -1,0 +1,122 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HTML partial updates - dynamic markup insertion on parser's Document in pagehide after cross-document move throws</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/scripting.html#prepare-content-patching">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#throw-on-dynamic-markup-insertion-counter">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+function createFrame(t) {
+  const frame = document.createElement("iframe");
+  document.body.appendChild(frame);
+  t.add_cleanup(() => frame.remove());
+  return frame;
+}
+
+const dynamicMarkupMethods = [
+  ["document.open()", (doc) => doc.open()],
+  ["document.write()", (doc) => doc.write("<p>injected")],
+  ["document.writeln()", (doc) => doc.writeln("<p>injected")],
+  ["document.close()", (doc) => doc.close()],
+];
+
+for (const [methodName, invoke] of dynamicMarkupMethods) {
+  test((t) => {
+    const parserFrame = createFrame(t);
+    const targetFrame = createFrame(t);
+    const parserWin = parserFrame.contentWindow;
+    const parserDoc = parserFrame.contentDocument;
+    const targetDoc = targetFrame.contentDocument;
+
+    parserDoc.open();
+    parserDoc.write(`<div id="target"><?start name="outer">old<?end></div>`);
+    parserDoc.write(`<template for="outer"><?start name="inner"><iframe></iframe><?end>`);
+    targetDoc.body.appendChild(parserDoc.getElementById("target"));
+
+    let pagehideRan = false;
+    let caught = null;
+    targetDoc.querySelector("#target iframe").contentWindow.onpagehide = () => {
+      pagehideRan = true;
+      try {
+        invoke(parserDoc);
+      } catch (e) {
+        caught = e;
+      }
+    };
+
+    parserDoc.write(`<template for="inner">New</template></template>`);
+    parserDoc.write(`<span id="after">ok</span>`);
+    parserDoc.close();
+
+    assert_true(pagehideRan, "pagehide should have fired");
+    assert_throws_dom("InvalidStateError", parserWin.DOMException, () => {
+      if (caught !== null) {
+        throw caught;
+      }
+    });
+    assert_equals(targetDoc.getElementById("target").textContent, "New");
+    assert_not_equals(parserDoc.getElementById("after"), null, "parserDoc counter was decremented");
+  }, `${methodName} on parser's Document throws InvalidStateError in pagehide when patch target moved to another document`);
+}
+
+test((t) => {
+  const parserFrame = createFrame(t);
+  const targetFrame = createFrame(t);
+  const thirdFrame = createFrame(t);
+  const parserWin = parserFrame.contentWindow;
+  const parserDoc = parserFrame.contentDocument;
+  const targetWin = targetFrame.contentWindow;
+  const targetDoc = targetFrame.contentDocument;
+  const thirdDoc = thirdFrame.contentDocument;
+
+  parserDoc.open();
+  parserDoc.write(`<div id="target"><?start name="outer">old<?end></div>`);
+  parserDoc.write(
+    `<template for="outer"><?start name="inner">` +
+    `<iframe id="f1"></iframe><iframe id="f2"></iframe><?end>`
+  );
+  const target = parserDoc.getElementById("target");
+  targetDoc.body.appendChild(target);
+
+  let f2PagehideRan = false;
+  let parserCaught = null;
+  let targetCaught = null;
+  target.querySelector("#f1").contentWindow.onpagehide = () => {
+    thirdDoc.body.appendChild(target);
+  };
+  target.querySelector("#f2").contentWindow.onpagehide = () => {
+    f2PagehideRan = true;
+    try {
+      parserDoc.write("<p>injected");
+    } catch (e) {
+      parserCaught = e;
+    }
+    try {
+      targetDoc.open();
+    } catch (e) {
+      targetCaught = e;
+    }
+  };
+
+  parserDoc.write(`<template for="inner">New</template></template>`);
+  parserDoc.close();
+
+  assert_true(f2PagehideRan, "second iframe pagehide should have fired");
+  assert_throws_dom("InvalidStateError", parserWin.DOMException, () => {
+    if (parserCaught !== null) {
+      throw parserCaught;
+    }
+  });
+  assert_throws_dom("InvalidStateError", targetWin.DOMException, () => {
+    if (targetCaught !== null) {
+      throw targetCaught;
+    }
+  });
+  assert_equals(target.ownerDocument, thirdDoc);
+  assert_equals(target.textContent, "New");
+  targetDoc.close();
+  thirdDoc.close();
+}, "Adopting scope into a third document mid-removal-loop still guards parser's Document and decrements original scope Document's counter");
+</script>
+</body>

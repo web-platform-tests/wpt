@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!-- Tests parsing of URLs as allowlist items in the iframe allow attribute. -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+const cross_origin = 'https://{{domains[www]}}:{{ports[https][0]}}';
+
+function test_allow(allow_value, expected) {
+  async_test(t => {
+    const iframe = document.createElement('iframe');
+    iframe.src = `${cross_origin}/permissions-policy/resources/report-fullscreen-enabled.html`;
+    iframe.allow = allow_value;
+    t.add_cleanup(() => iframe.remove());
+
+    window.addEventListener('message', t.step_func(e => {
+      if (e.source === iframe.contentWindow && e.data.type === 'fullscreen-enabled') {
+        assert_equals(e.data.enabled, expected);
+        t.done();
+      }
+    }));
+
+    document.body.appendChild(iframe);
+  }, `allow="${allow_value}" expects ${expected}`);
+}
+
+test_allow(`fullscreen blob:${cross_origin}/some-uuid`, false);
+test_allow(`fullscreen blob:${cross_origin}/some-uuid ${cross_origin}`, true);
+test_allow(`fullscreen https://user@{{domains[www]}}:{{ports[https][0]}}`, false);
+test_allow(`fullscreen https://:password@{{domains[www]}}:{{ports[https][0]}}`, false);
+test_allow(`fullscreen ${cross_origin}/some/path.html`, true);
+test_allow(`fullscreen ${cross_origin}`, true);
+</script>

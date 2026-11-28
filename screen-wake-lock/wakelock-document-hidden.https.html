@@ -12,7 +12,7 @@
 'use strict';
 
 promise_test(async t => {
-  await test_driver.set_permission({ name: 'screen-wake-lock' }, 'granted');
+  await test_driver.bless("screen wake lock");
 
   const {minimize, restore} = window_state_context(t);
   await minimize();
@@ -23,7 +23,7 @@ promise_test(async t => {
 }, "navigator.wakeLock.request('screen') fails when the document is hidden");
 
 promise_test(async t => {
-  await test_driver.set_permission({ name: 'screen-wake-lock' }, 'granted');
+  await test_driver.bless("screen wake lock");
 
   const { minimize, restore } = window_state_context(t);
 

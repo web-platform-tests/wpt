@@ -4,7 +4,7 @@ from copy import deepcopy
 from logging import Logger
 from multiprocessing import Pool
 from typing import (Any, Callable, Container, Dict, IO, Iterator, Iterable, List, Optional, Set, Text,
-                    Tuple, Type, Union)
+                    TextIO, Tuple, Type, Union)
 
 from . import jsonlib
 from . import vcs
@@ -422,12 +422,22 @@ def load_and_update(tests_root: Text,
     return manifest
 
 
+def _write_into_file(manifest: Manifest, manifest_file: TextIO) -> None:
+    # Use ',' instead of the default ', ' separator to prevent trailing
+    # spaces: https://docs.python.org/2/library/json.html#json.dump
+    jsonlib.dump_dist(manifest.to_json(caller_owns_obj=True), manifest_file)
+    manifest_file.write("\n")
+
+
 def write(manifest: Manifest, manifest_path: Text) -> None:
     dir_name = os.path.dirname(manifest_path)
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
-    with atomic_write(manifest_path, overwrite=True) as f:
-        # Use ',' instead of the default ', ' separator to prevent trailing
-        # spaces: https://docs.python.org/2/library/json.html#json.dump
-        jsonlib.dump_dist(manifest.to_json(caller_owns_obj=True), f)
-        f.write("\n")
+    try:
+        with atomic_write(manifest_path, overwrite=True) as f:
+            _write_into_file(manifest, f)
+    except OSError:
+        # For filesystems that don't support atomic renames, fall back to a
+        # regular write.
+        with open(manifest_path, "w+") as f:
+            _write_into_file(manifest, f)

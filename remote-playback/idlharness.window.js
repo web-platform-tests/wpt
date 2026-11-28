@@ -13,7 +13,7 @@ idl_test(
   idl_array => {
     try {
       const media = document.createElement('video');
-      media.src = getVideoURI('/media/movie_5');
+      media.src = getVideoURI('/media/movie_300');
       media.width = media.height = 10;
       document.body.appendChild(media);
       self.media = media;

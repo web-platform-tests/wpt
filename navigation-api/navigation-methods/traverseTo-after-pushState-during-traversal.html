@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>navigation.traverseTo() after many pushState() calls during traversal</title>
+<link rel="help" href="https://html.spec.whatwg.org/#performing-a-navigation-api-traversal">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async t => {
+  const key = navigation.currentEntry.key;
+  const originalURL = location.href;
+
+  history.pushState({}, "", "?s0");
+  assert_not_equals(navigation.currentEntry.key, key,
+                    "pushState() must create a new navigation entry");
+
+  history.back();
+
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+
+  for (let i = 0; i < 25; i++) {
+    try {
+      history.pushState({}, "", "?r" + i);
+    } catch (e) {
+      // pushState() can be throttled; this test does not depend on every
+      // pushState() succeeding.
+    }
+  }
+
+  const result = navigation.traverseTo(key);
+  await result.finished;
+
+  assert_equals(navigation.currentEntry.key, key,
+                "traverseTo() must finish at the requested entry");
+  assert_equals(location.href, originalURL,
+                "traverseTo() must restore the original URL");
+});
+</script>

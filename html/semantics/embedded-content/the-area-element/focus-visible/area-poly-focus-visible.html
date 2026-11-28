@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Focus-visible ring matches the &lt;area> polygon geometry</title>
+<link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/image-maps.html#image-map-processing-model">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#dom-focusoptions-focusvisible">
+<link rel="match" href="reference/area-poly-ref.html">
+<link rel="mismatch" href="area-poly-focus-visible.html?mismatch">
+
+<style>
+  #container {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    background-color: gray;
+  }
+
+  svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  img {
+    margin-left: 40px;
+    margin-top: 60px;
+  }
+</style>
+
+<div id="container">
+  <img src="/images/transparent-300x300.png" usemap="#map" width="300" height="300">
+  <svg id="svg" width="400" height="400">
+    <polygon transform="translate(40,60)"
+      points="180,90 200,150 265,150 215,190 235,255 180,215 125,255 145,190 95,150 160,150"
+      fill="none" stroke="green" stroke-width="16" />
+  </svg>
+</div>
+<map name="map">
+  <area id="area" shape="poly"
+    coords="180,90 200,150 265,150 215,190 235,255 180,215 125,255 145,190 95,150 160,150"
+    tabindex="0" href>
+</map>
+
+<script>
+  if (location.search.endsWith('mismatch')) {
+    container.style.zIndex = -1;
+    svg.style.zIndex = -1;
+  }
+  area.focus({ focusVisible: true });
+</script>

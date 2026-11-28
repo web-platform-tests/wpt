@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script>
+const popup = window.open("/common/blank.html");
+const initial = popup.isSecureContext;
+popup.onload = () => {
+  parent.postMessage({ frame: isSecureContext, initial, loaded: popup.isSecureContext }, "*");
+  popup.close();
+};
+</script>

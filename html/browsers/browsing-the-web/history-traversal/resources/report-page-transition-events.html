@@ -1,0 +1,8 @@
+<!doctype html>
+<script>
+for (const type of ["pageshow", "pagehide"]) {
+  addEventListener(type, e => {
+    parent.recordPageTransitionEvent?.({type, persisted: e.persisted, search: location.search});
+  });
+}
+</script>

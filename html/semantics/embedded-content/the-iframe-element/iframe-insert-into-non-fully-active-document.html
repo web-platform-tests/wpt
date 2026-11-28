@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>iframe and frame elements inserted into a non-fully active document don't get a navigable</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:html-element-post-connection-steps">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/obsolete.html#frames:html-element-post-connection-steps">
+<link rel="help" href="https://github.com/whatwg/html/pull/13097">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+async function oldDocumentOfNavigatedIframe(t) {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  const loaded = () => new Promise(resolve => iframe.addEventListener("load", resolve, {once: true}));
+  iframe.src = "/common/blank.html?1";
+  document.body.append(iframe);
+  await loaded();
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  const oldDoc = iframe.contentDocument;
+  iframe.src = "/common/blank.html?2";
+  await loaded();
+  return oldDoc;
+}
+
+async function oldDocumentOfNavigatedPopup(t) {
+  const popup = window.open("/common/blank.html?1");
+  t.add_cleanup(() => popup.close());
+  const loadedPage = search => t.step_wait(() => {
+    try {
+      return popup.location.search === search && popup.document.readyState === "complete";
+    } catch {
+      return false;
+    }
+  }, `popup loaded ${search}`);
+  await loadedPage("?1");
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  const oldDoc = popup.document;
+  popup.location.href = "/common/blank.html?2";
+  await loadedPage("?2");
+  return oldDoc;
+}
+
+for (const localName of ["iframe", "frame"]) {
+  test(() => {
+    const element = document.createElement(localName);
+    element.src = "/common/blank.html";
+    document.body.append(element);
+    try {
+      assert_not_equals(element.contentWindow, null);
+    } finally {
+      element.remove();
+    }
+  }, `${localName} inserted into a fully active document gets a navigable`);
+
+  for (const [description, getOldDocument] of [
+    ["an iframe's previous document", oldDocumentOfNavigatedIframe],
+    ["a popup's previous document", oldDocumentOfNavigatedPopup],
+  ]) {
+    promise_test(async t => {
+      const oldDoc = await getOldDocument(t);
+      const element = oldDoc.createElement(localName);
+      element.src = "/common/blank.html";
+      oldDoc.body.append(element);
+      assert_equals(element.contentWindow, null, "contentWindow");
+      assert_equals(element.contentDocument, null, "contentDocument");
+    }, `${localName} inserted into ${description} doesn't get a navigable`);
+  }
+}
+</script>

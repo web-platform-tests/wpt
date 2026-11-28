@@ -1,5 +1,6 @@
 <!doctype html>
 <title>pagehide event properties</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/document-lifecycle.html#unload-a-document">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -13,10 +14,14 @@ onload = function() {setTimeout(function() {
                     setTimeout(function() {
                                  iframe.contentWindow.location="001-2.html";
                                }, 100);
-                    iframe.onload = t.step_func(function() {t.done()});
+                    iframe.onload = t.step_func_done(function() {
+                      assert_true(pagehideFired, "pagehide fired");
+                    });
                   };
 
-  function do_test(e) {
+  var pagehideFired = false;
+  window.do_test = function(e) {
+    pagehideFired = true;
     assert_equals(e.type, "pagehide");
     assert_equals(e.target, iframe.contentDocument);
     assert_equals(e.currentTarget, iframe.contentWindow);
@@ -25,8 +30,9 @@ onload = function() {setTimeout(function() {
     assert_true(e.bubbles, "bubbles");
     assert_true(e.cancelable, "cancelable");
 
-    assert_true(e.persisted, "persisted");
-  }
+    // An iframe's own navigation doesn't keep its document in bfcache.
+    assert_false(e.persisted, "persisted");
+  };
 
   iframe.src = "002-1.html?" + Math.random();
 

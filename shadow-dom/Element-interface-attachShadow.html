@@ -90,6 +90,53 @@ test(function () {
     }
 }, 'Element.attachShadow must throw a NotSupportedError for non-safelisted elements');
 
+// Additional test: Verify shadowRoot.mode === "open"
+test(function () {
+    var div = document.createElement('div');
+    var shadowRoot = div.attachShadow({mode: "open"});
+    assert_equals(shadowRoot.mode, "open", 'shadowRoot.mode should be "open"');
+}, 'Element.attachShadow({mode: "open"}) should set shadowRoot.mode to "open"');
+
+// Additional test: Verify shadowRoot.mode === "closed"
+test(function () {
+    var div = document.createElement('div');
+    var shadowRoot = div.attachShadow({mode: "closed"});
+    assert_equals(shadowRoot.mode, "closed", 'shadowRoot.mode should be "closed"');
+}, 'Element.attachShadow({mode: "closed"}) should set shadowRoot.mode to "closed"');
+
+// Additional test: attachShadow on custom elements
+test(function () {
+    var customElement = document.createElement('my-custom-element');
+    var shadowRoot = customElement.attachShadow({mode: "open"});
+    assert_true(shadowRoot instanceof ShadowRoot, 'Custom element should support attachShadow');
+    assert_equals(shadowRoot.mode, "open", 'Custom element shadowRoot.mode should be "open"');
+}, 'Element.attachShadow should work on custom elements');
+
+// Additional test: attachShadow on SVG elements
+test(function () {
+    var svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    assert_throws_dom('NotSupportedError', function () {
+        svgElement.attachShadow({mode: "open"});
+    }, 'attachShadow on an SVG element must throw NotSupportedError');
+}, 'Element.attachShadow must throw NotSupportedError for SVG elements');
+
+// Additional test: attachShadow on MathML elements
+test(function () {
+    var mathmlElement = document.createElementNS('http://www.w3.org/1998/Math/MathML', 'math');
+    assert_throws_dom('NotSupportedError', function () {
+        mathmlElement.attachShadow({mode: "open"});
+    }, 'attachShadow on a MathML element must throw NotSupportedError');
+}, 'Element.attachShadow must throw NotSupportedError for MathML elements');
+
+// Additional test: attachShadow on element with existing shadow root (different mode)
+test(function () {
+    var div = document.createElement('div');
+    div.attachShadow({mode: "open"});
+    assert_throws_dom('NotSupportedError', function () {
+        div.attachShadow({mode: "closed"});
+    }, 'Calling attachShadow({mode: "closed"}) after attachShadow({mode: "open"}) must throw');
+}, 'Element.attachShadow must throw NotSupportedError when switching mode on existing shadow root');
+
 </script>
 </body>
 </html>

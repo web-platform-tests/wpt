@@ -20,6 +20,8 @@ const insertText = command === "insertText" ? "XYZ" : "";
  * shouldn't be modified (deleted) for avoiding unexpected data loss for the
  * users. However, if inserting text when selection range is entirely in the
  * <select>, it's fine to insert text around the <select>.
+ * This doesn't apply to <option> and <optgroup> which are not in a <select>,
+ * since they render their children normally.
  */
 
 promise_test(async () => {
@@ -351,8 +353,12 @@ for (const multiple of ["", " multiple"]) {
   );
 }
 
+// <optgroup> and <option> elements which are not in a <select> render their
+// children like any other element, so their content is visible to the user and
+// should be editable as normal. See
+// https://html.spec.whatwg.org/multipage/rendering.html#the-select-element-2
 addPromiseTest(
-  "<optgroup contenteditable><option>{abc}</option><option>def</option></optgroup>: shouldn't delete <option>s nor optgroup",
+  "<optgroup contenteditable><option>{abc}</option><option>def</option></optgroup>: should modify only the selected <option> content",
   () => {
     document.body.innerHTML =
       "<optgroup contenteditable><option>abc</option><option>def</option></optgroup>";
@@ -360,12 +366,11 @@ addPromiseTest(
       document.querySelector("option")
     );
   },
-  // XXX It might be fine to modify <optgroup>/<option> not in <select> nor <datalist> if the browser does not replace its content.
-  `<optgroup contenteditable><option>abc</option><option>def</option></optgroup>`
+  `<optgroup contenteditable><option>${insertText}</option><option>def</option></optgroup>`
 );
 
 addPromiseTest(
-  "<option contenteditable>{abc}</option>: shouldn't modify <option>",
+  "<option contenteditable>{abc}</option>: should modify the <option> content",
   () => {
     document.body.innerHTML =
       "<option contenteditable>abc</option>";
@@ -373,8 +378,7 @@ addPromiseTest(
       document.querySelector("option")
     );
   },
-  // XXX It might be fine to modify <option> not in <select> nor <datalist> if the browser does not replace its content.
-  `<option contenteditable>abc</option>`
+  `<option contenteditable>${insertText}</option>`
 );
 </script>
 <body></body>

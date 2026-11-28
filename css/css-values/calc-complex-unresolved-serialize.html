@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <title>CSS Values and Units Test: Serialization of non-simplified calc() expressions</title>
 <link rel="help" href="https://drafts.csswg.org/css-values-4/#calc-simplification">
+<link rel="help" href="https://drafts.csswg.org/css-values-4/#serialize-a-math-function">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../support/serialize-testcommon.js"></script>
@@ -16,11 +17,11 @@
     test_computed_serialization("orphans", value, computed);
   }
 
-  test_serialization("calc(pow(2, sign(1em - 18px)))", "calc(pow(2, sign(1em - 18px)))", "2");
-  test_serialization("calc(pow(sign(1em - 18px), 2))", "calc(pow(sign(1em - 18px), 2))", "1");
-  test_serialization("calc(pow(sign(1em - 18px), sign(1em - 18px)))", "calc(pow(sign(1em - 18px), sign(1em - 18px)))", "1");
+  test_serialization("calc(pow(2, sign(1em - 18px)))", "pow(2, sign(1em - 18px))", "2");
+  test_serialization("calc(pow(sign(1em - 18px), 2))", "pow(sign(1em - 18px), 2)", "1");
+  test_serialization("calc(pow(sign(1em - 18px), sign(1em - 18px)))", "pow(sign(1em - 18px), sign(1em - 18px))", "1");
 
-  test_serialization("calc(pow(2, sibling-index())", "calc(pow(2, sibling-index()))", "2");
-  test_serialization("calc(pow(sibling-index(), 2)", "calc(pow(sibling-index(), 2))", "1");
-  test_serialization("calc(pow(sibling-index(), sibling-index())", "calc(pow(sibling-index(), sibling-index()))", "1");
+  test_serialization("calc(pow(2, sibling-index())", "pow(2, sibling-index())", "2");
+  test_serialization("calc(pow(sibling-index(), 2)", "pow(sibling-index(), 2)", "1");
+  test_serialization("calc(pow(sibling-index(), sibling-index())", "pow(sibling-index(), sibling-index())", "1");
 </script>

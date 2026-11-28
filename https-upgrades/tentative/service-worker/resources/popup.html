@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script>
+  // This popup should be loaded over https due to the Https-Upgrades feature.
+  assert_equals(document.location.protocol, "https:");
+
+  // Let the service worker know that this page loaded.
+  navigator.serviceWorker.ready.then( registration => {
+    registration.active.postMessage("popup_opened");
+  });
+</script>
+</body>
+</html>

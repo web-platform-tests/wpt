@@ -75,6 +75,28 @@
                     crossOrigin: true,
                     expectIsAllowed: true,
                 },
+                // Additional: Multiple origins in one policy
+                {
+                    policy: "digital-credentials-create 'self' *",
+                    crossOrigin: false,
+                    expectIsAllowed: true,
+                },
+                {
+                    policy: "digital-credentials-create 'self' *",
+                    crossOrigin: true,
+                    expectIsAllowed: true,
+                },
+                // Additional: Invalid origin in policy
+                {
+                    policy: "digital-credentials-create https://invalid.example.com",
+                    crossOrigin: false,
+                    expectIsAllowed: false,
+                },
+                {
+                    policy: "digital-credentials-create https://invalid.example.com",
+                    crossOrigin: true,
+                    expectIsAllowed: false,
+                },
             ];
 
             async function loadIframe({ policy, crossOrigin, expectIsAllowed }) {

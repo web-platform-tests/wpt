@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Image loading after gc</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const t_success = async_test('image load event after gc');
+let image_success = new Image();
+image_success.onload = t_success.step_func_done();
+image_success.onerror = t_success.unreached_func('onerror');
+image_success.src = '/images/blue.png?pipe=trickle(d2)';
+t_success.step_timeout(t_success.unreached_func('timeout'), 3000);
+
+const t_fail = async_test('image error event after gc');
+let image_fail = new Image();
+image_fail.onload = t_fail.unreached_func('onload');
+image_fail.onerror = t_fail.step_func_done();
+image_fail.src = '/common/text-plain.txt?pipe=trickle(d2)';
+t_fail.step_timeout(t_fail.unreached_func('timeout'), 3000);
+
+t_success.step_timeout(() => {
+    image_success = null;
+    image_fail = null;
+
+    if (window.GCController) {
+        GCController.collect();
+    } else {
+        // create lots of objects to force a garbage collection
+        var i = 0;
+        var s;
+        while (i < 5000) {
+            i = i + 1.11;
+            s = s + " ";
+        }
+    }
+}, 100);
+</script>

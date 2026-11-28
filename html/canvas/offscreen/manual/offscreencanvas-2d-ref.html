@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<title>Test that we can print 2d canvases</title>
+<meta name=fuzzy content="maxDifference=5;totalPixels=10">
+<canvas id='c'></canvas>
+<script>
+var can = document.getElementById('c');
+can.width = can.height = 100;
+var ctx = can.getContext("2d");
+ctx.fillStyle = 'green';
+ctx.fillRect(0, 0, 100, 100);
+</script>

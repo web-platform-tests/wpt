@@ -1,4 +1,5 @@
 import pytest
+from webdriver.bidi.modules.script import ContextTarget, ScriptEvaluateResultException
 
 from ... import recursive_compare, any_string
 
@@ -51,6 +52,66 @@ async def test_remote_values_with_internal_id(
     assert internalId1 == internalId2
 
     recursive_compare(value, result_value)
+
+
+@pytest.mark.parametrize(
+    "exception_expression, await_promise",
+    [
+        ("throw {}", False),
+        ("return Promise.reject({})", True),
+    ],
+    ids=["throw", "promise-rejection"],
+)
+@pytest.mark.parametrize(
+    "exception_structure, result_type",
+    [
+        ("[data, data]", "array"),
+        ("new Map([['foo', data],['bar', data]])", "map"),
+        ("({ 'foo': data, 'bar': data })", "object"),
+    ],
+)
+@pytest.mark.parametrize(
+    "expression",
+    [
+        "[1]",
+        "new Map([[true, false]])",
+        "new Set(['baz'])",
+        "{ baz: 'qux' }",
+    ],
+)
+async def test_exception_remote_values_with_internal_id(
+    bidi_session,
+    top_context,
+    exception_expression,
+    await_promise,
+    exception_structure,
+    result_type,
+    expression,
+):
+    formatted_exception_expression = exception_expression.format(exception_structure)
+
+    with pytest.raises(ScriptEvaluateResultException) as exception:
+        await bidi_session.script.call_function(
+            function_declaration=(
+                f"() => {{ const data = {expression}; "
+                f"{formatted_exception_expression}; }}"
+            ),
+            target=ContextTarget(top_context["context"]),
+            await_promise=await_promise,
+        )
+
+    exception_value = exception.value.result["exceptionDetails"]["exception"]["value"]
+
+    assert len(exception_value) == 2
+
+    if result_type == "array":
+        internalId1 = exception_value[0]["internalId"]
+        internalId2 = exception_value[1]["internalId"]
+    else:
+        internalId1 = exception_value[0][1]["internalId"]
+        internalId2 = exception_value[1][1]["internalId"]
+
+    assert internalId1 == internalId2
 
 
 async def test_different_remote_values_have_unique_internal_ids(call_function):

@@ -29,12 +29,11 @@ let testFunction =
 
       function CheckInvalidGrip(time, xrFrame) {
         let source = session.inputSources[0];
-        let grip_pose = xrFrame.getPose(source.gripSpace, referenceSpace);
 
         t.step( () => {
           // The input pose should be null when no grip matrix is provided.
           assert_equals(source.targetRayMode, "tracked-pointer");
-          assert_equals(grip_pose, null);
+          assert_equals(source.gripSpace, null);
         });
 
         input_source.setGripOrigin(VALID_GRIP_TRANSFORM);

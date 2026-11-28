@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <script nonce='forinlinescript'>
+        // Report violations, except of the directive given in the
+        // ignored_violation_directive parameter, like iframe.sub.html.
+        const ignoredDirective = new URLSearchParams(location.search)
+            .get('ignored_violation_directive');
+        window.addEventListener('securitypolicyviolation', function(e) {
+          if (e.effectiveDirective != ignoredDirective) {
+            top.postMessage('CSP_VIOLATION', '*');
+          }
+        });
+
+        // Preloads the script_url parameter with a <link> of the rel given in
+        // the preload parameter. Only once it's preloaded, a <script> of the
+        // type given in the script_type parameter requests it, so that the
+        // preload isn't preceded by a speculative request for the <script>.
+        const params = new URLSearchParams(location.search);
+        const scriptUrl = params.get('script_url');
+        const link = document.createElement('link');
+        link.rel = params.get('preload');
+        link.as = 'script';
+        link.href = scriptUrl;
+        link.onload = () => {
+          const script = document.createElement('script');
+          script.type = params.get('script_type');
+          script.src = scriptUrl;
+          document.body.appendChild(script);
+        };
+        // The script exists, so the preload only fails if it's blocked. Not
+        // all browsers fire a securitypolicyviolation event for a blocked
+        // preload, so report it here too.
+        link.onerror = () => top.postMessage('CSP_VIOLATION', '*');
+        document.head.appendChild(link);
+    </script>
+</body>
+</html>

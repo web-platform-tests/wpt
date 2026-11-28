@@ -10,3 +10,4 @@ from ..wptrunner import GlobalLogger
 def logger() -> Generator[StructuredLogger]:
     with GlobalLogger({}, {}) as _logger:
         yield _logger
+    _logger.reset_state()

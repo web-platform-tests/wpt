@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver click method dispatches events with no script on the stack</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/webappapis.html#clean-up-after-running-script">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<button type="button" id="button">Button</button>
+
+<script>
+// A microtask checkpoint runs after each event listener callback only if the
+// JavaScript execution context stack is empty, i.e. the event was dispatched
+// by the user agent rather than by script.
+promise_test(async t => {
+  const button = document.getElementById("button");
+  const log = [];
+  button.addEventListener("click", () => {
+    log.push("listener 1");
+    Promise.resolve().then(() => log.push("microtask"));
+  });
+  button.addEventListener("click", () => log.push("listener 2"));
+  const clicked = new Promise(resolve => {
+    button.addEventListener("click", () => t.step_timeout(resolve, 0));
+  });
+
+  await test_driver.click(button);
+  await clicked;
+
+  assert_array_equals(log, ["listener 1", "microtask", "listener 2"]);
+}, "test_driver.click() runs event listeners with no script on the stack");
+</script>

@@ -114,21 +114,57 @@ function url_string_test({name, url_string, allowed, expected,
   }, `${name} - ${test_type}`);
 }
 
-// Tests whether a |worker_type| ("dedicated", "shared" or "service") worker
-// requested with |url_string|, i.e. the URL passed to the Worker or
-// SharedWorker constructor or to navigator.serviceWorker.register(), is allowed
-// by a policy of the document with the url source of |allowed| in |directive|.
-// Creates the worker in worker.sub.html and checks that it posts |expected|.
+// The support scripts which import the URL string given in their script_url
+// parameter, for each way of importing it (|imported_with| below).
+const IMPORTERS = {
+  importScripts: "import_scripts_worker.js",
+};
+
+// Returns the absolute URL of the support script which imports |url_string|
+// with |imported_with|, with the additional query parameters |params|.
+function get_importer_url(imported_with, url_string, params = {}) {
+  const query = new URLSearchParams({script_url: url_string, ...params});
+  return new URL(`support/${IMPORTERS[imported_with]}?${query}`,
+                 location.href).href;
+}
+
+// Tests whether a script requested with |url_string| in a |worker_type|
+// ("dedicated", "shared" or "service") worker is allowed by a policy with the
+// url source of |allowed| in |directive|, and checks that the worker posts
+// |expected|.
+//
+// Without |imported_with|, |url_string| is the URL of the worker's script, i.e.
+// the URL passed to the Worker or SharedWorker constructor or to
+// navigator.serviceWorker.register(), which is checked against the policy of
+// the document. The worker is created in worker.sub.html, which has the
+// policy.
+//
+// With |imported_with| "importScripts", the worker's script imports
+// |url_string| with importScripts() instead, which is checked against the
+// policy of the worker, delivered with its script. The policy of the document
+// doesn't apply, so the worker is created by this document, which has none.
+// This needs support/create_worker.js.
 function url_string_worker_test({name, worker_type, url_string, allowed,
-                                 expected, directive = "script-src"}) {
+                                 expected, directive = "script-src",
+                                 imported_with}) {
   promise_test(async t => {
     const source = await url_source(allowed);
     const policy = directive == "script-src" ?
       `script-src 'nonce-forinlinescript' ${source}` :
       `script-src 'nonce-forinlinescript'; ${directive} ${source}`;
 
-    const result = await load_frame(t, get_support_url("header", "worker",
-        policy, {worker_type, script_url: url_string}));
+    let result;
+    if (imported_with) {
+      const script_url = get_importer_url(imported_with, url_string, {
+        pipe: `header(Content-Security-Policy,${policy})`,
+      });
+      // The URL of the worker's script is unique to the test.
+      result = await create_worker(worker_type, script_url,
+                                   {name: script_url});
+    } else {
+      result = await load_frame(t, get_support_url("header", "worker", policy,
+          {worker_type, script_url: url_string}));
+    }
     assert_equals(result, expected);
   }, `${name} - header`);
 }

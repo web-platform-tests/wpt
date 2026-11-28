@@ -1,0 +1,82 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>RTCPeerConnection.prototype.close</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src="RTCPeerConnection-helper.js"></script>
+<script>
+'use strict';
+
+test((t) => {
+  const pc = new RTCPeerConnection();
+
+  // Create 24 channels, some of them negotiated
+  const dcs = [];
+  for (let i = 0; i < 24; ++i) {
+    const options = {};
+    if (i % 2 === 0) {
+      options.negotiated = true;
+      options.id = i;
+    }
+    const dc = pc.createDataChannel(`test-channel-${i}`, options);
+    assert_not_equals(dc.readyState, 'closed',
+      'Channel may not be closed before connection establishment');
+    dcs.push(dc);
+  }
+
+  pc.close();
+
+  for (const dc of dcs) {
+    assert_equals(dc.readyState, 'closed', 'Channel should be closed after closing the peer connection');
+  }
+}, 'Closing the peer connection should close all channels (before connection establishment)');
+
+for (const local of [true, false]) {
+  promise_test(async (t) => {
+    const pc1 = new RTCPeerConnection();
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    t.add_cleanup(() => pc2.close());
+
+    const dcs = [];
+
+    const [dc1, dc2] = await createDataChannelPair(pc1, pc2);
+    const id = dc1.id;
+    assert_not_equals(dc1.readyState, 'closed',
+      'Channel may not be closed after connection establishment');
+    dcs.push(dc1);
+    assert_not_equals(dc2.readyState, 'closed',
+      'Channel may not be closed after connection establishment');
+    dcs.push(dc2);
+
+    // Create 23 further channels, some of them negotiated
+    for (let i = id + 1; i < (id + 24); ++i) {
+      const createChannel = (pc, options) => {
+        const dc = pc.createDataChannel(`test-channel-${i}`, options);
+        assert_not_equals(dc.readyState, 'closed',
+          'Channel may not be closed after connection establishment');
+        dcs.push(dc);
+      };
+
+      const options = {};
+      if ((local && i % 2 === 0) || (!local && i %2 === 1)) {
+        options.negotiated = true;
+        options.id = i;
+      }
+
+      // Note: We explicitly don't add negotiated channels to both sides to see if the
+      //       implementation can cope with that.
+      createChannel(local ? pc1 : pc2, options);
+    }
+
+    // Stop!
+    (local ? pc1 : pc2).close();
+
+    for (const dc of dcs) {
+      assert_equals(dc.readyState, 'closed',
+        'Channel should be closed after closing the peer connection');
+    }
+  }, `Closing the ${local ? 'local' : 'remote'} peer connection should close all channels (after
+  connection establishment)`);
+}
+</script>

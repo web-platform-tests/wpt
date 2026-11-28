@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>MutationObserver: parseEndChildList</title>
+<link rel="help" href="https://dom.spec.whatwg.org/#dom-mutationobserver-observe">
+<link rel="help" href="https://dom.spec.whatwg.org/#signal-parse-end">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+test(() => {
+  const el = document.createElement("div");
+  const mo = new MutationObserver(() => {});
+
+  assert_throws_js(TypeError, () => {
+    mo.observe(el, { parseEndChildList: true });
+  }, "parseEndChildList: true without childList: true throws TypeError");
+
+  assert_throws_js(TypeError, () => {
+    mo.observe(el, { attributes: true, parseEndChildList: true });
+  }, "parseEndChildList: true with attributes: true but not childList: true throws TypeError");
+
+  assert_throws_js(TypeError, () => {
+    mo.observe(el, { characterData: true, parseEndChildList: true });
+  }, "parseEndChildList: true with characterData: true but not childList: true throws TypeError");
+
+  assert_throws_js(TypeError, () => {
+    mo.observe(el, { childList: false, parseEndChildList: true });
+  }, "parseEndChildList: true with explicit childList: false throws TypeError");
+
+  mo.observe(el, { childList: true, parseEndChildList: false });
+  mo.observe(el, { childList: true, subtree: true, parseEndChildList: false });
+  mo.observe(el, { childList: true, subtree: true, parseEndChildList: true });
+  mo.observe(el, { childList: true, attributes: true, parseEndChildList: true });
+  mo.disconnect();
+}, "MutationObserver.observe() option validation for parseEndChildList");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='empty'>");
+  const empty = doc.getElementById("empty");
+
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({
+      isParsing: empty.isParsing,
+      records: records.map(r => ({
+        type: r.type,
+        target: r.target,
+        added: r.addedNodes.length,
+        removed: r.removedNodes.length,
+        previousSibling: r.previousSibling,
+        nextSibling: r.nextSibling,
+        attributeName: r.attributeName,
+        attributeNamespace: r.attributeNamespace,
+        oldValue: r.oldValue,
+      })),
+    });
+  });
+  mo.observe(empty, { childList: true, parseEndChildList: true });
+
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+
+  assert_equals(deliveries.length, 1, "callback invoked once at parse end");
+  assert_false(deliveries[0].isParsing, "isParsing is false in callback");
+  assert_equals(deliveries[0].records.length, 1);
+  assert_equals(deliveries[0].records[0].type, "childList");
+  assert_equals(deliveries[0].records[0].target, empty);
+  assert_equals(deliveries[0].records[0].added, 0);
+  assert_equals(deliveries[0].records[0].removed, 0);
+  assert_equals(deliveries[0].records[0].previousSibling, null);
+  assert_equals(deliveries[0].records[0].nextSibling, null);
+  assert_equals(deliveries[0].records[0].attributeName, null);
+  assert_equals(deliveries[0].records[0].attributeNamespace, null);
+  assert_equals(deliveries[0].records[0].oldValue, null);
+}, "Empty element receives empty fallback childList record at parse end");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d'>");
+  const d = doc.getElementById("d");
+
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({
+      isParsing: d.isParsing,
+      added: records.flatMap(r => [...r.addedNodes].map(n => n.id)),
+      emptyCount: records.filter(r => r.addedNodes.length === 0 && r.removedNodes.length === 0).length,
+      lastPrevSibling: records[records.length - 1].previousSibling,
+      lastNextSibling: records[records.length - 1].nextSibling,
+    });
+  });
+  mo.observe(d, { childList: true, parseEndChildList: true });
+
+  doc.write("<p id='p1'>1</p>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 1);
+  assert_true(deliveries[0].isParsing, "still parsing after chunk 1");
+  assert_array_equals(deliveries[0].added, ["p1"]);
+
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 2);
+  assert_false(deliveries[1].isParsing, "finished parsing after chunk 2");
+  assert_equals(deliveries[1].emptyCount, 1, "empty fallback record queued");
+  assert_equals(deliveries[1].lastPrevSibling, doc.getElementById("p1"));
+  assert_equals(deliveries[1].lastNextSibling, null);
+}, "End tag in separate chunk queues empty fallback childList record");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d'>");
+  const d = doc.getElementById("d");
+
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({
+      isParsing: d.isParsing,
+      count: records.length,
+      added: records.flatMap(r => [...r.addedNodes].map(n => n.id)),
+    });
+  });
+  mo.observe(d, { childList: true, parseEndChildList: true });
+
+  doc.write("<p id='p1'>1</p></div>");
+  doc.close();
+  await Promise.resolve();
+
+  assert_equals(deliveries.length, 1);
+  assert_false(deliveries[0].isParsing);
+  assert_equals(deliveries[0].count, 1, "no redundant empty fallback record when childList record is pending");
+  assert_array_equals(deliveries[0].added, ["p1"]);
+}, "Pending childList record in final chunk suppresses empty fallback record");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d'><p id='p1'>1</p>");
+  const d = doc.getElementById("d");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(d, { childList: true, parseEndChildList: true });
+
+  doc.write("<p id='p2'>2</p>");
+  const drained = mo.takeRecords();
+  assert_equals(drained.length, 1, "takeRecords drains pending childList record");
+
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+
+  assert_equals(records.length, 1, "empty fallback record is queued after takeRecords()");
+  assert_equals(records[0].addedNodes.length, 0);
+}, "takeRecords() before parse end still results in empty fallback record at parse end");
+
+promise_test(async () => {
+  const alreadyParsed = document.createElement("div");
+  let called = 0;
+  const mo = new MutationObserver(() => { called++; });
+  mo.observe(alreadyParsed, { childList: true, parseEndChildList: true });
+  await Promise.resolve();
+  assert_equals(called, 0, "observe() on already-parsed element queues nothing");
+}, "observe() on already-parsed element does not queue a record");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d1'></div><div id='d2'>");
+  const d2 = doc.getElementById("d2");
+
+  let called = 0;
+  const mo = new MutationObserver(() => { called++; });
+  mo.observe(d2, { childList: true, parseEndChildList: true });
+  mo.disconnect();
+
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(called, 0, "disconnect() prevents parse-end record");
+}, "disconnect() prevents parse-end fallback record");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d'>");
+  const d = doc.getElementById("d");
+
+  let called = 0;
+  const mo = new MutationObserver(() => { called++; });
+  mo.observe(d, { childList: true, parseEndChildList: true });
+  mo.observe(d, { childList: true, parseEndChildList: false });
+
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(called, 0, "re-observing with parseEndChildList: false disables fallback record");
+}, "Re-observing with parseEndChildList: false replaces previous option");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d'>");
+  const d = doc.getElementById("d");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(d, { childList: true, parseEndChildList: false });
+  mo.observe(d, { childList: true, parseEndChildList: true });
+
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(records.length, 1, "re-observing with parseEndChildList: true enables fallback record");
+}, "Re-observing with parseEndChildList: true replaces previous false option");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d1'><div id='d2'>");
+  const d1 = doc.getElementById("d1");
+  const d2 = doc.getElementById("d2");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(d1, { childList: true, attributes: true, parseEndChildList: true });
+  mo.observe(d2, { childList: true, parseEndChildList: true });
+
+  d1.setAttribute("data-x", "1");
+  doc.write("<span>x</span></div>");
+  doc.close();
+  await Promise.resolve();
+
+  const d2ChildLists = records.filter(r => r.target === d2 && r.type === "childList");
+  const d1ChildLists = records.filter(r => r.target === d1 && r.type === "childList");
+  assert_equals(d2ChildLists.length, 1, "d2 gets its childList record");
+  assert_equals(d1ChildLists.length, 1, "pending attributes record on d1 does not suppress childList fallback");
+  assert_equals(d1ChildLists[0].addedNodes.length, 0);
+}, "Pending attributes record or another target's childList record does not suppress fallback");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<ul><li id='li1'>");
+  const li1 = doc.getElementById("li1");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(li1, { childList: true, parseEndChildList: true });
+
+  doc.write("<li>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(records.length, 1, "implied end tag queues parseEndChildList fallback");
+  assert_false(li1.isParsing);
+}, "Implied end tag queues parseEndChildList fallback record");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='eof'>");
+  const eof = doc.getElementById("eof");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(eof, { childList: true, parseEndChildList: true });
+
+  doc.close();
+  await Promise.resolve();
+  assert_equals(records.length, 1, "EOF without end tag queues parseEndChildList fallback");
+  assert_false(eof.isParsing);
+}, "EOF without explicit end tag queues parseEndChildList fallback record");
+
+promise_test(async () => {
+  const div = document.createElement("div");
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(div, { childList: true, parseEndChildList: true });
+
+  const writer = div.streamHTMLUnsafe().getWriter();
+  await writer.abort("stop");
+  await Promise.resolve();
+  assert_equals(records.length, 1, "aborting streamHTMLUnsafe queues parseEndChildList fallback");
+  assert_false(div.isParsing);
+}, "Aborting streamHTMLUnsafe() queues parseEndChildList fallback record");
+
+promise_test(async () => {
+  const div = document.createElement("div");
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({
+      isParsing: div.isParsing,
+      count: records.length,
+      emptyCount: records.filter(r => r.addedNodes.length === 0 && r.removedNodes.length === 0).length,
+    });
+  });
+  mo.observe(div, { childList: true, parseEndChildList: true });
+
+  const writer = div.streamHTML().getWriter();
+  await writer.write("<p>1</p>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 1);
+  assert_true(deliveries[0].isParsing);
+
+  await writer.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 2);
+  assert_false(deliveries[1].isParsing);
+  assert_equals(deliveries[1].emptyCount, 1);
+}, "streamHTML() close queues empty fallback childList record");
+
+promise_test(async () => {
+  const div = document.createElement("div");
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({
+      isParsing: div.isParsing,
+      count: records.length,
+    });
+  });
+  mo.observe(div, { childList: true, parseEndChildList: true });
+
+  const w1 = div.streamAppendHTML().getWriter();
+  const w2 = div.streamAppendHTML().getWriter();
+  await w1.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 0, "closing first of two concurrent streams does not fire parse end");
+
+  await w2.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 1, "closing last stream fires parse end");
+  assert_false(deliveries[0].isParsing);
+  assert_equals(deliveries[0].count, 1);
+}, "Concurrent streamAppendHTML() only signals parse end when last stream finishes");
+
+promise_test(async () => {
+  const host = document.createElement("div");
+  const shadow = host.attachShadow({ mode: "open" });
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({
+      isParsing: shadow.isParsing,
+      count: records.length,
+      emptyCount: records.filter(r => r.addedNodes.length === 0 && r.removedNodes.length === 0).length,
+      previousSibling: records[records.length - 1].previousSibling,
+    });
+  });
+  mo.observe(shadow, { childList: true, parseEndChildList: true });
+
+  const writer = shadow.streamHTML().getWriter();
+  await writer.write("<p id='sp'>1</p>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 1);
+  assert_true(deliveries[0].isParsing);
+
+  await writer.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 2);
+  assert_false(deliveries[1].isParsing);
+  assert_equals(deliveries[1].emptyCount, 1, "ShadowRoot receives empty fallback childList record on stream close");
+  assert_equals(deliveries[1].previousSibling, shadow.getElementById("sp"));
+}, "ShadowRoot.streamHTML() close queues empty fallback childList record");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='host'><template shadowrootmode='open'>");
+  const shadow = doc.getElementById("host").shadowRoot;
+
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({
+      isParsing: shadow.isParsing,
+      count: records.length,
+      empty: records.length === 1 && records[0].addedNodes.length === 0 && records[0].removedNodes.length === 0,
+    });
+  });
+  mo.observe(shadow, { childList: true, parseEndChildList: true });
+
+  doc.write("</template></div>");
+  doc.close();
+  await Promise.resolve();
+
+  assert_equals(deliveries.length, 1, "declarative ShadowRoot receives fallback record at </template>");
+  assert_false(deliveries[0].isParsing);
+  assert_true(deliveries[0].empty);
+}, "Declarative ShadowRoot receives empty fallback childList record at </template>");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='box'><?marker name='m'?></div>");
+  const box = doc.getElementById("box");
+
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({
+      isParsing: box.isParsing,
+      count: records.length,
+      emptyCount: records.filter(r => r.addedNodes.length === 0 && r.removedNodes.length === 0).length,
+    });
+  });
+  mo.observe(box, { childList: true, parseEndChildList: true });
+
+  doc.write("<template for='m'><span>1</span>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 1);
+  assert_true(deliveries[0].isParsing, "still parsing before </template>");
+
+  // Remove marker before </template> so </template> itself removes no nodes
+  for (const child of [...box.childNodes]) {
+    if (child.nodeType === Node.PROCESSING_INSTRUCTION_NODE) child.remove();
+  }
+  mo.takeRecords();
+
+  doc.write("</template>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 2, "fallback childList record queued when <template for> finishes");
+  assert_false(deliveries[1].isParsing);
+  assert_equals(deliveries[1].emptyCount, 1);
+}, "<template for> content patch signals parse end on insertion target");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='outer'><?marker name='m'?><template for='m'><span>in</span>");
+  const outer = doc.getElementById("outer");
+  for (const child of [...outer.childNodes]) {
+    if (child.nodeType === Node.PROCESSING_INSTRUCTION_NODE) child.remove();
+  }
+
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({ isParsing: outer.isParsing, count: records.length });
+  });
+  mo.observe(outer, { childList: true, parseEndChildList: true });
+
+  doc.write("</template>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 0, "closing inner <template for> does not signal parse end while outer is still open");
+  assert_true(outer.isParsing);
+
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 1, "closing outer signals parse end");
+  assert_false(deliveries[0].isParsing);
+}, "Closing <template for> inside still-open target does not prematurely signal parse end");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<!DOCTYPE html><html><body><template id='t'>");
+  const tmpl = doc.getElementById("t");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  t.add_cleanup(() => mo.disconnect());
+  mo.observe(doc, { childList: true, parseEndChildList: true });
+  mo.observe(tmpl.content, { childList: true, parseEndChildList: true });
+
+  doc.write("</template></body></html>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(records.length, 0, "closing Document and <template> does not queue parseEndChildList fallback on Document or template.content");
+
+  const t2 = document.createElement("template");
+  mo.observe(t2.content, { childList: true, parseEndChildList: true });
+  const writer = t2.streamAppendHTML().getWriter();
+  await writer.close();
+  await Promise.resolve();
+  assert_equals(records.length, 0, "closing template.streamAppendHTML() does not queue parseEndChildList fallback on template.content");
+
+  doc.open();
+  doc.write("<template id='t3'><?marker name='m'?></template>");
+  const t3 = doc.getElementById("t3");
+  for (const child of [...t3.content.childNodes]) {
+    if (child.nodeType === Node.PROCESSING_INSTRUCTION_NODE) {
+      mo.observe(t3.content, { childList: true, parseEndChildList: true });
+      doc.write("<template for='m'><span>x</span>");
+      await Promise.resolve();
+      child.remove();
+      mo.takeRecords();
+      doc.write("</template>");
+    }
+  }
+  doc.close();
+  await Promise.resolve();
+  assert_equals(records.length, 0, "<template for> targeting plain DocumentFragment does not queue parseEndChildList fallback");
+}, "parseEndChildList has no effect on Document or plain DocumentFragment targets");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='outer'><div id='inner'>");
+  const outer = doc.getElementById("outer");
+  const inner = doc.getElementById("inner");
+
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push(records.map(r => ({
+      target: r.target.id,
+      added: r.addedNodes.length,
+      removed: r.removedNodes.length,
+      outerParsing: outer.isParsing,
+    })));
+  });
+  mo.observe(outer, { childList: true, subtree: true, parseEndChildList: true });
+
+  doc.write("</div>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 0, "descendant closing does not queue parseEndChildList fallback");
+
+  doc.write("<div id='inner2'><span>x</span></div>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 1);
+
+  inner.appendChild(doc.createElement("em"));
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 2);
+  assert_equals(deliveries[1].length, 2, "descendant mutation + outer parseEndChildList fallback both delivered");
+  assert_equals(deliveries[1][0].target, "inner");
+  assert_equals(deliveries[1][0].added, 1);
+  assert_equals(deliveries[1][1].target, "outer");
+  assert_equals(deliveries[1][1].added, 0);
+  assert_equals(deliveries[1][1].removed, 0);
+  assert_false(deliveries[1][1].outerParsing);
+}, "parseEndChildList with subtree: true applies only to target, not descendants");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='outer'><div id='inner'>");
+  const outer = doc.getElementById("outer");
+  const inner = doc.getElementById("inner");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(outer, { childList: true, subtree: true, parseEndChildList: true });
+
+  inner.remove();
+  doc.write("</div>");
+  await Promise.resolve();
+
+  const innerRecords = records.filter(r => r.target === inner);
+  assert_equals(innerRecords.length, 0, "transient registered observer on removed descendant does not emit parseEndChildList fallback");
+  doc.close();
+}, "Transient registered observer from subtree: true does not emit parseEndChildList fallback on removed descendant");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<b id='b'><span id='s'><i id='i'><p id='p'>hello");
+  const b = doc.getElementById("b");
+  const s = doc.getElementById("s");
+  const i = doc.getElementById("i");
+  const p = doc.getElementById("p");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(b, { childList: true, parseEndChildList: true });
+  mo.observe(s, { childList: true, parseEndChildList: true });
+  mo.observe(i, { childList: true, parseEndChildList: true });
+
+  doc.write("</b>");
+  await Promise.resolve();
+
+  const iRecords = records.filter(r => r.target === i);
+  const sRecords = records.filter(r => r.target === s);
+  const bRecords = records.filter(r => r.target === b);
+  assert_equals(iRecords.length, 1, "intermediate formatting element gets only one childList record when furthestBlock is detached");
+  assert_array_equals([...iRecords[0].removedNodes], [p], "i record reflects removal of p without preceding empty fallback");
+  assert_equals(sRecords.length, 1, "intermediate non-formatting element gets one empty fallback record");
+  assert_equals(sRecords[0].addedNodes.length, 0);
+  assert_equals(sRecords[0].removedNodes.length, 0);
+  assert_equals(bRecords.length, 1, "formattingElement gets one empty fallback record");
+  assert_equals(bRecords[0].addedNodes.length, 0);
+  doc.close();
+
+  doc.open();
+  doc.write("<b><span id='s2'><p id='p2'>hello");
+  const s2 = doc.getElementById("s2");
+  const p2 = doc.getElementById("p2");
+  const s2Records = [];
+  const mo2 = new MutationObserver(r => s2Records.push(...r));
+  mo2.observe(s2, { childList: true, parseEndChildList: true });
+  doc.write("</b>");
+  doc.close();
+  await Promise.resolve();
+
+  assert_equals(s2Records.length, 1, "intermediate ordinary element gets only the real removal record, not a preceding empty fallback");
+  assert_array_equals([...s2Records[0].removedNodes], [p2]);
+}, "Adoption agency algorithm detaches furthestBlock before signaling parse end on intermediate elements");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d1'>");
+  const d1 = doc.getElementById("d1");
+  let defaultCalled = 0;
+  const moDefault = new MutationObserver(() => { defaultCalled++; });
+  moDefault.observe(d1, { childList: true });
+  doc.write("</div>");
+  await Promise.resolve();
+  assert_equals(defaultCalled, 0, "omitting parseEndChildList defaults to false and queues nothing");
+
+  doc.write("<div id='d2'>");
+  const d2 = doc.getElementById("d2");
+  const records = [];
+  const moAtom = new MutationObserver(r => records.push(...r));
+  moAtom.observe(d2, { childList: true, parseEndChildList: true });
+  assert_throws_js(TypeError, () => {
+    moAtom.observe(d2, { attributes: true, parseEndChildList: true });
+  }, "invalid re-observe throws TypeError");
+
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(records.length, 1, "throwing re-observe preserves existing parseEndChildList registration");
+}, "Default parseEndChildList is false and throwing re-observe preserves existing registration");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='box'><?marker name='m'?></div>");
+  const box = doc.getElementById("box");
+
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({
+      isParsing: box.isParsing,
+      count: records.length,
+      removedTypes: records.flatMap(r => [...r.removedNodes].map(n => n.nodeType)),
+      emptyCount: records.filter(r => r.addedNodes.length === 0 && r.removedNodes.length === 0).length,
+    });
+  });
+  mo.observe(box, { childList: true, parseEndChildList: true });
+
+  doc.write("<template for='m'><span>1</span>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 1);
+  assert_true(deliveries[0].isParsing);
+
+  doc.write("</template>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 2, "normal </template> marker removal delivers one childList batch");
+  assert_false(deliveries[1].isParsing, "box is no longer parsing in marker-removal callback");
+  assert_equals(deliveries[1].count, 1, "marker removal suppresses duplicate empty parseEndChildList record");
+  assert_array_equals(deliveries[1].removedTypes, [Node.PROCESSING_INSTRUCTION_NODE]);
+  assert_equals(deliveries[1].emptyCount, 0);
+}, "Normal <template for> marker removal suppresses duplicate empty parseEndChildList record");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='host'><template shadowrootmode='open'><?marker name='m'?><template for='m'><span>in</span>");
+  const shadow = doc.getElementById("host").shadowRoot;
+  for (const child of [...shadow.childNodes]) {
+    if (child.nodeType === Node.PROCESSING_INSTRUCTION_NODE) child.remove();
+  }
+
+  const deliveries = [];
+  const mo = new MutationObserver(records => {
+    deliveries.push({ isParsing: shadow.isParsing, count: records.length });
+  });
+  mo.observe(shadow, { childList: true, parseEndChildList: true });
+
+  doc.write("</template>");
+  await Promise.resolve();
+  assert_equals(deliveries.length, 0, "closing inner <template for> does not signal parse end while declarative ShadowRoot is still open");
+  assert_true(shadow.isParsing);
+
+  doc.write("</template></div>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(deliveries.length, 1, "closing outer <template shadowrootmode> signals parse end on ShadowRoot");
+  assert_false(deliveries[0].isParsing);
+}, "<template for> inside open declarative ShadowRoot does not prematurely signal parse end");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='d'>");
+  const d = doc.getElementById("d");
+  const writer = d.streamAppendHTML().getWriter();
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(d, { childList: true, parseEndChildList: true });
+
+  doc.write("</div>");
+  doc.close();
+  await Promise.resolve();
+  assert_equals(records.length, 0, "closing </div> while streamAppendHTML is open does not signal parse end");
+  assert_true(d.isParsing);
+
+  await writer.close();
+  await Promise.resolve();
+  assert_equals(records.length, 1, "closing remaining streamAppendHTML signals parse end");
+  assert_false(d.isParsing);
+}, "Overlap between stack of open elements and streamAppendHTML delays parse end until both finish");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='stopped'>");
+  const stopped = doc.getElementById("stopped");
+
+  const stopRecords = [];
+  const mo = new MutationObserver(r => stopRecords.push(...r));
+  mo.observe(stopped, { childList: true, parseEndChildList: true });
+
+  iframe.contentWindow.stop();
+  await Promise.resolve();
+  assert_equals(stopRecords.length, 1, "window.stop() aborts parser and queues parseEndChildList fallback");
+  assert_false(stopped.isParsing);
+
+  const container = document.createElement("div");
+  const ref = document.createElement("span");
+  container.appendChild(ref);
+  const stream = ref.streamBeforeHTML();
+  const writer = stream.getWriter();
+  ref.remove();
+
+  const errRecords = [];
+  const moErr = new MutationObserver(r => errRecords.push(...r));
+  moErr.observe(container, { childList: true, parseEndChildList: true });
+
+  await promise_rejects_dom(t, "HierarchyRequestError", writer.write("<p>fail</p>"));
+  await Promise.resolve();
+  assert_equals(errRecords.length, 1, "errored streamBeforeHTML aborts fragment parser and queues parseEndChildList fallback");
+  assert_false(container.isParsing);
+}, "window.stop() and errored HTML streams signal parse end");
+
+promise_test(async t => {
+  const iframe = document.createElement("iframe");
+  t.add_cleanup(() => iframe.remove());
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<div id='reopened'><span>open");
+  const reopened = doc.getElementById("reopened");
+
+  const records = [];
+  const mo = new MutationObserver(r => records.push(...r));
+  mo.observe(reopened, { childList: true, parseEndChildList: true });
+
+  doc.open();
+  doc.close();
+  await Promise.resolve();
+  assert_false(reopened.isParsing, "document.open() clears isParsing on old parser elements");
+  assert_equals(records.length, 1, "document.open() aborts active parser and queues parseEndChildList fallback");
+  assert_equals(records[0].addedNodes.length, 0);
+  assert_equals(records[0].removedNodes.length, 0);
+}, "document.open() aborts active parser and signals parse end");
+</script>
+</body>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>An &lt;area> with an href attribute is focusable</title>
+<link rel="author" title="Ibrahim Bendebka" href="https://github.com/sb3nder">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#the-tabindex-attribute">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<img id="img1" src="/images/grgr-256x256.png" usemap="#map" width="300" height="300">
+<img id="img2" src="/images/ggrr-256x256.png" usemap="#map" width="300" height="300">
+<map name="map">
+  <area id="area1" shape="circle" coords="75,75,75" href>
+</map>
+
+<script>
+  const img1 = window.img1;
+  const img2 = window.img2;
+  const area = window.area1;
+
+  const focusableContexts = [
+    ['one visible image', () => img2.remove(), () => img1.after(img2)],
+    ['two visible images', () => { }, () => { }],
+    ['one visible image (after: "two visible images")', () => img2.remove(), () => img1.after(img2)],
+    ['one hidden and one visible image', () => img1.hidden = true, () => img1.hidden = false],
+    ['one visible and one hidden image', () => img2.hidden = true, () => img2.hidden = false],
+    ['one inert and one non-inert image', () => img1.inert = true, () => img1.inert = false],
+    ['one non-inert and one inert image', () => img2.inert = true, () => img2.inert = false],
+  ];
+
+  for (const [name, setup, cleanup] of focusableContexts) {
+    setup();
+    test(() => {
+      assert_not_equals(document.activeElement, area);
+      area.focus();
+      assert_equals(document.activeElement, area);
+    }, `an <area href> associated with ${name} is focusable`);
+    area.blur();
+    cleanup();
+  }
+</script>

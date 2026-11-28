@@ -793,6 +793,7 @@ class Session:
         orientation=None,
         page=None,
         page_ranges=None,
+        safe_printable_inset=None,
         scale=None,
         shrink_to_fit=None,
     ):
@@ -803,6 +804,7 @@ class Session:
             "orientation": orientation,
             "page": page,
             "pageRanges": page_ranges,
+            "safePrintableInset": safe_printable_inset,
             "scale": scale,
             "shrinkToFit": shrink_to_fit,
         }.items():

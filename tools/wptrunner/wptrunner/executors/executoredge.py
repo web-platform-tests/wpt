@@ -35,7 +35,7 @@ class EdgeDriverPrintRefTestExecutor(EdgeDriverRefTestExecutor):
         with open(os.path.join(here, "reftest.js")) as f:
             self.script = f.read()
 
-    def screenshot(self, test, viewport_size, dpi, page_ranges):
+    def screenshot(self, test, viewport_size, dpi, page_ranges, safe_printable_inset):
         # https://github.com/web-platform-tests/wpt/issues/7140
         assert dpi is None
 
@@ -62,7 +62,7 @@ class EdgeDriverPrintRefTestExecutor(EdgeDriverRefTestExecutor):
 
         protocol.base.execute_script(self.wait_script, asynchronous=True)
 
-        pdf = protocol.pdf_print.render_as_pdf(*self.viewport_size)
+        pdf = protocol.pdf_print.render_as_pdf(*self.viewport_size, self.safe_printable_inset)
         screenshots = protocol.pdf_print.pdf_to_png(pdf, self.page_ranges)
         for i, screenshot in enumerate(screenshots):
             # strip off the data:img/png, part of the url

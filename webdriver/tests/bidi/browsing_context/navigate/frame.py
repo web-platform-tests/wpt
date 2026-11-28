@@ -39,6 +39,20 @@ async def test_multiple_frames(
     assert contexts[0]["children"][1]["url"] == test_page2
 
 
+async def test_cross_origin_frame_to_parent_origin(bidi_session, new_tab, inline):
+    frame_url = inline(PAGE_CONTENT, domain="alt")
+    parent_url = inline(f"<iframe src='{frame_url}'></iframe>")
+    contexts = await navigate_and_assert(bidi_session, new_tab, parent_url)
+
+    frame = contexts[0]["children"][0]
+    destination_url = inline(PAGE_CONTENT)
+    await navigate_and_assert(bidi_session, frame, destination_url)
+
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+    assert contexts[0]["children"][0]["context"] == frame["context"]
+    assert contexts[0]["children"][0]["url"] == destination_url
+
+
 async def test_nested_frames(
     bidi_session,
     new_tab,

@@ -187,6 +187,92 @@ async def test_nested_iframes_delete_top_iframe(
     remove_listener()
 
 
+async def test_nested_iframes_navigate_parent(
+    bidi_session,
+    subscribe_events,
+    wait_for_bidi_events,
+    new_tab,
+    inline,
+    test_page_nested_frames,
+    test_page_same_origin_frame,
+):
+    await bidi_session.browsing_context.navigate(
+        url=test_page_nested_frames, context=new_tab["context"], wait="complete"
+    )
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+    top_iframe = contexts[0]["children"][0]
+    assert len(top_iframe["children"]) == 1
+
+    await subscribe_events([CONTEXT_DESTROYED_EVENT])
+    events = []
+
+    async def on_event(_, data):
+        events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(CONTEXT_DESTROYED_EVENT, on_event)
+    try:
+        await bidi_session.browsing_context.navigate(
+            url=inline("<div>replacement</div>"),
+            context=new_tab["context"],
+            wait="complete",
+        )
+        await wait_for_bidi_events(events, 1)
+        with pytest.raises(TimeoutException):
+            await wait_for_bidi_events(events, 2, timeout=0.5)
+
+        assert_browsing_context(
+            events[0],
+            top_iframe["context"],
+            children=1,
+            url=test_page_same_origin_frame,
+            parent=new_tab["context"],
+            client_window=contexts[0]["clientWindow"],
+        )
+    finally:
+        remove_listener()
+
+
+async def test_delete_cross_origin_iframe(
+    bidi_session, subscribe_events, wait_for_bidi_events, new_tab, inline
+):
+    frame_url = inline("<div>remote</div>", domain="alt")
+    await bidi_session.browsing_context.navigate(
+        url=inline(f"<iframe src='{frame_url}'></iframe>"),
+        context=new_tab["context"],
+        wait="complete",
+    )
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+    frame = contexts[0]["children"][0]
+
+    await subscribe_events([CONTEXT_DESTROYED_EVENT])
+    events = []
+
+    async def on_event(_, data):
+        events.append(data)
+
+    remove_listener = bidi_session.add_event_listener(CONTEXT_DESTROYED_EVENT, on_event)
+    try:
+        await bidi_session.script.evaluate(
+            expression="document.querySelector('iframe').remove()",
+            target=ContextTarget(new_tab["context"]),
+            await_promise=False,
+        )
+        await wait_for_bidi_events(events, 1)
+        with pytest.raises(TimeoutException):
+            await wait_for_bidi_events(events, 2, timeout=0.5)
+
+        assert_browsing_context(
+            events[0],
+            frame["context"],
+            children=0,
+            url=frame_url,
+            parent=new_tab["context"],
+            client_window=contexts[0]["clientWindow"],
+        )
+    finally:
+        remove_listener()
+
+
 async def test_nested_iframes_delete_deepest_iframe(
     bidi_session,
     subscribe_events,

@@ -1,0 +1,29 @@
+<!doctype html>
+<title>location.ancestorOrigins snapshot timing of referrerpolicy for javascript: URLs</title>
+<link rel="help" href="https://html.spec.whatwg.org/multipage/browsing-the-web.html#evaluate-a-javascript:-url">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+async function ancestorOriginsAfterNavigation(t, policyAtNavigation, policyAfterNavigation) {
+  const iframe = document.createElement('iframe');
+  t.add_cleanup(() => iframe.remove());
+  iframe.referrerPolicy = policyAtNavigation;
+  iframe.src = 'javascript:""';
+  const loaded = new Promise(resolve => iframe.onload = resolve);
+  document.body.append(iframe);
+  iframe.referrerPolicy = policyAfterNavigation;
+  await loaded;
+  return Array.from(iframe.contentWindow.location.ancestorOrigins);
+}
+
+promise_test(async t => {
+  assert_implements(location.ancestorOrigins);
+  assert_array_equals(await ancestorOriginsAfterNavigation(t, 'no-referrer', ''), ['null']);
+}, 'referrerpolicy at navigation time masks the javascript: URL document');
+
+promise_test(async t => {
+  assert_implements(location.ancestorOrigins);
+  assert_array_equals(await ancestorOriginsAfterNavigation(t, '', 'no-referrer'), [window.origin]);
+}, 'referrerpolicy set after navigation does not mask the javascript: URL document');
+</script>

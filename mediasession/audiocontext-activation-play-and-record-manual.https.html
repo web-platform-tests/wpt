@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<title>An audible AudioContext and a "play-and-record" audio session activate the media session</title>
+<link rel="help" href="https://w3c.github.io/mediasession/#audiocontext-activation-conditions">
+<link rel="help" href="https://w3c.github.io/audio-session/#dom-audiosessiontype-play-and-record">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/audiocontext-activation.js"></script>
+<script>
+audioContextActivationTest({audioSessionType: "play-and-record"});
+</script>

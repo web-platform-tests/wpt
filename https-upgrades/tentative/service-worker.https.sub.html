@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HTTPS Upgrades: Service Worker.</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/common/get-host-info.sub.js"></script>
+    <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+
+  </head>
+  <body>
+    <script>
+      promise_test(async t => {
+        const registration = await service_worker_unregister_and_register(
+            t, 'service-worker.js', '/https-upgrades/tentative/');
+        t.add_cleanup(() => registration.unregister());
+        await wait_for_state(t, registration.installing || registration.active, 'activated');
+
+        // This url should be handled by the service worker and not HTTPS-Upgrades, but it DOES NOT
+        // work as we can't register a SW for this http: URL (unless running via
+        // third_party/blink/tools/run_blink_wptserve.py in which case host is localhost which is
+        // secure context).
+        var url = new URL(
+            "http://{{host}}:{{ports[http][0]}}/https-upgrades/tentative/popup.html");
+        // var url = new URL("http://localhost:{{ports[http][0]}}/https-upgrades/tentative/popup.html")
+        const p = new Promise(r => window.onmessage = e => r(e.data));
+
+        let win = window.open(url);
+        assert_true(!!win);
+        t.add_cleanup(() => win.close());
+
+        const result = await p;
+        assert_equals(result, 'SERVICE WORKER');
+      }, "Service worker should handle navigation before HTTPS-Upgrade");
+    </script>
+  </body>
+</html>

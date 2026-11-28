@@ -1,22 +1,6 @@
 const image_delay = 2000;
 const delay_pipe_value = image_delay / 1000;
 
-const await_with_timeout = async (delay, message, promise, cleanup = ()=>{}) => {
-  let timeout_id;
-  const timeout = new Promise((_, reject) => {
-    timeout_id = step_timeout(() =>
-      reject(new DOMException(message, "TimeoutError")), delay)
-  });
-  let result = null;
-  try {
-    result = await Promise.race([promise, timeout]);
-    clearTimeout(timeout_id);
-  } finally {
-    cleanup();
-  }
-  return result;
-};
-
 // Receives a LargestContentfulPaint |entry| and checks |entry|'s attribute values.
 //
 // The |expectedSize| and |timeLowerBound| parameters may be functions returning
@@ -145,41 +129,6 @@ const load_video_and_observe = url => {
     document.body.appendChild(video);
   });
 };
-
-const getLCPStartTime = (identifier) => {
-  return new Promise(resolve => {
-    new PerformanceObserver((entryList, observer) => {
-      entryList.getEntries().forEach(e => {
-        if (e.url.includes(identifier)) {
-          resolve(e);
-          observer.disconnect();
-        }
-      });
-    }).observe({ type: 'largest-contentful-paint', buffered: true });
-  });
-}
-
-const getFCPStartTime = () => {
-  return performance.getEntriesByName('first-contentful-paint')[0];
-}
-
-const add_text = (text) => {
-  const paragraph = document.createElement('p');
-  paragraph.innerHTML = text;
-  document.body.appendChild(paragraph);
-}
-
-const loadImage = (url, shouldBeIgnoredForLCP = false) => {
-  return new Promise(function (resolve, reject) {
-    let image = document.createElement('img');
-    image.addEventListener('load', () => { resolve(image); });
-    image.addEventListener('error', reject);
-    image.src = url;
-    if (shouldBeIgnoredForLCP)
-      image.style.opacity = 0;
-    document.body.appendChild(image);
-  });
-}
 
 const raf = () => {
   return new Promise(resolve => requestAnimationFrame(resolve));

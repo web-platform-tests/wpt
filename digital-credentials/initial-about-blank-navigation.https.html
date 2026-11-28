@@ -1,0 +1,81 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Digital Credential: a pending request in an iframe, and navigating the iframe away from its initial about:blank document</title>
+<link rel="help" href="https://w3c-fedid.github.io/digital-credentials/" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js?feature=bidi"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body></body>
+<script type="module">
+  import { makeGetOptions } from "./support/helper.js";
+
+  async function requestInNewIframe(t) {
+    await test_driver.set_virtual_wallet_behavior("wait");
+    t.add_cleanup(() => test_driver.set_virtual_wallet_behavior("clear"));
+
+    const iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    t.add_cleanup(() => iframe.remove());
+    const frameWindow = iframe.contentWindow;
+    const FrameDOMException = frameWindow.DOMException;
+    await test_driver.bless("user activation for the iframe's request", null, frameWindow);
+    const firstRequest = frameWindow.navigator.credentials.get(makeGetOptions());
+    let firstSettled = false;
+    firstRequest.then(
+      () => (firstSettled = true),
+      () => (firstSettled = true),
+    );
+    await new Promise((resolve) => t.step_timeout(resolve, 100));
+    assert_false(firstSettled, "The iframe's request should still be pending before it navigates");
+    return { iframe, FrameDOMException, firstRequest };
+  }
+
+  function navigateAway(iframe) {
+    return new Promise((resolve) => {
+      iframe.addEventListener("load", resolve, { once: true });
+      iframe.src = "/common/blank.html";
+    });
+  }
+
+  promise_test(async (t) => {
+    await requestInNewIframe(t);
+
+    const abortController = new AbortController();
+    t.add_cleanup(() => abortController.abort());
+    let secondRequest;
+    await test_driver.bless("user activation for the second request", () => {
+      secondRequest = navigator.credentials.get(makeGetOptions({ signal: abortController.signal }));
+    });
+    await promise_rejects_dom(
+      t,
+      "NotAllowedError",
+      secondRequest,
+      "The second request should fail while the iframe's request is pending",
+    );
+  }, "A pending request in an iframe makes a request from the top page fail.");
+
+  promise_test(async (t) => {
+    const { iframe } = await requestInNewIframe(t);
+    await navigateAway(iframe);
+
+    await test_driver.set_virtual_wallet_behavior("respond", "openid4vp-v1-unsigned", { response: "second-response" });
+    await test_driver.bless("user activation for the second request");
+    const credential = await navigator.credentials.get(makeGetOptions({ protocol: "openid4vp-v1-unsigned" }));
+    assert_equals(credential.protocol, "openid4vp-v1-unsigned");
+    assert_equals(credential.data.response, "second-response");
+  }, "Navigating away from the initial about:blank document lets the next request start.");
+
+  promise_test(async (t) => {
+    const { iframe, FrameDOMException, firstRequest } = await requestInNewIframe(t);
+    await navigateAway(iframe);
+    await promise_rejects_dom(
+      t,
+      "AbortError",
+      FrameDOMException,
+      firstRequest,
+      "The abandoned request should reject with an AbortError",
+    );
+  }, "Navigating away from the initial about:blank document rejects its pending request.");
+</script>

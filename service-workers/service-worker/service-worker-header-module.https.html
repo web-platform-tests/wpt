@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<title>Service Worker: Service-Worker header with module static imports</title>
+<link rel="help" href="https://w3c.github.io/ServiceWorker/#update-algorithm">
+<link rel="help" href="https://github.com/w3c/ServiceWorker/issues/1574">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/test-helpers.sub.js"></script>
+<script>
+// The Service-Worker header is only sent with the request for the top-level
+// script. Modules statically imported by a module service worker are fetched
+// without it, like scripts imported with importScripts().
+
+async function register_module_and_update(t, script, scope) {
+  await service_worker_unregister(t, scope);
+  const registration =
+      await navigator.serviceWorker.register(script, {scope, type: 'module'});
+  t.add_cleanup(() => registration.unregister());
+  await wait_for_state(t, registration.installing, 'activated');
+  await registration.update();
+}
+
+promise_test(async t => {
+  const script = 'resources/service-worker-header.py?header&static-import=' +
+      encodeURIComponent('./service-worker-header.py?no-header');
+  await register_module_and_update(
+      t, script, 'resources/service-worker-header-module-same-origin');
+}, 'A module service worker main script request should have the ' +
+   'Service-Worker header and its same-origin static imports should not');
+
+promise_test(async t => {
+  const imported = get_host_info().HTTPS_REMOTE_ORIGIN +
+      new URL('resources/service-worker-header.py', location.href).pathname +
+      '?no-header&cors';
+  const script = 'resources/service-worker-header.py?header&static-import=' +
+      encodeURIComponent(imported);
+  await register_module_and_update(
+      t, script, 'resources/service-worker-header-module-cross-origin');
+}, 'A cross-origin static import from a module service worker should not ' +
+   'need Access-Control-Allow-Headers: Service-Worker');
+</script>

@@ -52,3 +52,10 @@ cycles, and since unexpected behavior differences across contexts
 (e.g. `window` vs. `dedicatedworker`) for individual WebNN operators
 (e.g. `matmul()`) is unlikely, most operator-specific tests only
 specify `global=window`.
+
+## Diagnostics
+
+`resources/candidate_dump/` holds a diagnostic page that runs one
+conformance file on one device and saves every output element with its
+ULP distance to a JSON report. It is not a test and is not run by CI;
+see `resources/candidate_dump/README.md`.

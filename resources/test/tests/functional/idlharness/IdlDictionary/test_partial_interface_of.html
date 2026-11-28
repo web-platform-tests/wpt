@@ -42,6 +42,18 @@
         namespace C {};`);
       idlArray.merge_partials();
     })();
+
+    // Test filter: partials follow the name of the dictionary they extend
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_idls(`
+        dictionary D {};
+        partial dictionary D { long d; };
+        dictionary E {};
+        partial dictionary E { long e; };`);
+      idlArray.set_test_filter(name => name === "E");
+      idlArray.merge_partials();
+    })();
   </script>
   <script type="text/json" id="expected">
 {
@@ -79,6 +91,18 @@
       "status_string": "FAIL",
       "properties": {},
       "message": "assert_true: Original C definition should have type dictionary expected true got false"
+    },
+    {
+      "name": "Partial dictionary E: original dictionary defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial dictionary E: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
     }
   ],
   "type": "complete"

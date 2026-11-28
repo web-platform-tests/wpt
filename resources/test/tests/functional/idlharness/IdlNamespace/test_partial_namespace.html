@@ -60,6 +60,18 @@
         interface E {};`);
       idlArray.merge_partials();
     })();
+
+    // Test filter: partials follow the name of the namespace they extend
+    (() => {
+      const idlArray = new IdlArray();
+      idlArray.add_idls(`
+        [Exposed=Window] namespace F {};
+        partial namespace F { undefined f(); };
+        [Exposed=Window] namespace G {};
+        partial namespace G { undefined g(); };`);
+      idlArray.set_test_filter(name => name === "G");
+      idlArray.merge_partials();
+    })();
   </script>
   <script type="text/json" id="expected">
 {
@@ -115,6 +127,18 @@
       "status_string": "FAIL",
       "properties": {},
       "message": "assert_true: Original E definition should have type namespace expected true got false"
+    },
+    {
+      "name": "Partial namespace G: original namespace defined",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
+    },
+    {
+      "name": "Partial namespace G: member names are unique",
+      "status_string": "PASS",
+      "properties": {},
+      "message": null
     }
   ],
   "type": "complete"

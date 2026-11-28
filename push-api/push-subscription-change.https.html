@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<title>test_driver.fire_push_subscription_change_event</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/push-testdriver.js"></script>
+<script>
+const SCRIPT = 'resources/push-event-worker.js';
+const SCOPE = 'resources/push-subscription-change-scope/';
+
+const nextMessage = messageQueue();
+
+let registration;
+
+promise_setup(async () => {
+  registration = await navigator.serviceWorker.register(SCRIPT, {scope: SCOPE});
+  add_completion_callback(() => registration.unregister());
+  await waitForActivated(registration);
+});
+
+promise_test(async () => {
+  await test_driver.fire_push_subscription_change_event(registration.scope)
+      .catch(rethrowIfUnsupported);
+
+  const message = await nextMessage(data => !data.push);
+  assert_equals(message.scope, registration.scope);
+  assert_equals(message.oldSubscription, null,
+                'oldSubscription must be null when it is unknown');
+  assert_equals(message.newSubscription, null,
+                'newSubscription must be null when it is unknown');
+}, 'fires pushsubscriptionchange without subscriptions');
+
+promise_test(async () => {
+  await test_driver.fire_push_subscription_change_event(registration.scope)
+      .catch(rethrowIfUnsupported);
+  await nextMessage(data => !data.push);
+
+  await test_driver.deliver_push_message(registration.scope, 'after').catch(
+      rethrowIfUnsupported);
+  const message = await nextMessage(data => data.text === 'after');
+  assert_equals(message.scope, registration.scope,
+                'the registration must still receive push events');
+}, 'keeps receiving push events after the subscription change');
+</script>
